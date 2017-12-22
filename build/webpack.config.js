@@ -3,11 +3,13 @@ const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const project = require('../project.config')
+const theme = require('../package.json').theme
 
 const inProject = path.resolve.bind(path, project.basePath)
 const inProjectSrc = (file) => inProject(project.srcDir, file)
 
 const __DEV__ = project.env === 'development'
+const __STAGE__ = project.env === 'stage'
 const __TEST__ = project.env === 'test'
 const __PROD__ = project.env === 'production'
 
@@ -31,7 +33,7 @@ const config = {
       inProject(project.srcDir),
       'node_modules',
     ],
-    extensions: ['*', '.js', '.jsx', '.json'],
+    extensions: ['*', '.web.js', '.web.jsx', '.js', '.jsx', '.json'],
   },
   externals: project.externals,
   module: {
@@ -41,6 +43,7 @@ const config = {
     new webpack.DefinePlugin(Object.assign({
       'process.env': { NODE_ENV: JSON.stringify(project.env) },
       __DEV__,
+      __STAGE__,
       __TEST__,
       __PROD__,
     }, project.globals))
@@ -73,7 +76,7 @@ config.module.rules.push({
             useBuiltIns: true // we polyfill Object.assign in src/normalize.js
           },
         ],
-        ['import', { libraryName: 'antd', style: 'css' }],
+        ['import', { libraryName: 'antd-mobile', style: true }],
       ],
       presets: [
         'babel-preset-react',
@@ -97,8 +100,51 @@ const extractStyles = new ExtractTextPlugin({
   disable: __DEV__,
 })
 
+// local style, with '.module.sass/scss/css' suffix
 config.module.rules.push({
-  test: /\.(sass|scss|css)$/,
+  test: /\.module.(sass|scss|css)$/,
+  loader: extractStyles.extract({
+    fallback: 'style-loader',
+    use: [
+      {
+        loader: 'css-loader',
+        options: {
+          modules: true,
+          localIdentName: "[name]__[local]___[hash:base64:5]",
+          sourceMap: project.sourcemaps,
+          minimize: {
+            autoprefixer: {
+              add: true,
+              remove: true,
+              browsers: ['last 2 versions'],
+            },
+            discardComments: {
+              removeAll : true,
+            },
+            discardUnused: false,
+            mergeIdents: false,
+            reduceIdents: false,
+            safe: true,
+            sourcemap: project.sourcemaps,
+          },
+        },
+      },
+      {
+        loader: 'sass-loader',
+        options: {
+          sourceMap: project.sourcemaps,
+          includePaths: [
+            inProjectSrc('styles'),
+          ],
+        },
+      }
+    ],
+  })
+})
+
+// global style
+config.module.rules.push({
+  test: /^((?!\.module).)*(sass|scss|css)$/,
   loader: extractStyles.extract({
     fallback: 'style-loader',
     use: [
@@ -135,6 +181,50 @@ config.module.rules.push({
     ],
   })
 })
+
+
+// less style
+config.module.rules.push({
+  test: /\.less$/,
+  loader: extractStyles.extract({
+    fallback: 'style-loader',
+    use: [
+      {
+        loader: 'css-loader',
+        options: {
+          sourceMap: project.sourcemaps,
+          minimize: {
+            autoprefixer: {
+              add: true,
+              remove: true,
+              browsers: ['last 2 versions'],
+            },
+            discardComments: {
+              removeAll : true,
+            },
+            discardUnused: false,
+            mergeIdents: false,
+            reduceIdents: false,
+            safe: true,
+            sourcemap: project.sourcemaps,
+          },
+        },
+      },
+      {
+        loader: 'less-loader',
+        options: {
+          sourceMap: project.sourcemaps,
+          includePaths: [
+            inProjectSrc('styles'),
+          ],
+          modifyVars: theme,
+        },
+      }
+    ],
+  })
+})
+
+
 config.plugins.push(extractStyles)
 
 // Images
@@ -207,7 +297,7 @@ if (!__TEST__) {
 
 // Production Optimizations
 // ------------------------------------
-if (__PROD__) {
+if (__PROD__ || __STAGE__) {
   config.plugins.push(
     new webpack.LoaderOptionsPlugin({
       minimize: true,
