@@ -2,8 +2,13 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import {store} from './store/persistStore'
 import {history} from './store/createStore'
+import AV from 'leancloud-storage'
+import appConfig from './utils/appConfig'
 import App from './App'
 import './main.scss'
+
+//leancloud init
+AV.init(appConfig.LC_APP_ID, appConfig.LC_APP_KEY)
 
 // Render Setup
 // ------------------------------------

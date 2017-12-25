@@ -25,9 +25,11 @@
     "express": "^4.14.0",
     "history": "^4.7.2",
     "immutable": "^3.8.1",
+    "leancloud-storage": "^3.4.2",
     "object-assign": "^4.1.1",
     "promise": "^7.1.1",
     "prop-types": "^15.5.10",
+    "querystring": "^0.2.0",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "react-redux": "^5.0.4",
@@ -107,6 +109,7 @@
     "yargs": "^8.0.1"
   },
   "theme": {
-    "brand-primary": "red"
+    "brand-primary": "#F6635F",
+    "brand-primary-tap": "#E8483A"
   }
 }
