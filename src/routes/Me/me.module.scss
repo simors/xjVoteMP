@@ -1,0 +1,21 @@
+.container {
+  height: 100%;
+  background-color: #fff;
+  .header {
+    background-color: #F6635F;
+    height: 8rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    .avatar {
+      width: 4rem;
+      height: 4rem;
+      border-radius: 50%;
+    }
+    .nickname {
+      margin-top: 5px;
+    }
+  }
+}
