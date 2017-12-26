@@ -7,7 +7,7 @@ import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import {Button, TabBar} from 'antd-mobile'
 import styles from './home.module.scss'
 import Me from '../Me'
-import VoteListPage from '../Vote'
+import VoteListPage, {PublishVote} from '../Vote'
 
 
 class Home extends Component {
@@ -21,6 +21,7 @@ class Home extends Component {
   }
 
   render() {
+    const {history} = this.props
     return (
       <div className={styles.page}>
         <TabBar tintColor="#F6635F" hidden={this.state.hidden}  >
@@ -31,14 +32,13 @@ class Home extends Component {
             selectedIcon={<div className={styles.homeIconFill}/>}
             selected={this.state.selectedTab === 'homeTab'}
             onPress={() => {
-              document.title = '小吉互动'
               this.setState({
                 selectedTab: 'homeTab',
-              });
+              })
             }}
             data-seed="logId"
           >
-            <VoteListPage />
+            <VoteListPage history={history}/>
           </TabBar.Item>
           <TabBar.Item
             key="Add"
@@ -46,7 +46,7 @@ class Home extends Component {
             selectedIcon={<div className={styles.plusIcon}/>}
             selected={this.state.selectedTab === 'plusTab'}
             onPress={() => {
-              document.title = '创建活动'
+              history.push('/publishVote')
             }}
             data-seed="logId0"
           >
@@ -56,17 +56,16 @@ class Home extends Component {
             selectedIcon={<div className={styles.mineIconFill}/>}
             title="我的"
             key="me"
-            badge={'8'}
+            badge={'new'}
             selected={this.state.selectedTab === 'mineTab'}
             onPress={() => {
-              document.title = '我的'
               this.setState({
                 selectedTab: 'mineTab',
-              });
+              })
             }}
             data-seed="logId1"
           >
-            <Me/>
+            <Me history={history} />
           </TabBar.Item>
         </TabBar>
       </div>

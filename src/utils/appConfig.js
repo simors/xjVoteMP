@@ -17,7 +17,7 @@ const LEAN_ENGINE_DOMAIN_PRO = "http://hudong-pro.leanapp.cn"
 var CLIENT_DOMAIN = ''
 const CLIENT_DOMAIN_DEV = 'http://www.hudong.frp.lvyii.com'
 const CLIENT_DOMAIN_STAGE = ''
-const CLIENT_DOMAIN_PRO = ''
+const CLIENT_DOMAIN_PRO = 'http://admin.xiaojee.cn:6400'
 
 //LeanCloud环境参数
 var LC_APP_ID = ""

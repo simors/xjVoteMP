@@ -3,6 +3,8 @@
  */
 import * as redux from './redux'
 import VoteListPage from './VoteListPage'
+import PublishVote from './PublishVote'
+import VoteDetail from './VoteDetail'
 
 /* export saga */
 export const voteSaga = redux.voteSaga
@@ -17,3 +19,4 @@ export const voteActions = redux.voteActions
 export const voteSelector = redux.voteSelector
 
 export default VoteListPage
+export {PublishVote, VoteDetail}
