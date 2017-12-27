@@ -7,7 +7,7 @@ import LoadingPage from './Loading'
 import AuthRoute from './AuthRoute'
 import ErrorPage from './Error'
 import {Wallet, MyVote, BePromoter} from './Me'
-import {VoteDetail, PublishVote} from './Vote'
+import {Vote, PublishVote} from './Vote'
 
 const rootRoutes = (
   <Switch>
@@ -16,7 +16,7 @@ const rootRoutes = (
     <AuthRoute path="/wallet" component={Wallet}/>
     <AuthRoute path="/myVote" component={MyVote}/>
     <AuthRoute path="/bePromoter" component={BePromoter}/>
-    <AuthRoute path="/voteDetail" component={VoteDetail}/>
+    <AuthRoute path="/vote" component={Vote}/>
       <AuthRoute path="/publishVote" component={PublishVote}/>
     <AuthRoute path="/" component={Home}/>
     <Route component={NoMatch}/>

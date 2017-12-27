@@ -1,0 +1,47 @@
+.page {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  .homeIcon {
+    width: 22px;
+    height: 22px;
+    background: url(../../asset/images/home.png) center  center / 22px 22px no-repeat;
+  }
+  .homeIconFill {
+    width: 22px;
+    height: 22px;
+    background: url(../../asset/images/home-vote-fill.png) center  center / 22px 22px no-repeat;
+  }
+  .applyIcon {
+    width: 22px;
+    height: 22px;
+    background: url(../../asset/images/apply.png) center  center / 22px 22px no-repeat;
+  }
+  .applyIconFill {
+    width: 22px;
+    height: 22px;
+    background: url(../../asset/images/apply-fill.png) center  center / 22px 22px no-repeat;
+  }
+  .prizeIcon {
+    width: 22px;
+    height: 22px;
+    background: url(../../asset/images/prize.png) center  center / 22px 22px no-repeat;
+  }
+  .prizeIconFill {
+    width: 22px;
+    height: 22px;
+    background: url(../../asset/images/prize-fill.png) center  center / 22px 22px no-repeat;
+  }
+  .rangeIcon {
+    width: 22px;
+    height: 22px;
+    background: url(../../asset/images/range.png) center  center / 22px 22px no-repeat;
+  }
+  .rangeIconFill {
+    width: 22px;
+    height: 22px;
+    background: url(../../asset/images/range-fill.png) center  center / 22px 22px no-repeat;
+  }
+
+}

@@ -88,8 +88,8 @@ class VoteListPage extends React.PureComponent {
       }
       return (
         <div key={rowID} className={styles.voteItem} style={itemStyle}>
-          <div onClick={() => {history.push('/voteDetail')}}>
-            <img className={styles.cover} src={rowData.cover} alt=""/>
+          <div className={styles.cover} onClick={() => {history.push('/vote')}}>
+            <img className={styles.img} src={rowData.cover} alt=""/>
           </div>
           <WhiteSpace />
           <WingBlank>

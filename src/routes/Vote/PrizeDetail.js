@@ -6,7 +6,7 @@ import {connect} from 'react-redux'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import {Button} from 'antd-mobile'
 
-class VoteDetail extends React.PureComponent {
+class PrizeDetail extends React.PureComponent {
   constructor(props) {
     super(props)
   }
@@ -14,7 +14,7 @@ class VoteDetail extends React.PureComponent {
   render() {
     return (
       <div>
-        <Button>创建活动</Button>
+        <Button>奖品详情</Button>
       </div>
     )
   }
@@ -30,4 +30,4 @@ const mapDispatchToProps = {
 
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(VoteDetail))
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(PrizeDetail))
