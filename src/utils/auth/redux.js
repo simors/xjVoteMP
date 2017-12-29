@@ -9,40 +9,25 @@ import * as datetime from '../datetime'
 import * as authCloud from './cloud'
 
 /****  Model  ****/
-
 const UserInfoRecord = Record({
   id: undefined,
-  phone: undefined,
   token: undefined,
   avatar: undefined,
   nickname: undefined,
   gender: undefined,
-  birthday: undefined,
-  identity: undefined,
-  geo: undefined,
-  geoProvince: undefined,
-  geoProvinceCode: undefined,
-  geoCity: undefined,
-  geoCityCode: undefined,
-  geoDistrict: undefined,
-  geoDistrictCode: undefined,
   createdAt: '',
-  createdDate: '',
   updatedAt: '',
-  updatedDate: '',
   lastLoginDuration: '',
   username: '',
-  type: '',
   emailVerified: false,
-  status: '',
   mobilePhoneNumber: '',
   mobilePhoneVerified: false,
-  detail: {},
-  enable: false,
-  paymentPassword: undefined,
-  isVirtual:0,
   authData: undefined,
-  openid: undefined,         //公众号对应的微信openid
+  unionid: undefined,         //微信开发平台unionid
+  agentLevel: undefined,      //代理级别
+  friendsNum: undefined,
+  province: undefined,
+  city:  undefined,
 }, 'UserInfoRecord')
 
 const UserStateRecord = Record({
@@ -52,12 +37,8 @@ const UserStateRecord = Record({
 }, 'UserStateRecord')
 
 class UserInfo extends UserInfoRecord {
-  static fromLeancloudObject(lcObj, type) {
+  static fromLeancloudObject(lcObj) {
     let attrs = lcObj.attributes
-    if(type) {
-      lcObj = attrs[type]
-      attrs = attrs[type].attributes
-    }
 
     let info = new UserInfoRecord()
     return info.withMutations((record) => {
@@ -66,37 +47,23 @@ class UserInfo extends UserInfoRecord {
       if(lcObj.createdAt) {
         let createdAt = lcObj.createdAt
         let updatedAt = lcObj.updatedAt
-
         record.set('createdAt', createdAt.valueOf())
-        record.set('createdDate', datetime.formatLeancloudTime(createdAt, 'YYYY-MM-DD HH:mm:SS'))
         record.set('updatedAt', updatedAt.valueOf())
-        record.set('updatedDate', datetime.formatLeancloudTime(updatedAt, 'YYYY-MM-DD HH:mm:SS'))
         record.set('lastLoginDuration', datetime.getConversationTime(updatedAt))
       }
-
-      record.set('phone', attrs['mobilePhoneNumber'])
       record.set('mobilePhoneNumber', attrs['mobilePhoneNumber'])
       record.set('avatar', attrs['avatar'])
       record.set('nickname', attrs['nickname'])
       record.set('gender', attrs['gender'])
-      record.set('birthday', attrs['birthday'])
-      record.set('identity', new List(attrs.identity))
-      record.set('geo', attrs['geo'])
-      record.set('geoProvince', attrs['geoProvince'])
-      record.set('geoProvinceCode', attrs['geoProvinceCode'])
-      record.set('geoCity', attrs['geoCity'])
-      record.set('geoCityCode', attrs['geoCityCode'])
-      record.set('geoDistrict', attrs['geoDistrict'])
-      record.set('geoDistrictCode', attrs['geoDistrictCode'])
       record.set('username', attrs['username'])
       record.set('emailVerified', attrs['emailVerified'])
       record.set('mobilePhoneVerified', attrs['mobilePhoneVerified'])
-      record.set('isVirtual', attrs['isVirtual'])
-      record.set('status', attrs['status'])
-      record.set('type', attrs['type'])
-      record.set('enable', attrs['enable'])
-      record.set('openid', attrs['openid'])
+      record.set('unionid', attrs['unionid'])
       record.set('authData', attrs['authData'])
+      record.set('agentLevel', attrs['agentLevel'])
+      record.set('friendsNum', attrs['friendsNum'])
+      record.set('province', attrs['province'])
+      record.set('city', attrs['city'])
     })
   }
 
@@ -104,14 +71,7 @@ class UserInfo extends UserInfoRecord {
     let info = new UserInfoRecord()
     info = info.withMutations((record) => {
       for(let key in lcObj) {
-        if('identity' == key) {
-          record.set('identity', new List(lcObj.identity))
-        }else if('mobilePhoneNumber' == key){
-          record.set(key, lcObj[key])
-          record.set('phone', lcObj[key])
-        }else {
-          record.set(key, lcObj[key])
-        }
+        record.set(key, lcObj[key])
       }
     })
     return info
@@ -135,7 +95,6 @@ const LOGIN_OUT = "LOGIN_OUT"
 const REGISTER_SUCCESS = "REGISTER_SUCCESS"
 const ADD_USER_PROFILE = "ADD_USER_PROFILE"
 const ADD_USER_PROFILES = "ADD_USER_PROFILES"
-const UPDATE_USER_IDENTITY = 'UPDATE_USER_IDENTITY'
 
 /**** Action ****/
 
@@ -199,20 +158,11 @@ export function authReducer(state = initialState, action) {
       return handleAddUserProfile(state, action)
     case ADD_USER_PROFILES:
       return handleAddUserProfiles(state, action)
-    case UPDATE_USER_IDENTITY:
-      return handleUpdateUserIdentity(state, action)
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
       return state
   }
-}
-
-function handleUpdateUserIdentity(state, action){
-  let newIdentity = action.payload.identity
-  let activeUser = state.get('activeUser')
-  state = state.setIn(['profiles', activeUser, 'identity'], newIdentity)
-  return state
 }
 
 function handleRegisterSuccess(state, action) {
@@ -322,15 +272,6 @@ function activeUserInfo(state) {
   return activeUser ? state.AUTH.getUserInfoById(activeUser) : new UserInfo()
 }
 
-function getUserIdentity(state, userId) {
-  let userInfo = userInfoById(state, userId).toJS()
-  let identity = userInfo.identity
-  if (!identity) {
-    return []
-  }
-  return identity
-}
-
 function selectToken(state) {
   let AUTH = state.AUTH
   return AUTH.token
@@ -342,6 +283,5 @@ export const authSelector = {
   userInfoById,
   userInfoByIds,
   activeUserInfo,
-  getUserIdentity,
   selectToken,
 }

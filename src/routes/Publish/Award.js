@@ -3,6 +3,7 @@
  */
 import React from 'react'
 import {connect} from 'react-redux'
+import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import styles from './organizer.module.scss'
 import {Button} from 'antd-mobile'
 
@@ -11,13 +12,23 @@ class Award extends React.PureComponent {
     super(props)
   }
 
+  onBack = () => {
+    const {history} = this.props
+    history.goBack()
+  }
+
+  onNext = () => {
+    const {history} = this.props
+    history.push('/publish/gifts')
+  }
+
   render() {
     const {onBack, onNext} = this.props
     return (
       <div>
         <Button>Award</Button>
-        <Button onClick={onBack}>上一步</Button>
-        <Button onClick={onNext}>下一步</Button>
+        <Button onClick={this.onBack}>上一步</Button>
+        <Button onClick={this.onNext}>下一步</Button>
       </div>
     )
   }
@@ -32,4 +43,4 @@ const mapDispatchToProps = {
 
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Award)
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Award))

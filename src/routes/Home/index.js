@@ -7,7 +7,7 @@ import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import {Button, TabBar} from 'antd-mobile'
 import styles from './home.module.scss'
 import Me from '../Me'
-import VoteListPage, {PublishVote} from '../Vote'
+import VoteListPage from '../Vote'
 
 
 class Home extends Component {
@@ -46,7 +46,7 @@ class Home extends Component {
             selectedIcon={<div className={styles.plusIcon}/>}
             selected={this.state.selectedTab === 'plusTab'}
             onPress={() => {
-              history.push('/publishVote')
+              history.push('/publish')
             }}
             data-seed="logId0"
           >

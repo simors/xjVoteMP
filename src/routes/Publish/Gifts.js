@@ -3,6 +3,7 @@
  */
 import React from 'react'
 import {connect} from 'react-redux'
+import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import styles from './organizer.module.scss'
 import {Button} from 'antd-mobile'
 
@@ -11,12 +12,16 @@ class Gifts extends React.PureComponent {
     super(props)
   }
 
+  onBack = () => {
+    const {history} = this.props
+    history.goBack()
+  }
+
   render() {
-    const {onBack} = this.props
     return (
       <div>
         <Button>Gifts</Button>
-        <Button onClick={onBack}>上一步</Button>
+        <Button onClick={this.onBack}>上一步</Button>
       </div>
     )
   }
@@ -31,4 +36,4 @@ const mapDispatchToProps = {
 
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Gifts)
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Gifts))

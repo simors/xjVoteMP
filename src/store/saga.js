@@ -7,6 +7,7 @@ import {appStateSaga} from '../utils/appstate'
 import {rehydrateSaga} from '../utils/rehydrateRedux'
 import {voteSaga} from '../routes/Vote'
 import {meSaga} from '../routes/Me'
+import {publishSaga} from '../routes/Publish'
 
 export default function* rootSaga() {
   yield all([
@@ -15,5 +16,6 @@ export default function* rootSaga() {
     ...rehydrateSaga,
     ...voteSaga,
     ...meSaga,
+    ...publishSaga,
   ])
 }

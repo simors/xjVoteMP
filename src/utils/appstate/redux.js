@@ -44,9 +44,8 @@ export const appStateAction = {
   updateRehydrate: createAction(UPDATE_REHYDRATE),
   getJsApiConfig: createAction(GET_WECHAT_JSAPI_CONFIG),
   updateProvinceAndCities: createAction(UPDATE_PROVINCE_AND_CITY),
-    updateEntryURLAction: createAction(UPDATE_ENTRY_URL),
-
-  }
+  updateEntryURLAction: createAction(UPDATE_ENTRY_URL),
+}
 
 const updateProvinceAndCitySuccess = createAction(UPDATE_PROVINCE_AND_CITY_SUCCESS)
 const updateRehydrateSuccess = createAction(UPDATE_REHYDRATE_SUCCESS)

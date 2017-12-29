@@ -4,6 +4,7 @@ import {authReducer} from '../utils/auth'
 import {appStateReducer} from '../utils/appstate'
 import {meReducer} from '../routes/Me'
 import {voteReducer} from '../routes/Vote'
+import {publishReducer} from '../routes/Publish'
 
 export const makeRootReducer = (asyncReducers) => {
   return combineReducers({
@@ -12,6 +13,7 @@ export const makeRootReducer = (asyncReducers) => {
     APPSTATE: appStateReducer,
     ME: meReducer,
     VOTE: voteReducer,
+    PUBLISH: publishReducer,
     ...asyncReducers
   })
 }
