@@ -6,3 +6,7 @@ import AV from 'leancloud-storage'
 export async function fetchVotesApi(payload) {
   return await AV.Cloud.run('voteFetchSet', payload)
 }
+
+export async function fetchVotePlayers(payload) {
+  return await AV.Cloud.run('voteFetchVotePlayers', payload)
+}

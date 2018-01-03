@@ -9,21 +9,32 @@ import {call, put, takeEvery, takeLatest, select} from 'redux-saga/effects'
 /****  Model  ****/
 const PublishVoteRecord = Record({
   id: undefined,
-
+  title: undefined,
+  cover: undefined,
+  notice:  undefined,
+  rule: undefined,
+  organizer: undefined,
+  awards: undefined,
+  gifts: undefined,
+  startDate: undefined,
+  expire: undefined,
+  status: undefined,
 }, 'PublishVoteRecord')
 
-class PublishVote extends PublishVoteRecord {
-  static fromJson(lcObj) {
-    try {
-      let publishVote = new PublishVoteRecord()
-      return publishVote.withMutations((record) => {
-        record.set('id', lcObj.id)
-      })
-    } catch (e) {
-      throw e
-    }
-  }
-}
+// class PublishVote extends PublishVoteRecord {
+//   static fromJson(lcObj) {
+//     try {
+//       let publishVote = new PublishVoteRecord()
+//       return publishVote.withMutations((record) => {
+//         record.set('id', lcObj.id)
+//         record.set('title', lcObj.title)
+//         record.set('title', lcObj.title)
+//       })
+//     } catch (e) {
+//       throw e
+//     }
+//   }
+// }
 
 const PublishVoteState = Record({
   publishingVote: PublishVoteRecord(),

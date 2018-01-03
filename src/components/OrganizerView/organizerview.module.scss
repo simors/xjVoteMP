@@ -1,0 +1,39 @@
+.container {
+
+  .title {
+    background: #ff9d4e;
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 0;
+    .icon {
+      width: 28px;
+      height: 28px;
+      margin-right: 5px;
+    }
+    .text {
+      font-size: 16px;
+      font-weight: bold;
+      color: #323232;
+    }
+  }
+
+  .textView {
+    margin-bottom: 10px;
+    font-size: 16px;
+    line-height: 1.4;
+  }
+  .imageView {
+    width: 100%;
+    max-height: 15rem;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    .img {
+      width: 100%;
+    }
+  }
+}

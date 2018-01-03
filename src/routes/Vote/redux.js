@@ -28,6 +28,7 @@ const VoteRecord =  Record({
   applyNum: undefined,
   awards: undefined,
   organizer: undefined,
+  counter: undefined,
 }, 'VoteRecord')
 
 class Vote extends VoteRecord {
@@ -53,6 +54,48 @@ class Vote extends VoteRecord {
         record.set('applyNum', lcObj.applyNum)
         record.set('awards', lcObj.awards)
         record.set('organizer', lcObj.organizer)
+        record.set('counter', lcObj.counter)
+      })
+    } catch (e) {
+      throw e
+    }
+  }
+}
+
+const PlayerRecord = Record({
+  id: undefined,
+  createdAt: undefined,
+  updatedAt: undefined,
+  number: undefined,
+  name: undefined,
+  declaration: undefined,
+  album: undefined,
+  giftNum: undefined,
+  voteNum: undefined,
+  pv: undefined,
+  enable: undefined,
+  creatorId: undefined,
+  voteId: undefined,
+}, 'PlayerRecord')
+
+class Player extends PlayerRecord {
+  static fromJson(lcObj) {
+    try {
+      let player = new PlayerRecord()
+      return player.withMutations((record) => {
+        record.set('id', lcObj.id)
+        record.set('createdAt', lcObj.createdAt)
+        record.set('updatedAt', lcObj.updatedAt)
+        record.set('number', lcObj.number)
+        record.set('name', lcObj.name)
+        record.set('declaration', lcObj.declaration)
+        record.set('album', lcObj.album)
+        record.set('giftNum', lcObj.giftNum)
+        record.set('voteNum', lcObj.voteNum)
+        record.set('pv', lcObj.pv)
+        record.set('enable', lcObj.enable)
+        record.set('creatorId', lcObj.creatorId)
+        record.set('voteId', lcObj.voteId)
       })
     } catch (e) {
       throw e
@@ -61,14 +104,19 @@ class Vote extends VoteRecord {
 }
 
 const VoteState = Record({
-  allVotes: Map(),        // 全部投票信息：键-id, 值-VoteRecord
+  allVotes: Map(),        // 全部投票信息：键-voteId, 值-VoteRecord
   voteList: List(),       // 投票列表
+  allPlayers: Map(),      // 全部投票选手信息：键-playerId, 值-PlayerRecord
+  votePlayerList: Map(),  // 投票选手列表：键-voteId, 值-PlayerRecord
 }, 'VoteState')
+
 /**** Constant ****/
 const FETCH_VOTES = 'FETCH_VOTES'
 const SAVE_VOTE = 'SAVE_VOTE'
 const BATCH_SAVE_VOTE = 'BATCH_SAVE_VOTE'
 const UPDATE_VOTE_LIST = 'UPDATE_VOTE_LIST'
+const FETCH_VOTE_PLAYERS = 'FETCH_VOTE_PLAYERS'
+const UPDATE_VOTE_PLAYER_LIST = 'UPDATE_VOTE_PLAYER_LIST'
 
 export const VOTE_STATUS = {
   EDITING:    1,        // 正在编辑
@@ -87,8 +135,10 @@ export const VOTE_SEARCH_TYPE = {
 /**** Action ****/
 export const voteActions = {
   fetchVotesAction: createAction(FETCH_VOTES),
+  fetchVotePlayersAction: createAction(FETCH_VOTE_PLAYERS),
 }
 const updateVoteListAction = createAction(UPDATE_VOTE_LIST)
+const updateVotePlayerListAction = createAction(UPDATE_VOTE_PLAYER_LIST)
 
 /**** Saga ****/
 function* fetchVotes(action) {
@@ -115,8 +165,32 @@ function* fetchVotes(action) {
   }
 }
 
+function* fetchVotePlayers(action) {
+  let payload = action.payload
+  let apiPayload = {
+    voteId: payload.voteId,
+    lastNumber: payload.lastNumber,
+    limit: payload.limit
+  }
+
+  try {
+    let players = yield call(voteCloud.fetchVotePlayers, apiPayload)
+    yield put(updateVotePlayerListAction({voteId: apiPayload.voteId, players: players, isRefresh: apiPayload.lastNumber? false : true}))
+
+    if(payload.success) {
+      payload.success(players.length)
+    }
+  } catch (error) {
+    console.error(error)
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
+}
+
 export const voteSaga = [
   takeLatest(FETCH_VOTES, fetchVotes),
+  takeLatest(FETCH_VOTE_PLAYERS, fetchVotePlayers)
 ]
 
 /**** Reducer ****/
@@ -130,6 +204,8 @@ export function voteReducer(state = initialState, action) {
       return handleBatchSaveVote(state, action)
     case UPDATE_VOTE_LIST:
       return handleUpdateVoteList(state, action)
+    case UPDATE_VOTE_PLAYER_LIST:
+      return handleUpdateVotePlayerList(state, action)
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
@@ -153,6 +229,23 @@ function handleUpdateVoteList(state, action) {
   return state
 }
 
+function handleUpdateVotePlayerList(state, action) {
+  let voteId = action.payload.voteId
+  let players = action.payload.players
+  let isRefresh = action.payload.isRefresh
+  let playerList = List()
+  if(!isRefresh) {
+    playerList = state.getIn(['votePlayerList', voteId])
+  }
+  players.forEach((player) => {
+    let playerRecord = Player.fromJson(player)
+    state = state.setIn(['allPlayers', player.id], playerRecord)
+    playerList = playerList.push(player.id)
+  })
+  state = state.setIn(['votePlayerList', voteId], playerList)
+  return state
+}
+
 function handleBatchSaveVote(state, action) {
   return state
 }
@@ -164,6 +257,22 @@ function handleSaveVote(state, action) {
 function onRehydrate(state, action) {
   var incoming = action.payload.VOTE
   if (!incoming) return state
+  let allVotesMap = new Map(incoming.allVotes)
+  try {
+    for(let [voteId, voteInfo] of allVotesMap) {
+      if(voteId, voteInfo) {
+        let voteRecord = new VoteRecord({...voteInfo})
+        state = state.setIn(['allVotes', voteId], voteRecord)
+      }
+    }
+  } catch (e) {
+    allVotesMap.clear()
+  }
+
+  let voteList = incoming.voteList
+  if(voteList) {
+    state = state.set('voteList', List(voteList))
+  }
 
   return state
 }
@@ -187,8 +296,35 @@ function selectVoteList(state) {
   return voteInfoList
 }
 
+function selectPlayer(state, playerId) {
+  if(!playerId) {
+    return undefined
+  }
+  let playerRecord = state.VOTE.getIn(['allPlayers', playerId])
+  return playerRecord? playerRecord.toJS() : undefined
+}
+
+function selectVotePlayerList(state, voteId) {
+  if(!voteId) {
+    return undefined
+  }
+  let votePlayerInfoList = []
+  let votePlayerList = state.VOTE.getIn(['votePlayerList', voteId])
+  if(!votePlayerList) {
+    return votePlayerInfoList
+  }
+  votePlayerList.toArray().forEach((playerId) => {
+    let playerInfo = selectPlayer(state, playerId)
+    votePlayerInfoList.push(playerInfo)
+  })
+  return votePlayerInfoList
+}
+
 export const voteSelector = {
   selectVoteList,
+  selectVote,
+  selectPlayer,
+  selectVotePlayerList,
 }
 
 

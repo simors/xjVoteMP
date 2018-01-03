@@ -8,6 +8,7 @@ import wx from 'tencent-wx-jssdk'
 import {appStateAction} from '../../utils/appstate'
 import {WhiteSpace} from 'antd-mobile'
 
+
 class ImageSelector extends React.PureComponent {
   constructor(props) {
     super(props)
@@ -29,13 +30,7 @@ class ImageSelector extends React.PureComponent {
 
   getJsApiConfigSuccess = (configInfo) => {
     wx.config(configInfo)
-    wx.ready(function () {
-      console.log("wx.ready")
-      console.log("wxjs_is_wkwebview:", window.__wxjs_is_wkwebview)
-    })
-    wx.error(function (err) {
-      console.error(err)
-    })
+    console.log("wxjs_is_wkwebview:", window.__wxjs_is_wkwebview)
   }
 
   onSelectImage = () => {

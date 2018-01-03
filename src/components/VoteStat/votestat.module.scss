@@ -1,0 +1,36 @@
+.container {
+  height: 65px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 12px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+
+  .item {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    height: 100%;
+    .trip {
+      display: flex;
+      margin-bottom: 10px;
+      justify-content: center;
+      align-items: center;
+      .img {
+        width: 16px;
+        height: 16px;
+      }
+      .text {
+
+      }
+    }
+  }
+
+  .num {
+    color: #ff9d4e;
+  }
+}

@@ -10,6 +10,7 @@ import VoteDetail from './VoteDetail'
 import Apply from './Apply'
 import PrizeDetail from './PrizeDetail'
 import Range from './Range'
+import {voteSelector} from './redux'
 
 const Item = TabBar.Item
 
@@ -22,6 +23,7 @@ class Vote extends React.PureComponent {
   }
 
   render() {
+    const {voteId} = this.props
     return (
       <div className={styles.page}>
         <TabBar tintColor="#F6635F">
@@ -37,7 +39,7 @@ class Vote extends React.PureComponent {
               })
             }}
           >
-            <VoteDetail />
+            <VoteDetail id={voteId} />
           </Item>
           <Item
             title="报名"
@@ -88,8 +90,10 @@ class Vote extends React.PureComponent {
 }
 
 const mapStateToProps = (state, ownProps) => {
+  const {match} = ownProps
+  const {voteId} = match.params
   return {
-
+    voteId,
   }
 }
 
