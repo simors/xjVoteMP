@@ -10,3 +10,7 @@ export async function fetchVotesApi(payload) {
 export async function fetchVotePlayers(payload) {
   return await AV.Cloud.run('voteFetchVotePlayers', payload)
 }
+
+export async function voteForPlayer(payload) {
+  return await AV.Cloud.run('voteVoteForPlayer', payload)
+}

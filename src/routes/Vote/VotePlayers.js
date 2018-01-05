@@ -58,10 +58,15 @@ class VotePlayers extends React.PureComponent {
     })
   }
 
+  gotoPlayer(playerId) {
+    const {history} = this.props
+    history.push('/vote/player/' + playerId)
+  }
+
 
   renderItem = (dataItem) => {
     return(
-      <div className={styles.playItem}>
+      <div className={styles.playItem} onClick={() => this.gotoPlayer(dataItem.id)}>
         <div className={styles.cover}>
           <img className={styles.img} src={dataItem.album[0]} alt=""/>
         </div>

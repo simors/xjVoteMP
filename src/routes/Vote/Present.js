@@ -1,28 +1,29 @@
 /**
- * Created by wanpeng on 2017/12/26.
+ * Created by wanpeng on 2018/1/3.
  */
 import React from 'react'
 import {connect} from 'react-redux'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
-import {Button} from 'antd-mobile'
+import styles from './present.module.scss'
 
-class PrizeDetail extends React.PureComponent {
+class Present extends React.PureComponent {
   constructor(props) {
     super(props)
+    document.title = '送礼物'
   }
 
   render() {
-    return (
-      <div>
-        <Button>奖品详情</Button>
+    return(
+      <div className={styles.container}>
+
       </div>
     )
   }
 }
 
+
 const mapStateToProps = (state, ownProps) => {
   return {
-
   }
 }
 
@@ -30,4 +31,5 @@ const mapDispatchToProps = {
 
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(PrizeDetail))
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Present))
+

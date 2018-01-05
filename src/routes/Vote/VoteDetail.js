@@ -36,7 +36,7 @@ class VoteDetail extends React.PureComponent {
   }
 
   render() {
-    const {voteInfo} = this.props
+    const {voteInfo, history} = this.props
     console.log("voteInfo", voteInfo)
     const endTime = moment(voteInfo.startDate, 'YYYY-MM-DD').add(voteInfo.expire, 'days').format('YYYY-MM-DD')
     return (
@@ -62,7 +62,7 @@ class VoteDetail extends React.PureComponent {
         <WhiteSpace />
         {this.renderApplyBtn()}
         <WhiteSpace />
-        <VotePlayers voteId={voteInfo.id} />
+        <VotePlayers voteId={voteInfo.id} history={history} />
         <OrganizerView organizer={voteInfo.organizer} />
         <div className={styles.foot}>
           <div className={styles.logoView}>

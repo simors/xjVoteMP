@@ -29,6 +29,7 @@ const VoteRecord =  Record({
   awards: undefined,
   organizer: undefined,
   counter: undefined,
+  rule: undefined,
 }, 'VoteRecord')
 
 class Vote extends VoteRecord {
@@ -55,6 +56,7 @@ class Vote extends VoteRecord {
         record.set('awards', lcObj.awards)
         record.set('organizer', lcObj.organizer)
         record.set('counter', lcObj.counter)
+        record.set('rule', lcObj.rule)
       })
     } catch (e) {
       throw e
@@ -118,6 +120,9 @@ const UPDATE_VOTE_LIST = 'UPDATE_VOTE_LIST'
 const FETCH_VOTE_PLAYERS = 'FETCH_VOTE_PLAYERS'
 const UPDATE_VOTE_PLAYER_LIST = 'UPDATE_VOTE_PLAYER_LIST'
 
+const VOTE_FOR_PLAYER = 'VOTE_FOR_PLAYER'
+
+
 export const VOTE_STATUS = {
   EDITING:    1,        // 正在编辑
   PAYING:     2,        // 待支付
@@ -136,6 +141,7 @@ export const VOTE_SEARCH_TYPE = {
 export const voteActions = {
   fetchVotesAction: createAction(FETCH_VOTES),
   fetchVotePlayersAction: createAction(FETCH_VOTE_PLAYERS),
+  voteForPlayerAction: createAction(VOTE_FOR_PLAYER),
 }
 const updateVoteListAction = createAction(UPDATE_VOTE_LIST)
 const updateVotePlayerListAction = createAction(UPDATE_VOTE_PLAYER_LIST)
@@ -188,9 +194,27 @@ function* fetchVotePlayers(action) {
   }
 }
 
+function* voteForPlayer(action) {
+  let payload = action.payload
+
+  try {
+    yield call(voteCloud.voteForPlayer, {playerId: payload.playerId})
+
+    if(payload.success) {
+      payload.success()
+    }
+  } catch (error) {
+    console.error(error)
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
+}
+
 export const voteSaga = [
   takeLatest(FETCH_VOTES, fetchVotes),
-  takeLatest(FETCH_VOTE_PLAYERS, fetchVotePlayers)
+  takeLatest(FETCH_VOTE_PLAYERS, fetchVotePlayers),
+  takeLatest(VOTE_FOR_PLAYER, voteForPlayer),
 ]
 
 /**** Reducer ****/

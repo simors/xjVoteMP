@@ -8,7 +8,7 @@ import {Button, TabBar} from 'antd-mobile'
 import styles from './vote.module.scss'
 import VoteDetail from './VoteDetail'
 import Apply from './Apply'
-import PrizeDetail from './PrizeDetail'
+import Award from './Award'
 import Range from './Range'
 import {voteSelector} from './redux'
 
@@ -23,7 +23,7 @@ class Vote extends React.PureComponent {
   }
 
   render() {
-    const {voteId} = this.props
+    const {voteId, history} = this.props
     return (
       <div className={styles.page}>
         <TabBar tintColor="#F6635F">
@@ -39,7 +39,7 @@ class Vote extends React.PureComponent {
               })
             }}
           >
-            <VoteDetail id={voteId} />
+            <VoteDetail id={voteId} history={history} />
           </Item>
           <Item
             title="报名"
@@ -67,7 +67,7 @@ class Vote extends React.PureComponent {
               })
             }}
           >
-            <PrizeDetail />
+            <Award voteId={voteId} />
           </Item>
           <Item
             title="榜单"
