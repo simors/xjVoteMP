@@ -14,3 +14,7 @@ export async function fetchVotePlayers(payload) {
 export async function voteForPlayer(payload) {
   return await AV.Cloud.run('voteVoteForPlayer', payload)
 }
+
+export async  function fetchVoteRank(payload) {
+  return await AV.Cloud.run('voteFetchRank', payload)
+}

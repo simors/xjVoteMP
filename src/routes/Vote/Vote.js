@@ -81,7 +81,7 @@ class Vote extends React.PureComponent {
               })
             }}
           >
-            <Range />
+            <Range voteId={voteId} history={history} />
           </Item>
         </TabBar>
       </div>

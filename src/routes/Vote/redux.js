@@ -109,7 +109,8 @@ const VoteState = Record({
   allVotes: Map(),        // 全部投票信息：键-voteId, 值-VoteRecord
   voteList: List(),       // 投票列表
   allPlayers: Map(),      // 全部投票选手信息：键-playerId, 值-PlayerRecord
-  votePlayerList: Map(),  // 投票选手列表：键-voteId, 值-PlayerRecord
+  votePlayerList: Map(),  // 投票选手列表：键-voteId, 值-playerId列表
+  voteRankList: Map(),    // 投票榜单列表：键-voteId, 值-playerId列表
 }, 'VoteState')
 
 /**** Constant ****/
@@ -119,8 +120,11 @@ const BATCH_SAVE_VOTE = 'BATCH_SAVE_VOTE'
 const UPDATE_VOTE_LIST = 'UPDATE_VOTE_LIST'
 const FETCH_VOTE_PLAYERS = 'FETCH_VOTE_PLAYERS'
 const UPDATE_VOTE_PLAYER_LIST = 'UPDATE_VOTE_PLAYER_LIST'
-
+const FETCH_VOTE_RANK = 'FETCH_VOTE_RANK'
+const UPDATE_VOTE_RANK_LIST = 'UPDATE_VOTE_RANK_LIST'
 const VOTE_FOR_PLAYER = 'VOTE_FOR_PLAYER'
+const SAVE_PLAYER = 'SAVE_PLAYER'
+const BATCH_SAVE_PLAYER = 'BATCH_SAVE_PLAYER'
 
 
 export const VOTE_STATUS = {
@@ -142,9 +146,13 @@ export const voteActions = {
   fetchVotesAction: createAction(FETCH_VOTES),
   fetchVotePlayersAction: createAction(FETCH_VOTE_PLAYERS),
   voteForPlayerAction: createAction(VOTE_FOR_PLAYER),
+  fetchVoteRankAction: createAction(FETCH_VOTE_RANK),
+  savePlayerInfoAction: createAction(SAVE_PLAYER),
+  batchSavePlayerInfoAction: createAction(BATCH_SAVE_PLAYER)
 }
 const updateVoteListAction = createAction(UPDATE_VOTE_LIST)
 const updateVotePlayerListAction = createAction(UPDATE_VOTE_PLAYER_LIST)
+const updateVoteRankListAction =createAction(UPDATE_VOTE_RANK_LIST)
 
 /**** Saga ****/
 function* fetchVotes(action) {
@@ -211,10 +219,28 @@ function* voteForPlayer(action) {
   }
 }
 
+function* fetchVoteRank(action) {
+  let payload = action.payload
+
+  try {
+    let rank =  yield call(voteCloud.fetchVoteRank, {voteId: payload.voteId})
+    yield put(updateVoteRankListAction({voteId: payload.voteId, rank: rank}))
+    if(payload.success) {
+      payload.success()
+    }
+  } catch (error) {
+    console.error(error)
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
+}
+
 export const voteSaga = [
   takeLatest(FETCH_VOTES, fetchVotes),
   takeLatest(FETCH_VOTE_PLAYERS, fetchVotePlayers),
   takeLatest(VOTE_FOR_PLAYER, voteForPlayer),
+  takeLatest(FETCH_VOTE_RANK, fetchVoteRank)
 ]
 
 /**** Reducer ****/
@@ -230,6 +256,12 @@ export function voteReducer(state = initialState, action) {
       return handleUpdateVoteList(state, action)
     case UPDATE_VOTE_PLAYER_LIST:
       return handleUpdateVotePlayerList(state, action)
+    case UPDATE_VOTE_RANK_LIST:
+      return handleUpdateVoteRankList(state, action)
+    case SAVE_PLAYER:
+      return handleSavePlayer(state, action)
+    case BATCH_SAVE_PLAYER:
+      return handleBatchSavePlayer(state, action)
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
@@ -270,11 +302,32 @@ function handleUpdateVotePlayerList(state, action) {
   return state
 }
 
+function handleUpdateVoteRankList(state, action) {
+  let voteId = action.payload.voteId
+  let rank = action.payload.rank
+  let rankList = List()
+  rank.forEach((playerInfo) => {
+    let playerRecord = Player.fromJson(playerInfo)
+    state = state.setIn(['allPlayers', playerInfo.id], playerRecord)
+    rankList = rankList.push(playerInfo.id)
+  })
+  state = state.setIn(['voteRankList', voteId], rankList)
+  return state
+}
+
 function handleBatchSaveVote(state, action) {
   return state
 }
 
 function handleSaveVote(state, action) {
+  return state
+}
+
+function handleSavePlayer(state, action) {
+  return  state
+}
+
+function handleBatchSavePlayer(state, action) {
   return state
 }
 
@@ -344,11 +397,28 @@ function selectVotePlayerList(state, voteId) {
   return votePlayerInfoList
 }
 
+function selectVoteRankInfo(state, voteId) {
+  if(!voteId) {
+    return undefined
+  }
+  let voteRankInfoList = []
+  let voteRankList = state.VOTE.getIn(['voteRankList', voteId])
+  if(!voteRankList) {
+    return voteRankInfoList
+  }
+  voteRankList.toArray().forEach((playerId) => {
+    let playerInfo = selectPlayer(state, playerId)
+    voteRankInfoList.push(playerInfo)
+  })
+  return voteRankInfoList
+}
+
 export const voteSelector = {
   selectVoteList,
   selectVote,
   selectPlayer,
   selectVotePlayerList,
+  selectVoteRankInfo,
 }
 
 
