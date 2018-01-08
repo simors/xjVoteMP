@@ -6,6 +6,7 @@ import Me from './Me'
 import Wallet from './Wallet'
 import MyVote from './MyVote'
 import BePromoter from './BePromoter'
+import Withdraw from './Withdraw'
 
 /* export saga */
 export const meSaga = redux.meSaga
@@ -21,6 +22,6 @@ export const meSelector = redux.meSelector
 
 export default Me
 
-export {Wallet, MyVote, BePromoter}
+export {Wallet, MyVote, BePromoter, Withdraw}
 
 

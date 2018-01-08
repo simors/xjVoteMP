@@ -5,37 +5,45 @@ import React from 'react'
 import {connect} from 'react-redux'
 import styles from './imageselector.module.scss'
 import wx from 'tencent-wx-jssdk'
-import {appStateAction} from '../../utils/appstate'
+import {appStateAction, appStateSelector} from '../../utils/appstate'
 import {WhiteSpace} from 'antd-mobile'
+import {getMobileOperatingSystem} from '../../utils/OS'
+
 
 
 class ImageSelector extends React.PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      fileList: [],
+      localIds: [],
     }
   }
 
-  componentWillMount() {
-    const {getJsApiConfig} = this.props
-    getJsApiConfig({
-      debug: __DEV__? true: false,
-      jsApiList: ['chooseImage', 'previewImage', 'getLocalImgData'],
-      url: window.location.href,
-      success: this.getJsApiConfigSuccess,
-      error: (error) => {console.log(error)}
-    })
-  }
+  // componentWillMount() {
+  //   const {getJsApiConfig, entryURL} = this.props
+  //   const OS = getMobileOperatingSystem()
+  //   let jssdkURL = window.location.href
+  //   if(OS === 'iOS') {
+  //     //微信JS-SDK Bug: SPA(单页应用)ios系统必须使用首次加载的url初始化jssdk
+  //     jssdkURL = entryURL
+  //   }
+  //   getJsApiConfig({
+  //     debug: __DEV__? true: false,
+  //     jsApiList: ['chooseImage', 'previewImage', 'getLocalImgData', 'uploadImage'],
+  //     url: jssdkURL,
+  //     success: this.getJsApiConfigSuccess,
+  //     error: (error) => {console.log(error)}
+  //   })
+  // }
 
-  getJsApiConfigSuccess = (configInfo) => {
-    wx.config(configInfo)
-    console.log("wxjs_is_wkwebview:", window.__wxjs_is_wkwebview)
-  }
+  // getJsApiConfigSuccess = (configInfo) => {
+  //   wx.config(configInfo)
+  //   console.log("wxjs_is_wkwebview:", window.__wxjs_is_wkwebview)
+  // }
 
   onSelectImage = () => {
     let that = this
-    const {count} = this.props
+    const {count, onChange} = this.props
 
     wx.ready(function () {
       wx.chooseImage({
@@ -43,16 +51,8 @@ class ImageSelector extends React.PureComponent {
         sizeType: ['original', 'compressed'],
         "sourceType": ['album', 'camera'],
         "success": function (res) {
-          let fileList = []
-          res.localIds.forEach((localId) => {
-            wx.getLocalImgData({
-              "localId": localId,
-              "success": function (result) {
-                fileList.push(res.localData)
-              }
-            })
-          })
-          that.setState({fileList: fileList})
+          that.setState({localIds: res.localIds})
+          onChange(res.localIds)
         }
       })
     })
@@ -63,8 +63,8 @@ class ImageSelector extends React.PureComponent {
   }
 
   renderCover() {
-    const {fileList} = this.state
-    if(fileList.length === 0) {
+    const {localIds} = this.state
+    if(localIds.length === 0) {
       return(
         <div className={styles.defaultCover} onClick={this.onSelectImage}>
           <img className={styles.icon} src={require('../../asset/images/photo.png')} alt=""/>
@@ -75,7 +75,7 @@ class ImageSelector extends React.PureComponent {
       return(
         <div>
           {
-            fileList.map((value, index) => (
+            localIds.map((value, index) => (
               <div key={index} className={styles.cover}>
                 <img className={styles.img} src={value} alt=""/>
                 <WhiteSpace />
@@ -99,6 +99,7 @@ class ImageSelector extends React.PureComponent {
 
 const mapStateToProps = (state, ownProps) => {
   return {
+    entryURL: appStateSelector.selectEntryURL(state)
   }
 }
 

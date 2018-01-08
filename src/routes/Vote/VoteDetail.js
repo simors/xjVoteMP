@@ -37,7 +37,6 @@ class VoteDetail extends React.PureComponent {
 
   render() {
     const {voteInfo, history} = this.props
-    console.log("voteInfo", voteInfo)
     const endTime = moment(voteInfo.startDate, 'YYYY-MM-DD').add(voteInfo.expire, 'days').format('YYYY-MM-DD')
     return (
       <div className={styles.page}>
@@ -77,7 +76,7 @@ class VoteDetail extends React.PureComponent {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const voteId = ownProps.id
+  const voteId = ownProps.voteId
   return {
     voteInfo: voteSelector.selectVote(state, voteId)
   }

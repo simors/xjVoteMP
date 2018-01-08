@@ -125,6 +125,7 @@ const UPDATE_VOTE_RANK_LIST = 'UPDATE_VOTE_RANK_LIST'
 const VOTE_FOR_PLAYER = 'VOTE_FOR_PLAYER'
 const SAVE_PLAYER = 'SAVE_PLAYER'
 const BATCH_SAVE_PLAYER = 'BATCH_SAVE_PLAYER'
+const JOIN_VOTE_APPLY = 'JOIN_VOTE_APPLY'
 
 
 export const VOTE_STATUS = {
@@ -148,7 +149,8 @@ export const voteActions = {
   voteForPlayerAction: createAction(VOTE_FOR_PLAYER),
   fetchVoteRankAction: createAction(FETCH_VOTE_RANK),
   savePlayerInfoAction: createAction(SAVE_PLAYER),
-  batchSavePlayerInfoAction: createAction(BATCH_SAVE_PLAYER)
+  batchSavePlayerInfoAction: createAction(BATCH_SAVE_PLAYER),
+  joinVoteApplyAction: createAction(JOIN_VOTE_APPLY),
 }
 const updateVoteListAction = createAction(UPDATE_VOTE_LIST)
 const updateVotePlayerListAction = createAction(UPDATE_VOTE_PLAYER_LIST)
@@ -187,6 +189,7 @@ function* fetchVotePlayers(action) {
     limit: payload.limit
   }
 
+  console.log("apiPayload", apiPayload)
   try {
     let players = yield call(voteCloud.fetchVotePlayers, apiPayload)
     yield put(updateVotePlayerListAction({voteId: apiPayload.voteId, players: players, isRefresh: apiPayload.lastNumber? false : true}))
@@ -236,11 +239,35 @@ function* fetchVoteRank(action) {
   }
 }
 
+function* joinVoteApply(action) {
+  let payload = action.payload
+
+  let apiPayload = {
+    voteId: payload.voteId,
+    name: payload.name,
+    declaration: payload.declaration,
+    album: payload.album
+  }
+
+  try {
+    let result = yield call(voteCloud.joinVoteApply, apiPayload)
+    if(payload.success) {
+      payload.success()
+    }
+  } catch (error) {
+    console.error(error)
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
+}
+
 export const voteSaga = [
   takeLatest(FETCH_VOTES, fetchVotes),
   takeLatest(FETCH_VOTE_PLAYERS, fetchVotePlayers),
   takeLatest(VOTE_FOR_PLAYER, voteForPlayer),
-  takeLatest(FETCH_VOTE_RANK, fetchVoteRank)
+  takeLatest(FETCH_VOTE_RANK, fetchVoteRank),
+  takeLatest(JOIN_VOTE_APPLY, joinVoteApply)
 ]
 
 /**** Reducer ****/

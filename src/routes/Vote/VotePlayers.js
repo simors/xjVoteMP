@@ -13,18 +13,19 @@ class VotePlayers extends React.PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      hasMore: true
+      hasMore: false
     }
   }
 
   componentWillMount() {
     const {voteId, fetchVotePlayersAction} = this.props
+    console.log("voteId", voteId)
     fetchVotePlayersAction({
       voteId: voteId,
       limit: 10,
       success: (length) => {
-        if(length < 10) {
-          this.setState({hasMore: false})
+        if(length === 10) {
+          this.setState({hasMore: true})
         }
       },
     })

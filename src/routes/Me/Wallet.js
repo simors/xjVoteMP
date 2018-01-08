@@ -4,7 +4,10 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
-import {Button} from 'antd-mobile'
+import {Button, ActivityIndicator, WhiteSpace, WingBlank} from 'antd-mobile'
+import {meActions, meSelector} from './redux'
+import DealRecord from '../../components/DealRecord'
+import styles from './wallet.module.scss'
 
 class Wallet extends React.PureComponent {
   constructor(props) {
@@ -12,11 +15,27 @@ class Wallet extends React.PureComponent {
     super(props)
   }
 
+  componentWillMount() {
+    const {fetchWalletInfoAction} = this.props
+    fetchWalletInfoAction()
+  }
+
 
   render() {
+    const {walletInfo, history} = this.props
+    if(!walletInfo) {
+      return(<ActivityIndicator toast text="正在加载" />)
+    }
     return (
-      <div>
-        <Button>钱包</Button>
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <div className={styles.trip}>余额</div>
+          <div className={styles.balance}>{'¥ ' + walletInfo.balance + '元'}</div>
+        </div>
+        <WhiteSpace />
+        <WingBlank>
+          <Button type="primary" onClick={() => history.push('/withdraw')}>提现到微信</Button>
+        </WingBlank>
       </div>
     )
   }
@@ -24,12 +43,12 @@ class Wallet extends React.PureComponent {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-
+    walletInfo: meSelector.selectWallet(state)
   }
 }
 
 const mapDispatchToProps = {
-
+    ...meActions,
 }
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Wallet))

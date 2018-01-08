@@ -115,21 +115,20 @@ class VoteListPage extends React.PureComponent {
       )
     }
     return (
-      <div>
-        <ListView
-          dataSource={dataSource}
-          renderFooter={() => (<div style={{ padding: 30, textAlign: 'center' }}>
-            {this.state.isLoading ? '加载中...' : '全部加载成功'}
-          </div>)}
-          renderRow={row}
-          useBodyScroll
-          onEndReached={this.onEndReached}
-          onEndReachedThreshold={50}
-          pullToRefresh={<PullToRefresh
-            refreshing={this.state.refreshing}
-            onRefresh={this.onRefresh}/>}
-        />
-      </div>
+      <ListView
+        dataSource={dataSource}
+        renderFooter={() => (<div style={{ padding: 30, textAlign: 'center' }}>
+          {this.state.isLoading ? '加载中...' : '全部加载成功'}
+        </div>)}
+        style={{height: '100vh', overflow: 'auto'}}
+        renderRow={row}
+        useBodyScroll={false}
+        onEndReached={this.onEndReached}
+        onEndReachedThreshold={50}
+        pullToRefresh={<PullToRefresh
+          refreshing={this.state.refreshing}
+          onRefresh={this.onRefresh}/>}
+      />
     )
   }
 }

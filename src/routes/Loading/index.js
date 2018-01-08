@@ -13,6 +13,11 @@ class LoadingPage extends React.Component {
     super(props)
   }
 
+  componentWillMount() {
+    const {updateEntryURLAction} = this.props
+    updateEntryURLAction({url: window.location.href})
+  }
+
   render() {
     const { from } = this.props.location.state || { from: { pathname: '/' } }
     if (this.props.isRehydrated) {

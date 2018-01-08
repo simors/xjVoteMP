@@ -37,9 +37,10 @@ class Vote extends React.PureComponent {
               this.setState({
                 selectedTab: 'homeTab',
               })
+              document.title = "活动主页"
             }}
           >
-            <VoteDetail id={voteId} history={history} />
+            <VoteDetail voteId={voteId} history={history} />
           </Item>
           <Item
             title="报名"
@@ -51,9 +52,10 @@ class Vote extends React.PureComponent {
               this.setState({
                 selectedTab: 'applyTab',
               })
+              document.title = "我要报名"
             }}
           >
-            <Apply />
+            <Apply voteId={voteId} />
           </Item>
           <Item
             title="奖品"
@@ -65,6 +67,7 @@ class Vote extends React.PureComponent {
               this.setState({
                 selectedTab: 'prizeTab',
               })
+              document.title = "奖品详情"
             }}
           >
             <Award voteId={voteId} />
@@ -79,6 +82,7 @@ class Vote extends React.PureComponent {
               this.setState({
                 selectedTab: 'rangeTab',
               })
+              document.title = "榜单"
             }}
           >
             <Range voteId={voteId} history={history} />

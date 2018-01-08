@@ -43,7 +43,7 @@ export function wechatOauth(nextPath) {
     store.dispatch(appStateAction.updateEntryURLAction({url: document.location.href}))
     return null
   }
-  let redirectUri = appConfig.LEAN_ENGINE_DOMAIN + '/wechatOauth'
+  let redirectUri = appConfig.WECHAT_OAUTH_DOMAIN
   let urlObj = URL.parse(document.location.href)
   let {openid, access_token, expires_at} = querystring.parse(urlObj.query)
   let authData = undefined
