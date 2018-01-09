@@ -4,7 +4,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
-import {Button, WhiteSpace, WingBlank, Toast} from 'antd-mobile'
+import {Button, WhiteSpace, WingBlank, Toast, InputItem, TextareaItem, List} from 'antd-mobile'
 import styles from './apply.module.scss'
 import ImageSelector from '../../components/ImageSelector'
 import {voteActions} from './redux'
@@ -14,7 +14,7 @@ class Apply extends React.PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      title: "报名测试",
+      title: undefined,
       declaration: "不一样的经常",
       imageServerIds: undefined
     }
@@ -52,8 +52,12 @@ class Apply extends React.PureComponent {
   }
 
   joinVoteApplySuccess = () => {
+    const {onSwitchTab} = this.props
     Toast.hide()
     Toast.success('提交成功', 1)
+    setTimeout(function () {
+      onSwitchTab('homeTab')
+    }, 1000)
   }
 
   joinVoteApplyError = (error) => {
@@ -61,18 +65,27 @@ class Apply extends React.PureComponent {
     Toast.fail('提交失败', 1)
   }
 
+  onChangeTitle = (value) => {
+    this.setState({title: value})
+  }
+
+  onChangeDeclaration = (value) => {
+    this.setState({declaration: value})
+  }
+
   render() {
+    const {title} = this.state
     return(
       <div className={styles.container}>
-        <div className={styles.title}>
-
-        </div>
-        <div className={styles.declaration}>
-
-        </div>
+        <WingBlank className={styles.declaration}>
+          <List>
+            <InputItem placeholder="姓名" value={title} onChange={this.onChangeTitle} ></InputItem>
+            <TextareaItem rows={3} placeholder="请输入参赛宣言" onChange={this.onChangeDeclaration} />
+          </List>
+        </WingBlank>
         <WhiteSpace />
         <WingBlank>
-          <ImageSelector count={3} onChange={this.selectImage} />
+          <ImageSelector trip="请上传参赛图片" count={3} onChange={this.selectImage} />
         </WingBlank>
         <WhiteSpace />
         <WingBlank>

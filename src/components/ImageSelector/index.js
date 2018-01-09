@@ -6,7 +6,7 @@ import {connect} from 'react-redux'
 import styles from './imageselector.module.scss'
 import wx from 'tencent-wx-jssdk'
 import {appStateAction, appStateSelector} from '../../utils/appstate'
-import {WhiteSpace, Toast} from 'antd-mobile'
+import {WhiteSpace, Toast,} from 'antd-mobile'
 import {getMobileOperatingSystem} from '../../utils/OS'
 import {getLocalImgDataAsync, uploadImageAsync, chooseImageAsync} from '../../utils/wechatUtil'
 
@@ -74,8 +74,12 @@ class ImageSelector extends React.Component {
 
   onSelectImage = async () => {
     const {count, onChange} = this.props
+    let residueCount = count - this.state.localIds.length
+    if(residueCount < 1) {
+      return
+    }
     try {
-      let selectedLocalIds = await chooseImageAsync(wx, count)
+      let selectedLocalIds = await chooseImageAsync(wx, residueCount)
       this.setState({localIds: selectedLocalIds})
       if(window.__wxjs_is_wkwebview) {    //适配iOS WKWebview
         let selectedLocalDataList = await this.getLocalImgDataList(selectedLocalIds)
@@ -131,12 +135,32 @@ class ImageSelector extends React.Component {
 
   renderCover() {
     const {localIds, localDataList} = this.state
+    const {count, trip} = this.props
     let imageSrcList = window.__wxjs_is_wkwebview? localDataList : localIds
     if(imageSrcList.length === 0) {
       return(
         <div className={styles.defaultCover} onClick={this.onSelectImage}>
           <img className={styles.icon} src={require('../../asset/images/photo.png')} alt=""/>
-          <div className={styles.desc}>添加封面</div>
+          <div className={styles.desc}>{trip}</div>
+        </div>
+      )
+    } else if(imageSrcList.length < count) {
+      return(
+        <div>
+          {
+            imageSrcList.map((value, index) => (
+              <div key={index} className={styles.cover}>
+                <img className={styles.img} src={value} alt="" onClick={() => this.onReplaceImage(index)}/>
+                <div className={styles.close} onClick={(e) => this.onDeleteImage(e, index)}>
+                  <img className={styles.img} src={require('../../asset/images/close.png')} alt=""/>
+                </div>
+              </div>
+            ))
+          }
+          <div className={styles.defaultCover} onClick={this.onSelectImage}>
+            <img className={styles.icon} src={require('../../asset/images/photo.png')} alt=""/>
+            <div className={styles.desc}>{trip}</div>
+          </div>
         </div>
       )
     } else {

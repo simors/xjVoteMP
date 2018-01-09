@@ -22,6 +22,10 @@ class Vote extends React.PureComponent {
     }
   }
 
+  onSwitchTab = (tab) => {
+    this.setState({selectedTab: tab})
+  }
+
   render() {
     const {voteId, history} = this.props
     return (
@@ -55,7 +59,7 @@ class Vote extends React.PureComponent {
               document.title = "我要报名"
             }}
           >
-            <Apply voteId={voteId} />
+            <Apply voteId={voteId} onSwitchTab={this.onSwitchTab} />
           </Item>
           <Item
             title="奖品"
