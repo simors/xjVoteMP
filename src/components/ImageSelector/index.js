@@ -8,7 +8,7 @@ import wx from 'tencent-wx-jssdk'
 import {appStateAction, appStateSelector} from '../../utils/appstate'
 import {WhiteSpace, Toast} from 'antd-mobile'
 import {getMobileOperatingSystem} from '../../utils/OS'
-import {getLocalImgDataAsync, uploadImageAsync} from '../../utils/wechatUtil'
+import {getLocalImgDataAsync, uploadImageAsync, chooseImageAsync} from '../../utils/wechatUtil'
 
 class ImageSelector extends React.Component {
   constructor(props) {
@@ -29,7 +29,7 @@ class ImageSelector extends React.Component {
       jssdkURL = entryURL
     }
     getJsApiConfig({
-      debug: __DEV__? true: false,
+      debug: __DEV__? false: false,
       jsApiList: ['chooseImage', 'previewImage', 'getLocalImgData', 'uploadImage'],
       url: jssdkURL,
       success: this.getJsApiConfigSuccess,
@@ -41,23 +41,24 @@ class ImageSelector extends React.Component {
     wx.config(configInfo)
   }
 
-  async getLocalImgData(localIds) {
-    if(window.__wxjs_is_wkwebview) {
-      let localDataList = this.state.localDataList
-      for (let i = 0; i < localIds.length; i++) {
-        try {
-          let localData =  await getLocalImgDataAsync(wx, localIds[i])
-          localDataList.push(localData)
-        } catch (e) {
-          console.error(e)
-          throw e
-        }
-      }
-      this.setState({localDataList: localDataList})
+  async getLocalImgDataList(localIds) {
+    if(!localIds || localIds.length === 0) {
+      return undefined
     }
+    let localDataList = []
+    for (let i = 0; i < localIds.length; i++) {
+      try {
+        let localData =  await getLocalImgDataAsync(wx, localIds[i])
+        localDataList.push(localData)
+      } catch (e) {
+        console.error(e)
+        throw e
+      }
+    }
+    return localDataList
   }
 
-  async uploadImage(localIds) {
+  async uploadImageList(localIds) {
     let serverIds = []
     for(let i = 0; i < localIds.length; i++) {
       try {
@@ -71,37 +72,61 @@ class ImageSelector extends React.Component {
     return serverIds
   }
 
-  onSelectImage = () => {
-    let that = this
+  onSelectImage = async () => {
     const {count, onChange} = this.props
-
-    wx.ready(function () {
-      wx.chooseImage({
-        "count": count,
-        sizeType: ['compressed'],
-        "sourceType": ['album', 'camera'],
-        "success": async function (res) {
-          that.setState({localIds: res.localIds})
-          try {
-            await that.getLocalImgData(res.localIds)
-            let serverIds = await that.uploadImage(res.localIds)
-            onChange(serverIds)
-          } catch (e) {
-            console.error(e)
-            Toast.fail("图片选择失败")
-          }
-
-        }
-      })
-    })
-
-    wx.error(function (err) {
-      alert(err)
-    })
+    try {
+      let selectedLocalIds = await chooseImageAsync(wx, count)
+      this.setState({localIds: selectedLocalIds})
+      if(window.__wxjs_is_wkwebview) {    //适配iOS WKWebview
+        let selectedLocalDataList = await this.getLocalImgDataList(selectedLocalIds)
+        this.setState({localDataList: selectedLocalDataList})
+      }
+      let serverIds = await this.uploadImageList(selectedLocalIds)
+      this.setState({serverIds})
+      onChange(serverIds)
+    } catch (e) {
+      Toast.fail("图片选择失败")
+    }
   }
 
-  onReplaceImage(index) {
+  async onReplaceImage(index) {
+    const {localIds, localDataList, serverIds} = this.state
+    const {onChange} = this.props
+    try {
+      let result = await chooseImageAsync(wx, 1)
+      let selectedLocalId = result[0]
+      localIds[index] = selectedLocalId
+      this.setState({localIds})
+      if(window.__wxjs_is_wkwebview) {  //适配iOS WKWebview
+        let localData = await getLocalImgDataAsync(wx, selectedLocalId)
+        localDataList[index] = localData
+        this.setState({localDataList})
+      }
+      let serverId = await uploadImageAsync(wx, selectedLocalId)
+      serverIds[index] = serverId
+      this.setState(serverIds)
+      onChange(serverIds)
+    } catch (e) {
+      console.error(e)
+      Toast.fail("图片选择失败")
+    }
+  }
 
+  async onDeleteImage(e, index) {
+    e.preventDefault()
+    let {localIds, localDataList, serverIds} = this.state
+    const {onChange} = this.props
+    try {
+      localIds.splice(index, 1)
+      if(window.__wxjs_is_wkwebview) {
+        localDataList.splice(index, 1)
+      }
+      serverIds.splice(index, 1)
+      this.setState({localIds: localIds, localDataList: localDataList, serverIds})
+      onChange(serverIds)
+    } catch (e) {
+      Toast.fail("删除图片失败")
+    }
   }
 
   renderCover() {
@@ -119,8 +144,11 @@ class ImageSelector extends React.Component {
         <div>
           {
             imageSrcList.map((value, index) => (
-              <div key={index} className={styles.cover} onClick={() => this.onReplaceImage(index)}>
-                <img className={styles.img} src={value} alt=""/>
+              <div key={index} className={styles.cover}>
+                <img className={styles.img} src={value} alt="" onClick={() => this.onReplaceImage(index)}/>
+                <div className={styles.close} onClick={(e) => this.onDeleteImage(e, index)}>
+                  <img className={styles.img} src={require('../../asset/images/close.png')} alt=""/>
+                </div>
               </div>
             ))
           }
@@ -128,7 +156,6 @@ class ImageSelector extends React.Component {
       )
     }
   }
-
 
   render() {
     return(

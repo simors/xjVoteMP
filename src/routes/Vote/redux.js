@@ -248,7 +248,6 @@ function* joinVoteApply(action) {
     declaration: payload.declaration,
     imageServerIds: payload.imageServerIds
   }
-
   try {
     let result = yield call(voteCloud.joinVoteApply, apiPayload)
     if(payload.success) {

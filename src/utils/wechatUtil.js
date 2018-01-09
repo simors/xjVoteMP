@@ -66,7 +66,7 @@ export function wechatOauth(nextPath) {
 
 export function getLocalImgDataAsync(wx, localId) {
   if(!wx || !localId) {
-    return undefined
+    return Promise.reject()
   }
   return new Promise(function (resolve, reject) {
     wx.getLocalImgData({
@@ -84,7 +84,7 @@ export function getLocalImgDataAsync(wx, localId) {
 
 export function uploadImageAsync(wx, localId) {
   if(!wx || !localId) {
-    return undefined
+    return Promise.reject()
   }
   return new Promise(function (resolve, reject) {
     wx.uploadImage({
@@ -93,6 +93,26 @@ export function uploadImageAsync(wx, localId) {
       success: function (res) {
         if(res.serverId) {
           resolve(res.serverId)
+        } else {
+          reject()
+        }
+      }
+    })
+  })
+}
+
+export function chooseImageAsync(wx, count) {
+  if(!wx || !count) {
+    return Promise.reject()
+  }
+  return new Promise(function (resolve, reject) {
+    wx.chooseImage({
+      count: count,
+      sizeType: ['compressed'],
+      sourceType: ['album', 'camera'],
+      success: function (res) {
+        if(res.localIds) {
+          resolve(res.localIds)
         } else {
           reject()
         }

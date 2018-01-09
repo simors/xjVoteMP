@@ -22,7 +22,6 @@ class Apply extends React.PureComponent {
 
   selectImage = (imageServerIds) => {
     this.setState({imageServerIds: imageServerIds})
-    alert('imageServerIds:' + imageServerIds)
   }
 
   submitApply = () => {
