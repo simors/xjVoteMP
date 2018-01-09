@@ -246,7 +246,7 @@ function* joinVoteApply(action) {
     voteId: payload.voteId,
     name: payload.name,
     declaration: payload.declaration,
-    album: payload.album
+    imageServerIds: payload.imageServerIds
   }
 
   try {

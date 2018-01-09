@@ -63,3 +63,40 @@ export function wechatOauth(nextPath) {
   }
   return null
 }
+
+export function getLocalImgDataAsync(wx, localId) {
+  if(!wx || !localId) {
+    return undefined
+  }
+  return new Promise(function (resolve, reject) {
+    wx.getLocalImgData({
+      localId: localId,
+      success: function (res) {
+        if(res.localData) {
+          resolve(res.localData)
+        } else {
+          reject()
+        }
+      }
+    })
+  })
+}
+
+export function uploadImageAsync(wx, localId) {
+  if(!wx || !localId) {
+    return undefined
+  }
+  return new Promise(function (resolve, reject) {
+    wx.uploadImage({
+      localId: localId,
+      isShowProgressTips: 1,
+      success: function (res) {
+        if(res.serverId) {
+          resolve(res.serverId)
+        } else {
+          reject()
+        }
+      }
+    })
+  })
+}
