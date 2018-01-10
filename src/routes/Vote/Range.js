@@ -34,9 +34,9 @@ class Range extends React.PureComponent {
   }
 
   render() {
-    const {voteRankInfoList, voteInfo, history} = this.props
+    const {voteRankInfoList, voteInfo, history, voteId} = this.props
     const endTime = moment(voteInfo.startDate, 'YYYY-MM-DD').add(voteInfo.expire, 'days').format('YYYY-MM-DD')
-    if(voteRankInfoList.length === 0) {
+    if(!voteRankInfoList) {
       return(
         <ActivityIndicator toast text="正在加载" />
       )
@@ -51,7 +51,7 @@ class Range extends React.PureComponent {
                     thumb={this.renderThumb(value.album[0])}
                     extra={"第 " + (index + 1) + " 名"}
                     align="top"
-                    onClick={() => {history.push('/vote/player/' + value.id)}}
+                    onClick={() => {history.push('/player/'+ voteId + '/' + value.id)}}
                     multipleLine
               >
                 {value.number + '号 ' + value.name}
@@ -71,6 +71,7 @@ const mapStateToProps = (state, ownProps) => {
   let voteRankInfoList = voteSelector.selectVoteRankInfo(state, voteId)
   let voteInfo = voteSelector.selectVote(state, voteId)
   return {
+    voteId,
     voteInfo,
     voteRankInfoList,
   }

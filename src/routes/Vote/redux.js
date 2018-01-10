@@ -136,6 +136,39 @@ class Gift extends GiftRecord {
   }
 }
 
+const GiftMapRecord = Record({
+  id: undefined,
+  createdAt: undefined,
+  updatedAt: undefined,
+  giftNum: undefined,
+  price: undefined,
+  voteId: undefined,
+  giftId: undefined,
+  userId: undefined,
+  playerId: undefined,
+}, 'GiftMap')
+
+class GiftMap extends GiftMapRecord {
+  static fromJson(lcObj) {
+    try {
+      let giftMap = new GiftMapRecord()
+      return giftMap.withMutations((record) => {
+        record.set('id', lcObj.id)
+        record.set('createdAt', lcObj.createdAt)
+        record.set('updatedAt', lcObj.updatedAt)
+        record.set('giftNum', lcObj.giftNum)
+        record.set('price', lcObj.price)
+        record.set('voteId', lcObj.voteId)
+        record.set('giftId', lcObj.giftId)
+        record.set('userId', lcObj.userId)
+        record.set('playerId', lcObj.playerId)
+      })
+    } catch (e) {
+      throw e
+    }
+  }
+}
+
 const VoteState = Record({
   allVotes: Map(),        // 全部投票信息：键-voteId, 值-VoteRecord
   voteList: List(),       // 投票列表
@@ -144,6 +177,8 @@ const VoteState = Record({
   voteRankList: Map(),    // 投票榜单列表：键-voteId, 值-playerId列表
   allGifts: Map(),        // 全部礼品信息
   voteGiftList: Map(),    // 投票礼品列表：键-voteId, 值-giftId
+  giftMap: Map(),         // 参赛者礼品信息
+  playerGiftList: Map(),  // 参赛者接收礼品列表：键-playerId, 值-giftMapId
 }, 'VoteState')
 
 /**** Constant ****/
@@ -162,7 +197,9 @@ const JOIN_VOTE_APPLY = 'JOIN_VOTE_APPLY'
 const FETCH_VOTE_GITFS = 'FETCH_VOTE_GITFS'
 const UPDATE_VOTE_GIFT_LIST = 'UPDATE_VOTE_GIFT_LIST'
 const CREATE_PAYMENT_REQUEST = 'CREATE_PAYMENT_REQUEST'
-
+const FETCH_PLAYER_RECV_GIFTS = 'FETCH_PLAYER_RECV_GIFTS'
+const UPDATE_PLAYER_GIFTS_LIST = 'UPDATE_PLAYER_GIFTS_LIST'
+const BATCH_SAVE_GIFT = 'BATCH_SAVE_GIFT'
 
 export const VOTE_STATUS = {
   EDITING:    1,        // 正在编辑
@@ -189,11 +226,15 @@ export const voteActions = {
   joinVoteApplyAction: createAction(JOIN_VOTE_APPLY),
   fetchVoteGiftsAction: createAction(FETCH_VOTE_GITFS),
   createPaymentRequestAction: createAction(CREATE_PAYMENT_REQUEST),
+  fetchPlayerRecvGiftsAction: createAction(FETCH_PLAYER_RECV_GIFTS),
+  batchSaveVoteAction: createAction(BATCH_SAVE_VOTE),
+  batchSaveGiftAction: createAction(BATCH_SAVE_GIFT),
 }
 const updateVoteListAction = createAction(UPDATE_VOTE_LIST)
 const updateVotePlayerListAction = createAction(UPDATE_VOTE_PLAYER_LIST)
 const updateVoteRankListAction = createAction(UPDATE_VOTE_RANK_LIST)
 const updateVoteGiftListAction = createAction(UPDATE_VOTE_GIFT_LIST)
+const updatePlayerGiftListAction = createAction(UPDATE_PLAYER_GIFTS_LIST)
 
 /**** Saga ****/
 function* fetchVotes(action) {
@@ -340,6 +381,57 @@ function* createPayment(action) {
   }
 }
 
+function* fetchPlayerRecvGifts(action) {
+  let payload = action.payload
+
+  let apiPayload = {
+    playerId: payload.playerId,
+    lastTime: payload.lastTime,
+    limit: payload.limit
+  }
+  try {
+    let giftMaps = yield call(voteCloud.fetchPlayerRecvGifts, apiPayload)
+    let voteSet = new Set()
+    let giftSet = new Set()
+    let userSet = new Set()
+    let playerSet = new Set()
+    giftMaps.forEach((giftMap) => {
+      let vote = giftMap.vote
+      let gift = giftMap.gift
+      let user = giftMap.user
+      let player = giftMap.player
+      vote && voteSet.add(vote)
+      gift && giftSet.add(gift)
+      user && userSet.add(user)
+      player && playerSet.add(player)
+    })
+
+    if(voteSet.size > 0) {
+      yield put(voteActions.batchSaveVoteAction({votes: voteSet}))
+    }
+    if(giftSet.size > 0) {
+      yield put(voteActions.batchSaveGiftAction({gifts: giftSet}))
+    }
+    if(userSet.size > 0) {
+      yield put(authAction.addUserBatchProfile({userProfiles: userSet}))
+    }
+    if(playerSet.size > 0) {
+      yield put(voteActions.batchSavePlayerInfoAction({players: playerSet}))
+    }
+
+    yield put(updatePlayerGiftListAction({giftMaps: giftMaps, playerId: apiPayload.playerId}))
+
+    if(payload.success) {
+      payload.success()
+    }
+  } catch (error) {
+    console.error(error)
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
+}
+
 export const voteSaga = [
   takeLatest(FETCH_VOTES, fetchVotes),
   takeLatest(FETCH_VOTE_PLAYERS, fetchVotePlayers),
@@ -347,7 +439,8 @@ export const voteSaga = [
   takeLatest(FETCH_VOTE_RANK, fetchVoteRank),
   takeLatest(JOIN_VOTE_APPLY, joinVoteApply),
   takeLatest(FETCH_VOTE_GITFS, fetchVoteGifts),
-  takeLatest(CREATE_PAYMENT_REQUEST, createPayment)
+  takeLatest(CREATE_PAYMENT_REQUEST, createPayment),
+  takeLatest(UPDATE_PLAYER_GIFTS_LIST, fetchPlayerRecvGifts),
 ]
 
 /**** Reducer ****/
@@ -371,6 +464,10 @@ export function voteReducer(state = initialState, action) {
       return handleBatchSavePlayer(state, action)
     case UPDATE_VOTE_GIFT_LIST:
       return handleUpdateVoteGiftList(state, action)
+    case UPDATE_PLAYER_GIFTS_LIST:
+      return handleUpdatePlayerGiftList(state, action)
+    case BATCH_SAVE_GIFT:
+      return handleBatchSaveGift(state, action)
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
@@ -438,7 +535,26 @@ function handleUpdateVoteGiftList(state, action) {
   return state
 }
 
+function handleUpdatePlayerGiftList(state, action) {
+  let playerId = action.payload.playerId
+  let giftMaps = action.payload.giftMaps
+
+  let giftList = List()
+  giftMaps.forEach((giftMapInfo) => {
+    let giftMapRecord = GiftMap.fromJson(giftMapInfo)
+    state = state.setIn(['giftMap', giftMapInfo.id], giftMapRecord)
+    giftList = giftList.push(giftMapInfo.id)
+  })
+  state = state.setIn(['playerGiftList', playerId], giftList)
+  return state
+}
+
 function handleBatchSaveVote(state, action) {
+  let votes = action.payload.votes
+  votes.forEach((vote) => {
+    let voteRecord = Vote.fromJson(vote)
+    state = state.setIn(['allVotes', vote.id], voteRecord)
+  })
   return state
 }
 
@@ -451,6 +567,21 @@ function handleSavePlayer(state, action) {
 }
 
 function handleBatchSavePlayer(state, action) {
+  let players = action.payload.players
+  players.forEach((player) => {
+    let playerRecord = Player.fromJson(player)
+    state = state.setIn(['allPlayers', player.id], playerRecord)
+  })
+  return state
+}
+
+function handleBatchSaveGift(state, action) {
+  let gifts = action.payload.gifts
+
+  gifts.forEach((gift) => {
+    let giftRecord = Gift.fromJson(gift)
+    state = state.setIn(['allGifts', gift.id], giftRecord)
+  })
   return state
 }
 
@@ -560,6 +691,30 @@ function selectVoteGiftList(state, voteId) {
   return voteGiftListInfo
 }
 
+function selectGiftMap(state, giftMapId) {
+  if(!giftMapId) {
+    return undefined
+  }
+  let giftMapRecord = state.VOTE.getIn(['giftMap', giftMapId])
+  return giftMapRecord? giftMapRecord.toJS() : undefined
+}
+
+function selectPlayerRecvGiftList(state, playerId) {
+  if(!playerId) {
+    return undefined
+  }
+  let giftMapListInfo = []
+  let playerGiftList = state.VOTE.getIn(['playerGiftList', playerId])
+  if(!playerGiftList) {
+    return giftMapListInfo
+  }
+  playerGiftList.toArray().forEach((giftMapId) => {
+    let giftMapInfo = selectGiftMap(state, giftMapId)
+    giftMapListInfo.push(giftMapInfo)
+  })
+  return giftMapListInfo
+}
+
 export const voteSelector = {
   selectVoteList,
   selectVote,
@@ -568,6 +723,7 @@ export const voteSelector = {
   selectVoteRankInfo,
   selectGift,
   selectVoteGiftList,
+  selectPlayerRecvGiftList,
 }
 
 

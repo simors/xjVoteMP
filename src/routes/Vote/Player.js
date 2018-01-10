@@ -4,7 +4,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
-import {TabBar, Button, WhiteSpace, WingBlank, Toast, ActionSheet} from 'antd-mobile'
+import {TabBar, Button, WhiteSpace, WingBlank, Toast, ActionSheet, ListView} from 'antd-mobile'
 import styles from './player.module.scss'
 import {voteSelector, voteActions} from './redux'
 import PlayerStat from '../../components/PlayerStat'
@@ -28,26 +28,13 @@ class Player extends React.PureComponent {
     }
   }
 
-  // componentWillMount() {
-  //   const {getJsApiConfig, entryURL} = this.props
-  //   const OS = getMobileOperatingSystem()
-  //   let jssdkURL = window.location.href
-  //   if(OS === 'iOS') {
-  //     //微信JS-SDK Bug: SPA(单页应用)ios系统必须使用首次加载的url初始化jssdk
-  //     jssdkURL = entryURL
-  //   }
-  //   getJsApiConfig({
-  //     debug: __DEV__? true: false,
-  //     jsApiList: ['onMenuShareAppMessage'],
-  //     url: jssdkURL,
-  //     success: this.getJsApiConfigSuccess,
-  //     error: (error) => {console.log(error)}
-  //   })
-  // }
-  //
-  // getJsApiConfigSuccess = (configInfo) => {
-  //   wx.config(configInfo)
-  // }
+  componentWillMount() {
+    const {playerId, fetchPlayerRecvGiftsAction} = this.props
+    fetchPlayerRecvGiftsAction({
+      playerId: playerId,
+      limit: 10
+    })
+  }
 
   wxShare(type) {
     const {playerInfo} = this.props
@@ -102,6 +89,20 @@ class Player extends React.PureComponent {
         });
       });
   }
+
+  // renderRecvGifts() {
+  //   const {playerGiftList} = this.props
+  //   return(
+  //     <div>
+  //       {
+  //         playerGiftList.map((value, index) => (
+  //           <div className={styles.recvItem} key={index}>
+  //           </div>
+  //         ))
+  //       }
+  //     </div>
+  //   )
+  // }
 
   renderContent() {
     const {playerInfo} = this.props
@@ -220,7 +221,6 @@ class Player extends React.PureComponent {
 
     )
   }
-
 }
 
 const mapStateToProps = (state, ownProps) => {
@@ -231,7 +231,8 @@ const mapStateToProps = (state, ownProps) => {
     voteId,
     playerId,
     playerInfo,
-    entryURL: appStateSelector.selectEntryURL(state)
+    entryURL: appStateSelector.selectEntryURL(state),
+    playerGiftList: voteSelector.selectPlayerRecvGiftList(state, playerId)
   }
 }
 
