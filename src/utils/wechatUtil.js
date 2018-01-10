@@ -120,3 +120,4 @@ export function chooseImageAsync(wx, count) {
     })
   })
 }
+

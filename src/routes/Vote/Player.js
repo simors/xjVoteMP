@@ -4,14 +4,16 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
-import {TabBar, Button, WhiteSpace, WingBlank, Toast} from 'antd-mobile'
+import {TabBar, Button, WhiteSpace, WingBlank, Toast, ActionSheet} from 'antd-mobile'
 import styles from './player.module.scss'
 import {voteSelector, voteActions} from './redux'
 import PlayerStat from '../../components/PlayerStat'
 import * as errno from '../../utils/errno'
 import GitfTrip from '../../components/GiftTrip'
 import wx from 'tencent-wx-jssdk'
-import {appStateAction} from '../../utils/appstate'
+import {appStateAction, appStateSelector} from '../../utils/appstate'
+import {getMobileOperatingSystem} from '../../utils/OS'
+import appConfig from '../../utils/appConfig'
 
 const Item = TabBar.Item
 
@@ -26,39 +28,79 @@ class Player extends React.PureComponent {
     }
   }
 
-  componentWillMount() {
-    const {getJsApiConfig} = this.props
-    getJsApiConfig({
-      debug: __DEV__? true: false,
-      jsApiList: ['chooseImage', 'previewImage', 'getLocalImgData'],
-      url: window.location.href,
-      success: this.getJsApiConfigSuccess,
-      error: (error) => {console.log(error)}
-    })
-  }
+  // componentWillMount() {
+  //   const {getJsApiConfig, entryURL} = this.props
+  //   const OS = getMobileOperatingSystem()
+  //   let jssdkURL = window.location.href
+  //   if(OS === 'iOS') {
+  //     //微信JS-SDK Bug: SPA(单页应用)ios系统必须使用首次加载的url初始化jssdk
+  //     jssdkURL = entryURL
+  //   }
+  //   getJsApiConfig({
+  //     debug: __DEV__? true: false,
+  //     jsApiList: ['onMenuShareAppMessage'],
+  //     url: jssdkURL,
+  //     success: this.getJsApiConfigSuccess,
+  //     error: (error) => {console.log(error)}
+  //   })
+  // }
+  //
+  // getJsApiConfigSuccess = (configInfo) => {
+  //   wx.config(configInfo)
+  // }
 
-  getJsApiConfigSuccess = (configInfo) => {
-    wx.config(configInfo)
-    console.log("wxjs_is_wkwebview:", window.__wxjs_is_wkwebview)
-  }
-
-  gotoShare = () => {
+  wxShare(type) {
     const {playerInfo} = this.props
     const title = playerInfo.number + '号 ' + playerInfo.name + '，邀请您参与投票'
-    const url =
-    wx.ready(function () {
+    const url = 'appConfig.CLIENT_DOMAIN + '/vote/player/' + playerInfo.id'
+    if(type === 'timeline') {
       wx.onMenuShareTimeline({
         title: title,
-        link: 'http://www.baidu.com',
+        link: url,
         imgUrl: playerInfo.album[0],
         success: function () {
-
+          Toast.success("分享成功")
         },
         cancel: function () {
-
+          Toast.fail('取消分享')
         }
       })
-    })
+    } else if(type === 'appMessage') {
+      wx.onMenuShareAppMessage({
+        title: title,
+        link: url,
+        imgUrl: playerInfo.album[0],
+        desc: '',
+        success: function () {
+          Toast.success("分享成功")
+        },
+        cancel: function () {
+          Toast.fail('取消分享')
+        }
+      })
+    }
+  }
+
+  dataList = [
+    { url: 'cTTayShKtEIdQVEMuiWt', title: '生活圈', type: 'timeline'},
+    { url: 'umnHwvEgSyQtXlZjNJTt', title: '微信好友', type: 'appMessage' },
+  ].map(obj => ({
+    icon: <img src={`https://gw.alipayobjects.com/zos/rmsportal/${obj.url}.png`} alt={obj.title} style={{ width: 36 }}
+               onClick={() => this.wxShare(obj.type)} />,
+    title: obj.title,
+  }));
+
+  showShareActionSheet = () => {
+    ActionSheet.showShareActionSheetWithOptions({
+        options: this.dataList,
+      },
+      (buttonIndex) => {
+        this.setState({ clicked1: buttonIndex > -1 ? this.dataList[buttonIndex].title : 'cancel' });
+        // also support Promise
+        return new Promise((resolve) => {
+          setTimeout(resolve, 100);
+        });
+      });
   }
 
   renderContent() {
@@ -82,7 +124,7 @@ class Player extends React.PureComponent {
         <WhiteSpace />
         <PlayerStat number={playerInfo.number} voteNum={playerInfo.voteNum} giftNum={playerInfo.giftNum} pv={playerInfo.pv} />
         <WingBlank className={styles.share}>
-          <Button type="primary" onClick={this.gotoShare}>为TA拉票</Button>
+          <Button type="primary" onClick={this.showShareActionSheet}>为TA拉票</Button>
         </WingBlank>
       </div>
     )
@@ -188,6 +230,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     playerId,
     playerInfo,
+    entryURL: appStateSelector.selectEntryURL(state)
   }
 }
 
