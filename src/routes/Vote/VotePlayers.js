@@ -60,8 +60,8 @@ class VotePlayers extends React.PureComponent {
   }
 
   gotoPlayer(playerId) {
-    const {history} = this.props
-    history.push('/vote/player/' + playerId)
+    const {history, voteId} = this.props
+    history.push('/player/' + voteId + '/' + playerId)
   }
 
 

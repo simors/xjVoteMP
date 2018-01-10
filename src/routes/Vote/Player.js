@@ -161,8 +161,8 @@ class Player extends React.PureComponent {
   }
 
   gotoPresent = () => {
-    const {history, playerId} = this.props
-    history.push('/vote/player/present/' + playerId)
+    const {history, playerId, voteId} = this.props
+    history.push('/present/' + voteId + '/' + playerId)
   }
 
   render() {
@@ -225,9 +225,10 @@ class Player extends React.PureComponent {
 
 const mapStateToProps = (state, ownProps) => {
   const {match} = ownProps
-  const {playerId} = match.params
+  const {playerId, voteId} = match.params
   let playerInfo = voteSelector.selectPlayer(state, playerId)
   return {
+    voteId,
     playerId,
     playerInfo,
     entryURL: appStateSelector.selectEntryURL(state)

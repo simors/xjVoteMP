@@ -28,6 +28,7 @@
     "leancloud-storage": "^3.4.2",
     "moment": "^2.20.1",
     "object-assign": "^4.1.1",
+    "pingpp-js": "^2.1.16",
     "promise": "^7.1.1",
     "prop-types": "^15.5.10",
     "querystring": "^0.2.0",

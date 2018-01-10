@@ -105,12 +105,45 @@ class Player extends PlayerRecord {
   }
 }
 
+const GiftRecord = Record({
+  id: undefined,
+  createdAt: undefined,
+  updatedAt: undefined,
+  name: undefined,
+  ballot: undefined,
+  photo: undefined,
+  price: undefined,
+  vtag: undefined,
+}, 'GiftRecord')
+
+class Gift extends GiftRecord {
+  static fromJson(lcObj) {
+    try {
+      let gift = new GiftRecord()
+      return gift.withMutations((record) => {
+        record.set('id', lcObj.id)
+        record.set('createdAt', lcObj.createdAt)
+        record.set('updatedAt', lcObj.updatedAt)
+        record.set('name', lcObj.name)
+        record.set('ballot', lcObj.ballot)
+        record.set('photo', lcObj.photo)
+        record.set('price', lcObj.price)
+        record.set('vtag', lcObj.vtag)
+      })
+    } catch (e) {
+      throw e
+    }
+  }
+}
+
 const VoteState = Record({
   allVotes: Map(),        // 全部投票信息：键-voteId, 值-VoteRecord
   voteList: List(),       // 投票列表
   allPlayers: Map(),      // 全部投票选手信息：键-playerId, 值-PlayerRecord
   votePlayerList: Map(),  // 投票选手列表：键-voteId, 值-playerId列表
   voteRankList: Map(),    // 投票榜单列表：键-voteId, 值-playerId列表
+  allGifts: Map(),        // 全部礼品信息
+  voteGiftList: Map(),    // 投票礼品列表：键-voteId, 值-giftId
 }, 'VoteState')
 
 /**** Constant ****/
@@ -126,6 +159,9 @@ const VOTE_FOR_PLAYER = 'VOTE_FOR_PLAYER'
 const SAVE_PLAYER = 'SAVE_PLAYER'
 const BATCH_SAVE_PLAYER = 'BATCH_SAVE_PLAYER'
 const JOIN_VOTE_APPLY = 'JOIN_VOTE_APPLY'
+const FETCH_VOTE_GITFS = 'FETCH_VOTE_GITFS'
+const UPDATE_VOTE_GIFT_LIST = 'UPDATE_VOTE_GIFT_LIST'
+const CREATE_PAYMENT_REQUEST = 'CREATE_PAYMENT_REQUEST'
 
 
 export const VOTE_STATUS = {
@@ -151,10 +187,13 @@ export const voteActions = {
   savePlayerInfoAction: createAction(SAVE_PLAYER),
   batchSavePlayerInfoAction: createAction(BATCH_SAVE_PLAYER),
   joinVoteApplyAction: createAction(JOIN_VOTE_APPLY),
+  fetchVoteGiftsAction: createAction(FETCH_VOTE_GITFS),
+  createPaymentRequestAction: createAction(CREATE_PAYMENT_REQUEST),
 }
 const updateVoteListAction = createAction(UPDATE_VOTE_LIST)
 const updateVotePlayerListAction = createAction(UPDATE_VOTE_PLAYER_LIST)
-const updateVoteRankListAction =createAction(UPDATE_VOTE_RANK_LIST)
+const updateVoteRankListAction = createAction(UPDATE_VOTE_RANK_LIST)
+const updateVoteGiftListAction = createAction(UPDATE_VOTE_GIFT_LIST)
 
 /**** Saga ****/
 function* fetchVotes(action) {
@@ -189,7 +228,6 @@ function* fetchVotePlayers(action) {
     limit: payload.limit
   }
 
-  console.log("apiPayload", apiPayload)
   try {
     let players = yield call(voteCloud.fetchVotePlayers, apiPayload)
     yield put(updateVotePlayerListAction({voteId: apiPayload.voteId, players: players, isRefresh: apiPayload.lastNumber? false : true}))
@@ -261,12 +299,55 @@ function* joinVoteApply(action) {
   }
 }
 
+function* fetchVoteGifts(action) {
+  let payload = action.payload
+
+  try {
+    let gifts = yield call(voteCloud.fetchGiftsByVote, {voteId: payload.voteId})
+    yield put(updateVoteGiftListAction({gifts: gifts, voteId: payload.voteId}))
+    if(payload.success) {
+      payload.success()
+    }
+  } catch (error) {
+    console.error(error)
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
+}
+
+function* createPayment(action) {
+  let payload = action.payload
+
+  let apiPayload = {
+    amount: payload.amount,
+    channel: 'wx_pub',
+    metadata: payload.metadata || {},
+    openid: payload.openid,
+    subject: payload.subject
+  }
+
+  try {
+    let charge = yield call(voteCloud.createPaymentRequest, apiPayload)
+    if(charge && payload.success){
+      payload.success(charge)
+    }
+  } catch (error) {
+    console.error(error)
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
+}
+
 export const voteSaga = [
   takeLatest(FETCH_VOTES, fetchVotes),
   takeLatest(FETCH_VOTE_PLAYERS, fetchVotePlayers),
   takeLatest(VOTE_FOR_PLAYER, voteForPlayer),
   takeLatest(FETCH_VOTE_RANK, fetchVoteRank),
-  takeLatest(JOIN_VOTE_APPLY, joinVoteApply)
+  takeLatest(JOIN_VOTE_APPLY, joinVoteApply),
+  takeLatest(FETCH_VOTE_GITFS, fetchVoteGifts),
+  takeLatest(CREATE_PAYMENT_REQUEST, createPayment)
 ]
 
 /**** Reducer ****/
@@ -288,6 +369,8 @@ export function voteReducer(state = initialState, action) {
       return handleSavePlayer(state, action)
     case BATCH_SAVE_PLAYER:
       return handleBatchSavePlayer(state, action)
+    case UPDATE_VOTE_GIFT_LIST:
+      return handleUpdateVoteGiftList(state, action)
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
@@ -338,6 +421,20 @@ function handleUpdateVoteRankList(state, action) {
     rankList = rankList.push(playerInfo.id)
   })
   state = state.setIn(['voteRankList', voteId], rankList)
+  return state
+}
+
+function handleUpdateVoteGiftList(state, action) {
+  let voteId = action.payload.voteId
+  let gifts = action.payload.gifts
+
+  let giftList = List()
+  gifts.forEach((giftInfo) => {
+    let giftRecord = Gift.fromJson(giftInfo)
+    state = state.setIn(['allGifts', giftInfo.id], giftRecord)
+    giftList = giftList.push(giftInfo.id)
+  })
+  state = state.setIn(['voteGiftList', voteId], giftList)
   return state
 }
 
@@ -439,12 +536,38 @@ function selectVoteRankInfo(state, voteId) {
   return voteRankInfoList
 }
 
+function selectGift(state, giftId) {
+  if(!giftId) {
+    return undefined
+  }
+  let giftRecord = state.VOTE.getIn(['allGifts', giftId])
+  return giftRecord? giftRecord.toJS() : undefined
+}
+
+function selectVoteGiftList(state, voteId) {
+  if(!voteId) {
+    return undefined
+  }
+  let voteGiftListInfo = []
+  let voteGiftList = state.VOTE.getIn(['voteGiftList', voteId])
+  if(!voteGiftList) {
+    return voteGiftListInfo
+  }
+  voteGiftList.toArray().forEach((giftId) => {
+    let giftInfo = selectGift(state, giftId)
+    voteGiftListInfo.push(giftInfo)
+  })
+  return voteGiftListInfo
+}
+
 export const voteSelector = {
   selectVoteList,
   selectVote,
   selectPlayer,
   selectVotePlayerList,
   selectVoteRankInfo,
+  selectGift,
+  selectVoteGiftList,
 }
 
 

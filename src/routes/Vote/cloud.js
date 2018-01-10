@@ -22,3 +22,11 @@ export async  function fetchVoteRank(payload) {
 export async function joinVoteApply(payload) {
   return await AV.Cloud.run('voteCreatePlayerApplyMP', payload)
 }
+
+export async function fetchGiftsByVote(payload) {
+  return await AV.Cloud.run('voteFetchGiftsByVote', payload)
+}
+
+export async function createPaymentRequest(payload) {
+  return await AV.Cloud.run('payCreatePaymentRequest', payload)
+}

@@ -8,6 +8,7 @@ import MyVote from './MyVote'
 import BePromoter from './BePromoter'
 import Withdraw from './Withdraw'
 
+
 /* export saga */
 export const meSaga = redux.meSaga
 
@@ -19,6 +20,8 @@ export const meActions = redux.meActions
 
 /* export selector */
 export const meSelector = redux.meSelector
+
+export const DEAL_TYPE = redux.DEAL_TYPE
 
 export default Me
 

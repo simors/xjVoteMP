@@ -18,8 +18,8 @@ const rootRoutes = (
     <AuthRoute path="/myVote" component={MyVote}/>
     <AuthRoute path="/withdraw" component={Withdraw}/>
     <AuthRoute path="/bePromoter" component={BePromoter}/>
-    <AuthRoute path="/vote/player/present/:playerId" component={Present}/>
-    <AuthRoute path="/vote/player/:playerId" component={Player}/>
+    <AuthRoute path="/present/:voteId/:playerId" component={Present}/>
+    <AuthRoute path="/player/:voteId/:playerId" component={Player}/>
     <AuthRoute path="/vote/:voteId" component={Vote}/>
     <Route path="/publish/organizer" component={Organizer}/>
     <Route path="/publish/award" component={Award}/>
