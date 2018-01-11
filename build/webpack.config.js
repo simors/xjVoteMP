@@ -309,7 +309,6 @@ if (__PROD__ || __STAGE__) {
       uglifyOptions: {
         compress: {
           warnings: false,
-          // screw_ie8: true,
           conditionals: true,
           unused: true,
           comparisons: true,
