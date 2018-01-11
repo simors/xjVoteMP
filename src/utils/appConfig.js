@@ -15,9 +15,9 @@ const LEAN_ENGINE_DOMAIN_PRO = "http://hudong-pro.leanapp.cn"
 
 //微信认证服务器域名
 var WECHAT_OAUTH_DOMAIN = ""
-const WECHAT_OAUTH_DOMAIN_DEV = "http://devauth.xiaojee.cn/1/wechat/oauth"
+const WECHAT_OAUTH_DOMAIN_DEV = "http://vote.xiaojee.cn/devauth/1/wechat/oauth"
 const WECHAT_OAUTH_DOMAIN_STAGE = ""
-const WECHAT_OAUTH_DOMAIN_PRO = "http://auth.xiaojee.cn/1/wechat/oauth"
+const WECHAT_OAUTH_DOMAIN_PRO = "http://vote.xiaojee.cn/auth/1/wechat/oauth"
 
 // 微信端域名
 var CLIENT_DOMAIN = ''
