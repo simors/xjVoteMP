@@ -2,37 +2,50 @@
  * Created by wanpeng on 2018/1/6.
  */
 import React from 'react'
-import {connect} from 'react-redux'
 import styles from './dealrecord.scss'
-import {meActions, meSelector} from '../../routes/Me'
 import {ListView} from 'antd-mobile'
 
-class DealRecord extends React.PureComponent {
+export default class DealRecord extends React.PureComponent {
   constructor(props) {
     super(props)
+    const dataSource = new ListView.DataSource({
+      rowHasChanged: (row1, row2) => row1 !== row2,
+    })
+    this.state = {
+      dataSource: dataSource,
+    }
   }
 
-  componentWillMount() {
-    const {fetchDealRecordAction} = this.props
-    fetchDealRecordAction({
-      limit: 10,
-    })
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.record !== this.props.record) {
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRows(nextProps.record),
+      });
+    }
   }
 
   render() {
+    const {dataSource} = this.state
+    const row = (rowData, sectionID, rowID) => {
+      let itemStyle = {
 
+      }
+      return (
+        <div key={rowID} >
+        </div>
+      )
+    }
+    return(
+      <div>
+        <ListView
+          dataSource={dataSource}
+          renderRow={row}
+          useBodyScroll={false}
+          onEndReached={this.onEndReached}
+          onEndReachedThreshold={50}
+        />
+      </div>
+    )
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
-  let dealList = meSelector.selectDealList(state)
-  return {
-    dealList: dealList
-  }
-}
-
-const mapDispatchToProps = {
-  ...meActions,
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(DealRecord)

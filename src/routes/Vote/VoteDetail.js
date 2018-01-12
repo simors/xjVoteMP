@@ -19,11 +19,11 @@ class VoteDetail extends React.PureComponent {
   }
 
   renderApplyBtn() {
-    const {voteInfo} = this.props
+    const {voteInfo, onSwitchTab} = this.props
     if(voteInfo.status) {
       return (
         <WingBlank>
-          <Button type="primary">我要报名</Button>
+          <Button type="primary" onClick={() => onSwitchTab('applyTab')}>我要报名</Button>
         </WingBlank>
       )
     } else {

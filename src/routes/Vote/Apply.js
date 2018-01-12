@@ -77,12 +77,8 @@ class Apply extends React.PureComponent {
     const {title} = this.state
     return(
       <div className={styles.container}>
-        <WingBlank className={styles.declaration}>
-          <List>
-            <InputItem placeholder="姓名" value={title} onChange={this.onChangeTitle} ></InputItem>
-            <TextareaItem rows={3} placeholder="请输入参赛宣言" onChange={this.onChangeDeclaration} />
-          </List>
-        </WingBlank>
+        <InputItem placeholder="姓名" value={title} onChange={this.onChangeTitle} ></InputItem>
+        <TextareaItem style={{fontSize: '14px'}} rows={3} placeholder="请输入参赛宣言" onChange={this.onChangeDeclaration} />
         <WhiteSpace />
         <WingBlank>
           <ImageSelector trip="请上传参赛图片" count={3} onChange={this.selectImage} />

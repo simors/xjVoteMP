@@ -56,7 +56,6 @@ class Home extends Component {
             selectedIcon={<div className={styles.mineIconFill}/>}
             title="我的"
             key="me"
-            badge={'new'}
             selected={this.state.selectedTab === 'mineTab'}
             onPress={() => {
               this.setState({

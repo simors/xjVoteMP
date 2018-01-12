@@ -18,7 +18,6 @@ class Present extends React.PureComponent {
     document.title = '送礼物'
     this.state = {
       payDisabled: false,
-      amount: undefined,
       giftId: undefined,
       giftNum: 1,
       checkedGift: undefined,
@@ -35,14 +34,14 @@ class Present extends React.PureComponent {
   onPayment = () => {
     this.setState({payDisabled: true})
     const {createPaymentRequestAction, playerId, currentUser, voteId} = this.props
-    const {amount, giftId, giftNum, checkedGift} = this.state
+    const {giftId, giftNum, checkedGift} = this.state
     const openid = currentUser.authData.weixin.openid
     if(!checkedGift) {
       Toast.fail("请选择礼品")
       return
     }
     createPaymentRequestAction({
-      amount: amount,
+      amount: giftNum * checkedGift.price,
       metadata: {
         'fromUser': currentUser.id,
         'toUser': 'platform',

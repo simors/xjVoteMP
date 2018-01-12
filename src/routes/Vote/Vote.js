@@ -44,7 +44,7 @@ class Vote extends React.PureComponent {
               document.title = "活动主页"
             }}
           >
-            <VoteDetail voteId={voteId} history={history} />
+            <VoteDetail voteId={voteId} onSwitchTab={this.onSwitchTab} history={history} />
           </Item>
           <Item
             title="报名"

@@ -16,13 +16,15 @@ class Wallet extends React.PureComponent {
   }
 
   componentWillMount() {
-    const {fetchWalletInfoAction} = this.props
-    fetchWalletInfoAction()
+    const {fetchWalletInfoAction, fetchDealRecordAction} = this.props
+    fetchWalletInfoAction({})
+    fetchDealRecordAction({limit: 10})
   }
 
 
   render() {
-    const {walletInfo, history} = this.props
+    const {walletInfo, dealList, history} = this.props
+    console.log("dealList", dealList)
     if(!walletInfo) {
       return(<ActivityIndicator toast text="正在加载" />)
     }
@@ -36,6 +38,7 @@ class Wallet extends React.PureComponent {
         <WingBlank>
           <Button type="primary" onClick={() => history.push('/withdraw')}>提现到微信</Button>
         </WingBlank>
+        <DealRecord record={dealList} />
       </div>
     )
   }
@@ -43,7 +46,8 @@ class Wallet extends React.PureComponent {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    walletInfo: meSelector.selectWallet(state)
+    walletInfo: meSelector.selectWallet(state),
+    dealList: meSelector.selectDealList(state),
   }
 }
 

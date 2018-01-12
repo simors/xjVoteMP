@@ -28,6 +28,7 @@ export async function fetchGiftsByVote(payload) {
 }
 
 export async function createPaymentRequest(payload) {
+  console.log("payCreatePaymentRequest:", payload)
   return await AV.Cloud.run('payCreatePaymentRequest', payload)
 }
 
