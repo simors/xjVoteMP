@@ -8,7 +8,7 @@ import wx from 'tencent-wx-jssdk'
 import {appStateAction, appStateSelector} from '../../utils/appstate'
 import {WhiteSpace, Toast,} from 'antd-mobile'
 import {getMobileOperatingSystem} from '../../utils/OS'
-import {getLocalImgDataAsync, uploadImageAsync, chooseImageAsync} from '../../utils/wechatUtil'
+import {getLocalImgDataAsync, uploadImageAsync, chooseImageAsync, checkJsApiAsync} from '../../utils/wechatUtil'
 
 class ImageSelector extends React.Component {
   constructor(props) {
@@ -29,7 +29,7 @@ class ImageSelector extends React.Component {
       jssdkURL = entryURL
     }
     getJsApiConfig({
-      debug: __DEV__? true: false,
+      debug: __DEV__? true: true,
       jsApiList: ['chooseImage', 'previewImage', 'getLocalImgData', 'uploadImage', 'onMenuShareAppMessage', 'onMenuShareAppMessage'],
       url: jssdkURL,
       success: this.getJsApiConfigSuccess,
@@ -79,6 +79,8 @@ class ImageSelector extends React.Component {
       return
     }
     try {
+      let result = await checkJsApiAsync(['chooseImage', 'previewImage', 'getLocalImgData', 'uploadImage', 'onMenuShareAppMessage', 'onMenuShareAppMessage'])
+      alert('checkJsApi:' + result)
       let selectedLocalIds = await chooseImageAsync(wx, residueCount)
       this.setState({localIds: selectedLocalIds})
       if(window.__wxjs_is_wkwebview) {    //适配iOS WKWebview

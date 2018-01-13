@@ -106,16 +106,32 @@ export function chooseImageAsync(wx, count) {
     return Promise.reject()
   }
   return new Promise(function (resolve, reject) {
-    wx.chooseImage({
-      count: count,
-      sizeType: ['compressed'],
-      sourceType: ['album', 'camera'],
-      success: function (res) {
-        if(res.localIds) {
-          resolve(res.localIds)
-        } else {
-          reject()
+    wx.ready(function () {
+      wx.chooseImage({
+        count: count,
+        sizeType: ['compressed'],
+        sourceType: ['album', 'camera'],
+        success: function (res) {
+          if(res.localIds) {
+            resolve(res.localIds)
+          } else {
+            reject()
+          }
         }
+      })
+    })
+  })
+}
+
+export function checkJsApiAsync(wx, jsApiList) {
+  if(!wx || !jsApiList) {
+    return Promise.reject()
+  }
+  return new Promise(function (resolve, reject) {
+    wx.checkJsApi({
+      jsApiList: jsApiList,
+      success: function (res) {
+        resolve(res)
       }
     })
   })
