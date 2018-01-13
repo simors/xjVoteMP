@@ -80,8 +80,6 @@ class ImageSelector extends React.Component {
       return
     }
     try {
-      let result = await checkJsApiAsync(['chooseImage', 'previewImage', 'getLocalImgData', 'uploadImage', 'onMenuShareAppMessage', 'onMenuShareAppMessage'])
-      alert('checkJsApi:' + result)
       let selectedLocalIds = await chooseImageAsync(wx, residueCount)
       this.setState({localIds: selectedLocalIds})
       if(window.__wxjs_is_wkwebview) {    //适配iOS WKWebview
