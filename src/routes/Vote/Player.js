@@ -69,7 +69,7 @@ class Player extends React.PureComponent {
   }
 
   dataList = [
-    { url: 'cTTayShKtEIdQVEMuiWt', title: '生活圈', type: 'timeline'},
+    { url: 'cTTayShKtEIdQVEMuiWt', title: '朋友圈', type: 'timeline'},
     { url: 'umnHwvEgSyQtXlZjNJTt', title: '微信好友', type: 'appMessage' },
   ].map(obj => ({
     icon: <img src={`https://gw.alipayobjects.com/zos/rmsportal/${obj.url}.png`} alt={obj.title} style={{ width: 36 }}

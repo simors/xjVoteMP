@@ -30,7 +30,8 @@ class ImageSelector extends React.Component {
     }
     getJsApiConfig({
       debug: __DEV__? true: true,
-      jsApiList: ['chooseImage', 'previewImage', 'getLocalImgData', 'uploadImage', 'onMenuShareAppMessage', 'onMenuShareAppMessage'],
+      // jsApiList: ['chooseImage', 'previewImage', 'getLocalImgData', 'uploadImage', 'onMenuShareAppMessage', 'onMenuShareAppMessage'],
+      jsApiList: ['chooseImage', 'previewImage', 'getLocalImgData', 'uploadImage'].toString(),
       url: jssdkURL,
       success: this.getJsApiConfigSuccess,
       error: (error) => {console.log(error)}
