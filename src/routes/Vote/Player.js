@@ -57,7 +57,7 @@ class Player extends React.PureComponent {
   wxShare(type) {
     const {playerInfo} = this.props
     const title = playerInfo.number + '号 ' + playerInfo.name + '，邀请您参与投票'
-    const url = 'appConfig.CLIENT_DOMAIN + '/vote/player/' + playerInfo.id'
+    const url = appConfig.CLIENT_DOMAIN + '/vote/player/' + playerInfo.id
     wx.ready(function () {
       wx.checkJsApi({
         jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage'],
