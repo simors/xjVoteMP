@@ -43,7 +43,7 @@ class Player extends React.PureComponent {
     }
     getJsApiConfig({
       debug: __DEV__? true: true,
-      jsApiList: ['onMenuShareAppMessage', 'onMenuShareAppMessage'].toString(),
+      jsApiList: ['onMenuShareAppMessage', 'onMenuShareAppMessage', 'scanQRCode'].toString(),
       url: jssdkURL,
       success: this.getJsApiConfigSuccess,
       error: (error) => {console.log(error)}
@@ -91,6 +91,16 @@ class Player extends React.PureComponent {
           }
         })
       })
+    } else if(type === 'scan') {
+      wx.ready(function () {
+        wx.scanQRCode({
+          needResult: 0,
+          scanType: ["qrCode","barCode"],
+          success: function (res) {
+            Toast.success(res)
+          }
+        })
+      })
     } else {
       Toast.fail("无效到分享类型")
     }
@@ -99,6 +109,7 @@ class Player extends React.PureComponent {
   dataList = [
     { url: 'cTTayShKtEIdQVEMuiWt', title: '朋友圈', type: 'timeline'},
     { url: 'umnHwvEgSyQtXlZjNJTt', title: '微信好友', type: 'appMessage'},
+    { url: 'SxpunpETIwdxNjcJamwB', title: '扫一扫', type: 'scan' }
   ].map(obj => ({
     icon: <img src={`https://gw.alipayobjects.com/zos/rmsportal/${obj.url}.png`} alt={obj.title} style={{ width: 36 }}
                onClick={() => this.wxShare(obj.type)} />,
