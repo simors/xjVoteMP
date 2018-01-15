@@ -41,10 +41,11 @@ class Player extends React.PureComponent {
       //微信JS-SDK Bug: SPA(单页应用)ios系统必须使用首次加载的url初始化jssdk
       jssdkURL = entryURL
     }
+    alert('jssdkURL' + jssdkURL)
     getJsApiConfig({
       debug: __DEV__? true: true,
-      jsApiList: ['onMenuShareAppMessage', 'onMenuShareAppMessage', 'scanQRCode'].toString(),
-      url: jssdkURL,
+      jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage', 'scanQRCode'].toString(),
+      url: jssdkURL.split('#')[0],
       success: this.getJsApiConfigSuccess,
       error: (error) => {console.log(error)}
     })
@@ -59,10 +60,9 @@ class Player extends React.PureComponent {
     // const title = playerInfo.number + '号 ' + playerInfo.name + '，邀请您参与投票'
     const title = '分享测试'
     // const url = appConfig.CLIENT_DOMAIN + '/vote/player/' + playerInfo.id
-    const url = appConfig.CLIENT_DOMAIN
+    const url = 'http://vote.xiaojee.cn/#/'
     if(type === 'timeline') {
       wx.ready(function () {
-        alert('onMenuShareTimeline')
         wx.onMenuShareTimeline({
           title: title,
           link: url,
@@ -77,7 +77,6 @@ class Player extends React.PureComponent {
       })
     } else if(type === 'appMessage') {
       wx.ready(function () {
-        alert('onMenuShareAppMessage')
         wx.onMenuShareAppMessage({
           title: title,
           link: url,
