@@ -21,10 +21,10 @@ const rootRoutes = (
     <AuthRoute path="/present/:voteId/:playerId" component={Present}/>
     <AuthRoute path="/player/:voteId/:playerId" component={Player}/>
     <AuthRoute path="/vote/:voteId" component={Vote}/>
-    <Route path="/publish/organizer" component={Organizer}/>
-    <Route path="/publish/award" component={Award}/>
-    <Route path="/publish/gifts" component={Gifts}/>
-    <Route path="/publish" component={Publish}/>
+    <AuthRoute path="/publish/organizer" component={Organizer}/>
+    <AuthRoute path="/publish/award" component={Award}/>
+    <AuthRoute path="/publish/gifts" component={Gifts}/>
+    <AuthRoute path="/publish" component={Publish}/>
     <AuthRoute path="/" component={Home}/>
     <Route component={NoMatch}/>
   </Switch>

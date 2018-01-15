@@ -24,6 +24,9 @@ function getAuthorizeURL(redirect, state, scope) {
 
 
 export function wechatOauth(nextPath) {
+  store.dispatch(appStateAction.updateEntryURLAction({url: document.location.href}))
+
+
   let state = store.getState()
   let appState = appStateSelector.selectAppState(state)
   let isRehydrated = undefined
@@ -40,7 +43,6 @@ export function wechatOauth(nextPath) {
   }
   let activeUser = authSelector.activeUserId(state)
   if (activeUser) {
-    store.dispatch(appStateAction.updateEntryURLAction({url: document.location.href}))
     return null
   }
   let redirectUri = appConfig.WECHAT_OAUTH_DOMAIN
