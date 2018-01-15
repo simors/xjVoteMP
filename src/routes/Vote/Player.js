@@ -56,8 +56,10 @@ class Player extends React.PureComponent {
 
   wxShare(type) {
     const {playerInfo} = this.props
-    const title = playerInfo.number + '号 ' + playerInfo.name + '，邀请您参与投票'
-    const url = appConfig.CLIENT_DOMAIN + '/vote/player/' + playerInfo.id
+    // const title = playerInfo.number + '号 ' + playerInfo.name + '，邀请您参与投票'
+    const title = '分享测试'
+    // const url = appConfig.CLIENT_DOMAIN + '/vote/player/' + playerInfo.id
+    const url = appConfig.CLIENT_DOMAIN
     if(type === 'timeline') {
       wx.onMenuShareTimeline({
         title: title,
