@@ -15,6 +15,7 @@ import {appStateAction, appStateSelector} from '../../utils/appstate'
 import {getMobileOperatingSystem} from '../../utils/OS'
 import appConfig from '../../utils/appConfig'
 
+
 const Item = TabBar.Item
 
 class Player extends React.PureComponent {
@@ -29,17 +30,40 @@ class Player extends React.PureComponent {
   }
 
   componentWillMount() {
-    const {playerId, fetchPlayerRecvGiftsAction} = this.props
+    const {playerId, fetchPlayerRecvGiftsAction, getJsApiConfig, entryURL} = this.props
     fetchPlayerRecvGiftsAction({
       playerId: playerId,
       limit: 10
     })
+    const OS = getMobileOperatingSystem()
+    let jssdkURL = window.location.href
+    if(OS === 'iOS') {
+      //微信JS-SDK Bug: SPA(单页应用)ios系统必须使用首次加载的url初始化jssdk
+      jssdkURL = entryURL
+    }
+    getJsApiConfig({
+      debug: __DEV__? true: true,
+      jsApiList: ['onMenuShareAppMessage', 'onMenuShareAppMessage'].toString(),
+      url: jssdkURL,
+      success: this.getJsApiConfigSuccess,
+      error: (error) => {console.log(error)}
+    })
+  }
+
+  getJsApiConfigSuccess = (configInfo) => {
+    wx.config(configInfo)
   }
 
   wxShare(type) {
     const {playerInfo} = this.props
     const title = playerInfo.number + '号 ' + playerInfo.name + '，邀请您参与投票'
     const url = 'appConfig.CLIENT_DOMAIN + '/vote/player/' + playerInfo.id'
+    wx.checkJsApi({
+      jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage'],
+      success: function (res) {
+        alert(res)
+      }
+    })
     if(type === 'timeline') {
       wx.onMenuShareTimeline({
         title: title,
