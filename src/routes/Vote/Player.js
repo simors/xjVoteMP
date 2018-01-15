@@ -66,8 +66,8 @@ class Player extends React.PureComponent {
         }
       })
     })
+    alert(type)
     if(type === 'timeline') {
-      alert('分享到朋友圈')
       wx.ready(function () {
         wx.onMenuShareTimeline({
           title: title,
@@ -82,7 +82,6 @@ class Player extends React.PureComponent {
         })
       })
     } else if(type === 'appMessage') {
-      alert('分享朋友')
       wx.ready(function () {
         wx.onMenuShareAppMessage({
           title: title,
@@ -97,6 +96,8 @@ class Player extends React.PureComponent {
           }
         })
       })
+    } else {
+      Toast.fail("无效到分享类型")
     }
   }
 
