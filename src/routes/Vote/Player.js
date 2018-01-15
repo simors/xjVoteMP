@@ -67,6 +67,7 @@ class Player extends React.PureComponent {
       })
     })
     if(type === 'timeline') {
+      alert('分享到朋友圈')
       wx.ready(function () {
         wx.onMenuShareTimeline({
           title: title,
@@ -81,6 +82,7 @@ class Player extends React.PureComponent {
         })
       })
     } else if(type === 'appMessage') {
+      alert('分享朋友')
       wx.ready(function () {
         wx.onMenuShareAppMessage({
           title: title,
@@ -100,7 +102,7 @@ class Player extends React.PureComponent {
 
   dataList = [
     { url: 'cTTayShKtEIdQVEMuiWt', title: '朋友圈', type: 'timeline'},
-    { url: 'umnHwvEgSyQtXlZjNJTt', title: '微信好友', type: 'appMessage' },
+    { url: 'umnHwvEgSyQtXlZjNJTt', title: '微信好友', type: 'appMessage'},
   ].map(obj => ({
     icon: <img src={`https://gw.alipayobjects.com/zos/rmsportal/${obj.url}.png`} alt={obj.title} style={{ width: 36 }}
                onClick={() => this.wxShare(obj.type)} />,
