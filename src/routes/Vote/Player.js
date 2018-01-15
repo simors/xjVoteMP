@@ -58,36 +58,42 @@ class Player extends React.PureComponent {
     const {playerInfo} = this.props
     const title = playerInfo.number + '号 ' + playerInfo.name + '，邀请您参与投票'
     const url = 'appConfig.CLIENT_DOMAIN + '/vote/player/' + playerInfo.id'
-    wx.checkJsApi({
-      jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage'],
-      success: function (res) {
-        alert(res)
-      }
-    })
-    if(type === 'timeline') {
-      wx.onMenuShareTimeline({
-        title: title,
-        link: url,
-        imgUrl: playerInfo.album[0],
-        success: function () {
-          Toast.success("分享成功")
-        },
-        cancel: function () {
-          Toast.fail('取消分享')
+    wx.ready(function () {
+      wx.checkJsApi({
+        jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage'],
+        success: function (res) {
+          alert(res)
         }
       })
+    })
+    if(type === 'timeline') {
+      wx.ready(function () {
+        wx.onMenuShareTimeline({
+          title: title,
+          link: url,
+          imgUrl: playerInfo.album[0],
+          success: function () {
+            Toast.success("分享成功")
+          },
+          cancel: function () {
+            Toast.fail('取消分享')
+          }
+        })
+      })
     } else if(type === 'appMessage') {
-      wx.onMenuShareAppMessage({
-        title: title,
-        link: url,
-        imgUrl: playerInfo.album[0],
-        desc: '',
-        success: function () {
-          Toast.success("分享成功")
-        },
-        cancel: function () {
-          Toast.fail('取消分享')
-        }
+      wx.ready(function () {
+        wx.onMenuShareAppMessage({
+          title: title,
+          link: url,
+          imgUrl: playerInfo.album[0],
+          desc: '',
+          success: function () {
+            Toast.success("分享成功")
+          },
+          cancel: function () {
+            Toast.fail('取消分享')
+          }
+        })
       })
     }
   }
