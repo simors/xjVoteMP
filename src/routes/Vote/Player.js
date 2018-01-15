@@ -62,6 +62,7 @@ class Player extends React.PureComponent {
     const url = appConfig.CLIENT_DOMAIN
     if(type === 'timeline') {
       wx.ready(function () {
+        alert('onMenuShareTimeline')
         wx.onMenuShareTimeline({
           title: title,
           link: url,
@@ -76,6 +77,7 @@ class Player extends React.PureComponent {
       })
     } else if(type === 'appMessage') {
       wx.ready(function () {
+        alert('onMenuShareAppMessage')
         wx.onMenuShareAppMessage({
           title: title,
           link: url,
