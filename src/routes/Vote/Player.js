@@ -61,29 +61,33 @@ class Player extends React.PureComponent {
     // const url = appConfig.CLIENT_DOMAIN + '/vote/player/' + playerInfo.id
     const url = appConfig.CLIENT_DOMAIN
     if(type === 'timeline') {
-      wx.onMenuShareTimeline({
-        title: title,
-        link: url,
-        imgUrl: playerInfo.album[0],
-        success: function () {
-          Toast.success("分享成功")
-        },
-        cancel: function () {
-          Toast.fail('取消分享')
-        }
+      wx.ready(function () {
+        wx.onMenuShareTimeline({
+          title: title,
+          link: url,
+          imgUrl: playerInfo.album[0],
+          success: function () {
+            Toast.success("分享成功")
+          },
+          cancel: function () {
+            Toast.fail('取消分享')
+          }
+        })
       })
     } else if(type === 'appMessage') {
-      wx.onMenuShareAppMessage({
-        title: title,
-        link: url,
-        imgUrl: playerInfo.album[0],
-        desc: '',
-        success: function () {
-          Toast.success("分享成功")
-        },
-        cancel: function () {
-          Toast.fail('取消分享')
-        }
+      wx.ready(function () {
+        wx.onMenuShareAppMessage({
+          title: title,
+          link: url,
+          imgUrl: playerInfo.album[0],
+          desc: '',
+          success: function () {
+            Toast.success("分享成功")
+          },
+          cancel: function () {
+            Toast.fail('取消分享')
+          }
+        })
       })
     } else {
       Toast.fail("无效到分享类型")
