@@ -70,9 +70,18 @@ class UserInfo extends UserInfoRecord {
   static fromLeancloudApi(lcObj) {
     let info = new UserInfoRecord()
     info = info.withMutations((record) => {
-      for(let key in lcObj) {
-        record.set(key, lcObj[key])
-      }
+      record.set('id', lcObj.id)
+      record.set('createdAt', lcObj.createdAt)
+      record.set('updatedAt', lcObj.updatedAt)
+      record.set('nickname', lcObj.nickname)
+      record.set('username', lcObj.username)
+      record.set('avatar', lcObj.avatar)
+      record.set('gender', lcObj.gender)
+      record.set('province', lcObj.province)
+      record.set('city', lcObj.city)
+      record.set('agentLevel', lcObj.agentLevel)
+      record.set('inviterId', lcObj.inviterId)
+      record.set('friendsNum', lcObj.friendsNum)
     })
     return info
   }
