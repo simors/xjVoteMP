@@ -419,10 +419,10 @@ function* fetchPlayerRecvGifts(action) {
       yield put(voteActions.batchSavePlayerInfoAction({players: playerSet}))
     }
 
-    yield put(updatePlayerGiftListAction({giftMaps: giftMaps, playerId: apiPayload.playerId}))
+    yield put(updatePlayerGiftListAction({giftMaps: giftMaps, playerId: apiPayload.playerId, lastTime: apiPayload.lastTime}))
 
     if(payload.success) {
-      payload.success()
+      payload.success(giftMaps.length)
     }
   } catch (error) {
     console.error(error)
@@ -538,8 +538,14 @@ function handleUpdateVoteGiftList(state, action) {
 function handleUpdatePlayerGiftList(state, action) {
   let playerId = action.payload.playerId
   let giftMaps = action.payload.giftMaps
+  let lastTime = action.payload.lastTime
 
   let giftList = List()
+
+  if(lastTime) {
+    giftList = state.getIn(['playerGiftList', playerId])
+  }
+
   giftMaps.forEach((giftMapInfo) => {
     let giftMapRecord = GiftMap.fromJson(giftMapInfo)
     state = state.setIn(['giftMap', giftMapInfo.id], giftMapRecord)

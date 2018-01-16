@@ -136,10 +136,12 @@ class Player extends React.PureComponent {
 
   onLoadMoreRecvGifts = () => {
     let that = this
-    const {fetchPlayerRecvGiftsAction, playerId} = this.props
+    const {fetchPlayerRecvGiftsAction, playerId, playerGiftList} = this.props
+    const lastTime = playerGiftList[playerGiftList.length - 1].createdAt
     fetchPlayerRecvGiftsAction({
       playerId: playerId,
       limit: 10,
+      lastTime: lastTime,
       success: (total) => {
         if(total === 0) {
           that.setState({hasMore: false})
@@ -153,7 +155,7 @@ class Player extends React.PureComponent {
     if(hasMore) {
       return(
         <div className={styles.loadmoreBtn}>
-          <Button type="ghost" size="small" onClick={this.onLoadMoreRecvGifts()}>加载更多</Button>
+          <Button type="ghost" size="small" onClick={this.onLoadMoreRecvGifts}>加载更多</Button>
         </div>
       )
     }
