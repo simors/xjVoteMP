@@ -1,8 +1,8 @@
 .container {
-
-  .item {
+  .recordItem {
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     display: flex;
+    flex-direction: row;
     align-items: center;
     justify-content: space-between;
     height: 70px;
@@ -21,6 +21,7 @@
       }
     }
   }
+
   .loadmoreBtn {
     display: flex;
     justify-content: center;

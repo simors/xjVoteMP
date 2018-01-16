@@ -1,13 +1,46 @@
 .container {
-
+  background-color: #fff;
 
   .withdrawView {
     margin: 10px 12px;
     padding: 10px 10px;
     display: flex;
     flex-direction: column;
+    align-items: baseline;
     justify-content: center;
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 5px;
+    .title {
+      font-size: 14px;
+      color: darkgrey;
+    }
+    .inputView {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px 10px;
+      .cny {
+        font-size: 30px;
+        color: darkgrey;
+        margin-right: 5px;
+      }
+      .input {
+        font-size: 30px;
+        width: 250px;
+        border: 0;
+        padding: 0;
+        margin: 0;
+        height: 100%;
+      }
+    }
+    .trip {
+      font-size: 12px;
+      color: red;
+    }
+  }
+
+  .btn {
+    margin-top: 50px;
+    margin-bottom: 30px;
   }
 }

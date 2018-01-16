@@ -2,7 +2,7 @@
  * Created by wanpeng on 2017/12/25.
  */
 import React from 'react'
-  import {connect} from 'react-redux'
+import {connect} from 'react-redux'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import {Button, ActivityIndicator, WhiteSpace, WingBlank} from 'antd-mobile'
 import {meActions, meSelector} from './redux'
@@ -36,7 +36,7 @@ class Wallet extends React.PureComponent {
         </div>
         <WhiteSpace />
         <WingBlank>
-          <Button type="primary" onClick={() => history.push('/withdraw')}>提现到微信</Button>
+          <Button style={{backgroundColor: '#1AAD19', color: '#fff'}} onClick={() => history.push('/withdraw')}>提现到微信</Button>
         </WingBlank>
         <DealRecord record={dealList} />
       </div>

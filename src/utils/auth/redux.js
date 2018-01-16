@@ -5,7 +5,7 @@ import {Map, List, Record} from 'immutable'
 import {createAction} from 'redux-actions'
 import {REHYDRATE} from 'redux-persist/constants'
 import { call, put, takeEvery, takeLatest } from 'redux-saga/effects'
-import * as datetime from '../datetime'
+import DateTime from '../datetime'
 import * as authCloud from './cloud'
 
 /****  Model  ****/
@@ -49,7 +49,7 @@ class UserInfo extends UserInfoRecord {
         let updatedAt = lcObj.updatedAt
         record.set('createdAt', createdAt.valueOf())
         record.set('updatedAt', updatedAt.valueOf())
-        record.set('lastLoginDuration', datetime.getConversationTime(updatedAt))
+        record.set('lastLoginDuration', DateTime.getConversationTime(updatedAt))
       }
       record.set('mobilePhoneNumber', attrs['mobilePhoneNumber'])
       record.set('avatar', attrs['avatar'])

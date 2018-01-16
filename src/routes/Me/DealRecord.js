@@ -3,7 +3,7 @@
  */
 import React from 'react'
 import {connect} from 'react-redux'
-import styles from './dealrecord.scss'
+import styles from './dealrecord.module.scss'
 import {meActions, meSelector} from './redux'
 import {Button} from 'antd-mobile'
 
@@ -42,9 +42,11 @@ class DealRecord extends React.PureComponent {
 
   onLoadMoreRecord = () => {
     let that = this
-    const {fetchDealRecordAction} = this.props
+    const {fetchDealRecordAction, dealList} = this.props
+    const lastTime = dealList[dealList.length - 1].createdAt
     fetchDealRecordAction({
       limit: 10,
+      lastTime: lastTime,
       success: (total) => {
         if(total === 0) {
           that.setState({hasMore: false})
@@ -74,8 +76,8 @@ class DealRecord extends React.PureComponent {
     }
   }
 
-  renderCost(dealType) {
-    switch (dealType) {
+  renderCost(value) {
+    switch (value.dealType) {
       case 1:
         return(<div className={styles.content} style={{fontSize: '18px', fontWeight: 'bold', color: 'green'}}>¥{value.cost}</div>)
       case 2:
@@ -101,14 +103,14 @@ class DealRecord extends React.PureComponent {
       <div className={styles.container}>
         {
           dealList.map((value, index) => (
-            <div className={styles.item} key={index}>
+            <div className={styles.recordItem} key={index}>
               <div className={styles.content}>
                 <div className={styles.time}>{value.dealTime}</div>
                 <div className={styles.title}>
                   {this.renderDealType(value.dealType)}
                 </div>
               </div>
-              {this.renderCost(value.dealType)}
+              {this.renderCost(value)}
             </div>
           ))
         }
