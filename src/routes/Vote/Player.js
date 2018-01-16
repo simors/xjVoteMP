@@ -4,7 +4,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
-import {TabBar, Button, WhiteSpace, WingBlank, Toast, ActionSheet, ListView} from 'antd-mobile'
+import {TabBar, Button, WhiteSpace, WingBlank, Toast, ActionSheet} from 'antd-mobile'
 import styles from './player.module.scss'
 import {voteSelector, voteActions} from './redux'
 import PlayerStat from '../../components/PlayerStat'
@@ -26,14 +26,21 @@ class Player extends React.PureComponent {
       selectedTab: 'detailTab',
       showGitfTrip: false,
       tripMsg: '',
+      hasMore: false,
     }
   }
 
   componentWillMount() {
+    let that = this
     const {playerId, fetchPlayerRecvGiftsAction, getJsApiConfig, entryURL} = this.props
     fetchPlayerRecvGiftsAction({
       playerId: playerId,
-      limit: 10
+      limit: 10,
+      success: (total) => {
+        if(total === 10) {
+          that.setState({hasMore: true})
+        }
+      },
     })
     const OS = getMobileOperatingSystem()
     let jssdkURL = window.location.href
@@ -41,9 +48,8 @@ class Player extends React.PureComponent {
       //微信JS-SDK Bug: SPA(单页应用)ios系统必须使用首次加载的url初始化jssdk
       jssdkURL = entryURL
     }
-    alert('jssdkURL' + jssdkURL)
     getJsApiConfig({
-      debug: __DEV__? true: true,
+      debug: __DEV__? true: false,
       jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage', 'scanQRCode'].toString(),
       url: jssdkURL.split('#')[0],
       success: this.getJsApiConfigSuccess,
@@ -128,19 +134,52 @@ class Player extends React.PureComponent {
       });
   }
 
-  // renderRecvGifts() {
-  //   const {playerGiftList} = this.props
-  //   return(
-  //     <div>
-  //       {
-  //         playerGiftList.map((value, index) => (
-  //           <div className={styles.recvItem} key={index}>
-  //           </div>
-  //         ))
-  //       }
-  //     </div>
-  //   )
-  // }
+  onLoadMoreRecvGifts = () => {
+    let that = this
+    const {fetchPlayerRecvGiftsAction, playerId} = this.props
+    fetchPlayerRecvGiftsAction({
+      playerId: playerId,
+      limit: 10,
+      success: (total) => {
+        if(total === 0) {
+          that.setState({hasMore: false})
+        }
+      },
+    })
+  }
+
+  renderLoadMoreBtn = () => {
+    const {hasMore} = this.state
+    if(hasMore) {
+      return(
+        <div className={styles.loadmoreBtn}>
+          <Button type="ghost" size="small" onClick={this.onLoadMoreRecvGifts()}>加载更多</Button>
+        </div>
+      )
+    }
+  }
+
+  renderRecvGifts() {
+    const {playerGiftList} = this.props
+    return(
+      <div>
+        {
+          playerGiftList.map((value, index) => (
+            <div className={styles.recvItem} key={index}>
+              <img className={styles.avatar} src={value.user.avatar} alt=""/>
+              <div className={styles.itemBody}>
+                <div>{value.user.nickname}送了{value.giftNum}个{value.gift.name}</div>
+                <div className={styles.createdAt}>{value.createdAt}</div>
+              </div>
+            </div>
+          ))
+        }
+        {
+          this.renderLoadMoreBtn()
+        }
+      </div>
+    )
+  }
 
   renderContent() {
     const {playerInfo} = this.props
@@ -162,6 +201,7 @@ class Player extends React.PureComponent {
         </div>
         <WhiteSpace />
         <PlayerStat number={playerInfo.number} voteNum={playerInfo.voteNum} giftNum={playerInfo.giftNum} pv={playerInfo.pv} />
+        {this.renderRecvGifts()}
         <WingBlank className={styles.share}>
           <Button type="primary" onClick={this.showShareActionSheet}>为TA拉票</Button>
         </WingBlank>
@@ -238,7 +278,6 @@ class Player extends React.PureComponent {
             }}
           >
           </Item>
-
           <Item
             title="礼物"
             key="gift"
@@ -248,7 +287,6 @@ class Player extends React.PureComponent {
             onPress={this.gotoPresent}
           >
           </Item>
-
         </TabBar>
         <GitfTrip visible={this.state.showGitfTrip}
                   message={this.state.tripMsg}

@@ -347,7 +347,7 @@ function* fetchVoteGifts(action) {
     let gifts = yield call(voteCloud.fetchGiftsByVote, {voteId: payload.voteId})
     yield put(updateVoteGiftListAction({gifts: gifts, voteId: payload.voteId}))
     if(payload.success) {
-      payload.success()
+      payload.success(gifts.length)
     }
   } catch (error) {
     console.error(error)
@@ -440,7 +440,7 @@ export const voteSaga = [
   takeLatest(JOIN_VOTE_APPLY, joinVoteApply),
   takeLatest(FETCH_VOTE_GITFS, fetchVoteGifts),
   takeLatest(CREATE_PAYMENT_REQUEST, createPayment),
-  takeLatest(UPDATE_PLAYER_GIFTS_LIST, fetchPlayerRecvGifts),
+  takeLatest(FETCH_PLAYER_RECV_GIFTS, fetchPlayerRecvGifts),
 ]
 
 /**** Reducer ****/
@@ -710,6 +710,8 @@ function selectPlayerRecvGiftList(state, playerId) {
   }
   playerGiftList.toArray().forEach((giftMapId) => {
     let giftMapInfo = selectGiftMap(state, giftMapId)
+    giftMapInfo && (giftMapInfo.user = authSelector.userInfoById(state, giftMapInfo.userId))
+    giftMapInfo && (giftMapInfo.gift = selectGift(state, giftMapInfo.giftId))
     giftMapListInfo.push(giftMapInfo)
   })
   return giftMapListInfo

@@ -143,7 +143,7 @@ function* fetchDealRecord(action) {
     yield put(updateDealListAction({isRefresh: payload.lastTime? false : true, deals: deals}))
 
     if(payload.success) {
-      payload.success()
+      payload.success(deals.length)
     }
   } catch (error) {
     console.error(error)

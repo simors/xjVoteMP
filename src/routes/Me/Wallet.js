@@ -2,11 +2,11 @@
  * Created by wanpeng on 2017/12/25.
  */
 import React from 'react'
-import {connect} from 'react-redux'
+  import {connect} from 'react-redux'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import {Button, ActivityIndicator, WhiteSpace, WingBlank} from 'antd-mobile'
 import {meActions, meSelector} from './redux'
-import DealRecord from '../../components/DealRecord'
+import DealRecord from './DealRecord'
 import styles from './wallet.module.scss'
 
 class Wallet extends React.PureComponent {

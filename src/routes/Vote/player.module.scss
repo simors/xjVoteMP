@@ -69,5 +69,29 @@
     display: flex;
     align-items: center;
     height: 80px;
+
+    .avatar {
+      width: 60px;
+      height: 60px;
+      overflow: hidden;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+
+    .itemBody {
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      font-size: 12px;
+      .createdAt {
+        color: grey;
+      }
+    }
+  }
+
+  .loadmoreBtn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
