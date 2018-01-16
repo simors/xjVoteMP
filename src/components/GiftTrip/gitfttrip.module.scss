@@ -6,8 +6,12 @@
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.7);
   z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   .trip {
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -44,12 +48,14 @@
       font-weight: bold;
       color: #F8635B;
     }
-  }
-  .closeView {
-    position: relative;
-    .img {
-      width: 28px;
-      display: block;
+    .closeView {
+      position: absolute;
+      top: -50px;
+      right: 0;
+      .img {
+        width: 28px;
+        display: block;
+      }
     }
   }
 }

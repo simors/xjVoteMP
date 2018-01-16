@@ -233,7 +233,7 @@ class Player extends React.PureComponent {
       setTimeout(function () {
         that.setState({
           showGitfTrip: true,
-          tripMsg: '今天的选票已经用完啦！尝试送个礼物吧！',
+          tripMsg: '今天的选票已经用完啦！分享给其他小伙伴来支持我吧！',
         })
       }, 2000)
     } else if(error.code === errno.ERROR_VOTE_WAS_DONE) {
@@ -245,6 +245,8 @@ class Player extends React.PureComponent {
     const {history, playerId, voteId} = this.props
     history.push('/present/' + voteId + '/' + playerId)
   }
+
+
 
   render() {
     const {playerId, voteForPlayerAction} = this.props
@@ -293,7 +295,7 @@ class Player extends React.PureComponent {
         <GitfTrip visible={this.state.showGitfTrip}
                   message={this.state.tripMsg}
                   onClose={this.onCloseGitfTrip}
-                  gotoPresent={this.gotoPresent}
+                  onShare={this.showShareActionSheet}
         />
       </div>
 

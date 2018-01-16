@@ -76,7 +76,7 @@ class Present extends React.PureComponent {
   }
 
   createPaymentRequestError = (error) => {
-    this.setState({payDisabled: false})
+    this.setState({payDisabled: true})
     Toast.fail("创建支付请求失败")
   }
 

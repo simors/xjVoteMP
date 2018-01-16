@@ -10,7 +10,7 @@ export default class GitfTrip extends React.PureComponent {
   }
 
   render() {
-    const {visible, message, onClose, gotoPresent} = this.props
+    const {visible, message, onClose, onShare} = this.props
     if(!visible) {
       return(null)
     }
@@ -18,13 +18,15 @@ export default class GitfTrip extends React.PureComponent {
       <div className={styles.modalStyle}>
         <div className={styles.trip}>
           <div className={styles.message}>{message}</div>
-          <div className={styles.tripMsg}>给选手送礼物可以增加票数噢！</div>
-          <div className={styles.presentView} onClick={() => gotoPresent()} >送礼物</div>
+          <div className={styles.tripMsg}>一次可以转发9个群哦！</div>
+          <div className={styles.presentView} onClick={() => {onClose();onShare()}} >为我拉票</div>
+          <div className={styles.closeView} onClick={() => onClose()}>
+            <img className={styles.img} src={require('../../asset/images/close.png')} alt=""/>
+          </div>
+          <div>
+            <img style={{width: '100%', position: 'absolute', top: 0, left: 0}} src={require('../../asset/images/popup_help.png')} alt=""/>
+          </div>
         </div>
-        <div className={styles.closeView} onClick={() => onClose()}>
-          <img className={styles.img} src={require('../../asset/images/close.png')} alt=""/>
-        </div>
-
       </div>
     )
   }
