@@ -63,7 +63,7 @@ class Present extends React.PureComponent {
     let that = this
     const {history} = this.props
     pingpp.createPayment(charge, function (result, err) {
-      that.setState({payDisabled: true})
+      that.setState({payDisabled: false})
       if (result == "success") {
         Toast.success("支付成功", 1)
         history.goBack()
@@ -76,7 +76,7 @@ class Present extends React.PureComponent {
   }
 
   createPaymentRequestError = (error) => {
-    this.setState({payDisabled: true})
+    this.setState({payDisabled: false})
     Toast.fail("创建支付请求失败")
   }
 

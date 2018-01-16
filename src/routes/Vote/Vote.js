@@ -10,7 +10,7 @@ import VoteDetail from './VoteDetail'
 import Apply from './Apply'
 import Award from './Award'
 import Range from './Range'
-import {voteSelector} from './redux'
+import {voteSelector, VOTE_STATUS} from './redux'
 
 const Item = TabBar.Item
 
@@ -24,6 +24,30 @@ class Vote extends React.PureComponent {
 
   onSwitchTab = (tab) => {
     this.setState({selectedTab: tab})
+  }
+
+  renderApplyTab() {
+    const {voteId, voteInfo} = this.props
+    if(voteInfo.status === VOTE_STATUS.STARTING || voteInfo.status === VOTE_STATUS.DONE || voteInfo.status === VOTE_STATUS.ACCOUNTED) {
+      return(null)
+    }
+    return(
+      <Item
+        title="报名"
+        key="apply"
+        icon={<div className={styles.applyIcon} />}
+        selectedIcon={<div className={styles.applyIconFill}/>}
+        selected={this.state.selectedTab === 'applyTab'}
+        onPress={() => {
+          this.setState({
+            selectedTab: 'applyTab',
+          })
+          document.title = "我要报名"
+        }}
+      >
+        <Apply voteId={voteId} onSwitchTab={this.onSwitchTab} />
+      </Item>
+    )
   }
 
   render() {
@@ -46,21 +70,7 @@ class Vote extends React.PureComponent {
           >
             <VoteDetail voteId={voteId} onSwitchTab={this.onSwitchTab} history={history} />
           </Item>
-          <Item
-            title="报名"
-            key="apply"
-            icon={<div className={styles.applyIcon} />}
-            selectedIcon={<div className={styles.applyIconFill}/>}
-            selected={this.state.selectedTab === 'applyTab'}
-            onPress={() => {
-              this.setState({
-                selectedTab: 'applyTab',
-              })
-              document.title = "我要报名"
-            }}
-          >
-            <Apply voteId={voteId} onSwitchTab={this.onSwitchTab} />
-          </Item>
+          {this.renderApplyTab()}
           <Item
             title="奖品"
             key="prize"
@@ -102,6 +112,7 @@ const mapStateToProps = (state, ownProps) => {
   const {voteId} = match.params
   return {
     voteId,
+    voteInfo: voteSelector.selectVote(state, voteId)
   }
 }
 

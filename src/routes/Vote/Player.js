@@ -204,9 +204,7 @@ class Player extends React.PureComponent {
         <WhiteSpace />
         <PlayerStat number={playerInfo.number} voteNum={playerInfo.voteNum} giftNum={playerInfo.giftNum} pv={playerInfo.pv} />
         {this.renderRecvGifts()}
-        <WingBlank className={styles.share}>
-          <Button type="primary" onClick={this.showShareActionSheet}>为TA拉票</Button>
-        </WingBlank>
+        <div style={{width: '100%', height: '50px'}}></div>
       </div>
     )
   }
