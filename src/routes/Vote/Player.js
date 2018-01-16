@@ -165,13 +165,13 @@ class Player extends React.PureComponent {
       <div>
         {
           playerGiftList.map((value, index) => (
-            <div className={styles.recvItem} key={index}>
+            <WingBlank className={styles.recvItem} key={index}>
               <img className={styles.avatar} src={value.user.avatar} alt=""/>
               <div className={styles.itemBody}>
                 <div>{value.user.nickname}送了{value.giftNum}个{value.gift.name}</div>
                 <div className={styles.createdAt}>{value.createdAt}</div>
               </div>
-            </div>
+            </WingBlank>
           ))
         }
         {

@@ -80,7 +80,6 @@ class UserInfo extends UserInfoRecord {
       record.set('province', lcObj.province)
       record.set('city', lcObj.city)
       record.set('agentLevel', lcObj.agentLevel)
-      record.set('inviterId', lcObj.inviterId)
       record.set('friendsNum', lcObj.friendsNum)
     })
     return info
