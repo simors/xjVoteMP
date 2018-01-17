@@ -179,6 +179,7 @@ const VoteState = Record({
   voteGiftList: Map(),    // 投票礼品列表：键-voteId, 值-giftId
   giftMap: Map(),         // 参赛者礼品信息
   playerGiftList: Map(),  // 参赛者接收礼品列表：键-playerId, 值-giftMapId
+  ownerVoteList: List(),  // 用户自己的投票列表
 }, 'VoteState')
 
 /**** Constant ****/
@@ -200,6 +201,7 @@ const CREATE_PAYMENT_REQUEST = 'CREATE_PAYMENT_REQUEST'
 const FETCH_PLAYER_RECV_GIFTS = 'FETCH_PLAYER_RECV_GIFTS'
 const UPDATE_PLAYER_GIFTS_LIST = 'UPDATE_PLAYER_GIFTS_LIST'
 const BATCH_SAVE_GIFT = 'BATCH_SAVE_GIFT'
+const UPDATE_OWNER_VOTE_LIST = 'UPDATE_OWNER_VOTE_LIST'
 
 export const VOTE_STATUS = {
   EDITING:    1,        // 正在编辑
@@ -235,6 +237,8 @@ const updateVotePlayerListAction = createAction(UPDATE_VOTE_PLAYER_LIST)
 const updateVoteRankListAction = createAction(UPDATE_VOTE_RANK_LIST)
 const updateVoteGiftListAction = createAction(UPDATE_VOTE_GIFT_LIST)
 const updatePlayerGiftListAction = createAction(UPDATE_PLAYER_GIFTS_LIST)
+const updateOwnerVoteListAction = createAction(UPDATE_OWNER_VOTE_LIST)
+
 
 /**** Saga ****/
 function* fetchVotes(action) {
@@ -249,7 +253,11 @@ function* fetchVotes(action) {
 
   try {
     let votes = yield call(voteCloud.fetchVotesApi, apiPayload)
-    yield put(updateVoteListAction({votes: votes, isRefresh: apiPayload.lastTime? false : true}))
+    if(apiPayload.searchType === VOTE_SEARCH_TYPE.PERSONAL) {
+      yield put(updateOwnerVoteListAction({votes: votes, isRefresh: apiPayload.lastTime? false : true}))
+    } else {
+      yield put(updateVoteListAction({votes: votes, isRefresh: apiPayload.lastTime? false : true}))
+    }
     if(payload.success) {
       payload.success()
     }
@@ -468,6 +476,8 @@ export function voteReducer(state = initialState, action) {
       return handleUpdatePlayerGiftList(state, action)
     case BATCH_SAVE_GIFT:
       return handleBatchSaveGift(state, action)
+    case UPDATE_OWNER_VOTE_LIST:
+      return handleUpdateOwnerVoteList(state, action)
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
@@ -488,6 +498,23 @@ function handleUpdateVoteList(state, action) {
     voteList = voteList.push(vote.id)
   })
   state = state.set('voteList', voteList)
+  return state
+}
+
+function handleUpdateOwnerVoteList(state, action) {
+  let votes = action.payload.votes
+  let isRefresh = action.payload.isRefresh
+
+  let voteList = List()
+  if(!isRefresh) {
+    voteList = state.get('ownerVoteList')
+  }
+  votes.forEach((vote) => {
+    let voteRecord = Vote.fromJson(vote)
+    state = state.setIn(['allVotes', vote.id], voteRecord)
+    voteList = voteList.push(vote.id)
+  })
+  state = state.set('ownerVoteList', voteList)
   return state
 }
 
@@ -633,6 +660,16 @@ function selectVoteList(state) {
   return voteInfoList
 }
 
+function selectOwnerVoteList(state) {
+  let voteList = state.VOTE.get('ownerVoteList')
+  let voteInfoList = []
+  voteList.toArray().forEach((voteId) => {
+    let voteInfo = selectVote(state, voteId)
+    voteInfoList.push(voteInfo)
+  })
+  return voteInfoList
+}
+
 function selectPlayer(state, playerId) {
   if(!playerId) {
     return undefined
@@ -732,6 +769,7 @@ export const voteSelector = {
   selectGift,
   selectVoteGiftList,
   selectPlayerRecvGiftList,
+  selectOwnerVoteList,
 }
 
 
