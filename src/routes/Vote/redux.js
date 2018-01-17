@@ -204,6 +204,7 @@ const FETCH_PLAYER_RECV_GIFTS = 'FETCH_PLAYER_RECV_GIFTS'
 const UPDATE_PLAYER_GIFTS_LIST = 'UPDATE_PLAYER_GIFTS_LIST'
 const BATCH_SAVE_GIFT = 'BATCH_SAVE_GIFT'
 const UPDATE_OWNER_VOTE_LIST = 'UPDATE_OWNER_VOTE_LIST'
+const SEARCH_VOTE_PLAYER = 'SEARCH_VOTE_PLAYER'
 
 export const VOTE_STATUS = {
   EDITING:    1,        // 正在编辑
@@ -233,6 +234,7 @@ export const voteActions = {
   fetchPlayerRecvGiftsAction: createAction(FETCH_PLAYER_RECV_GIFTS),
   batchSaveVoteAction: createAction(BATCH_SAVE_VOTE),
   batchSaveGiftAction: createAction(BATCH_SAVE_GIFT),
+  searchVotePlayerAction: createAction(SEARCH_VOTE_PLAYER),
 }
 const updateVoteListAction = createAction(UPDATE_VOTE_LIST)
 const updateVotePlayerListAction = createAction(UPDATE_VOTE_PLAYER_LIST)
@@ -442,6 +444,27 @@ function* fetchPlayerRecvGifts(action) {
   }
 }
 
+function* searchVotePlayer(action) {
+  let payload = action.payload
+
+  let apiPayload = {
+    voteId: payload.voteId,
+    searchKey: payload.searchKey
+  }
+  try {
+    let players = yield call(voteCloud.searchPlayer, apiPayload)
+
+    if(payload.success) {
+      payload.success(players)
+    }
+  } catch (error) {
+    console.error(error)
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
+}
+
 export const voteSaga = [
   takeLatest(FETCH_VOTES, fetchVotes),
   takeLatest(FETCH_VOTE_PLAYERS, fetchVotePlayers),
@@ -451,6 +474,7 @@ export const voteSaga = [
   takeLatest(FETCH_VOTE_GITFS, fetchVoteGifts),
   takeLatest(CREATE_PAYMENT_REQUEST, createPayment),
   takeLatest(FETCH_PLAYER_RECV_GIFTS, fetchPlayerRecvGifts),
+  takeLatest(SEARCH_VOTE_PLAYER, searchVotePlayer)
 ]
 
 /**** Reducer ****/

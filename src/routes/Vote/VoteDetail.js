@@ -5,7 +5,7 @@ import React from 'react'
 import {connect} from 'react-redux'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import Countdown from '../../components/Countdown'
-import {voteSelector} from './redux'
+import {voteSelector, VOTE_STATUS} from './redux'
 import {NoticeBar, WhiteSpace, WingBlank, SearchBar, Button} from 'antd-mobile'
 import styles from './votedetail.module.scss'
 import VoteStat from '../../components/VoteStat'
@@ -20,7 +20,7 @@ class VoteDetail extends React.PureComponent {
 
   renderApplyBtn() {
     const {voteInfo, onSwitchTab} = this.props
-    if(voteInfo.status) {
+    if(voteInfo.status === VOTE_STATUS.STARTING) {
       return (
         <WingBlank>
           <Button type="primary" onClick={() => onSwitchTab('applyTab')}>我要报名</Button>
@@ -31,8 +31,9 @@ class VoteDetail extends React.PureComponent {
     }
   }
 
-  onSearch = () => {
-
+  onSearch = (searchKey) => {
+    const {history, voteId} = this.props
+    history.push('/searchPlayer/' + voteId + "/" + searchKey)
   }
 
   render() {
@@ -78,6 +79,7 @@ class VoteDetail extends React.PureComponent {
 const mapStateToProps = (state, ownProps) => {
   const voteId = ownProps.voteId
   return {
+    voteId,
     voteInfo: voteSelector.selectVote(state, voteId)
   }
 }

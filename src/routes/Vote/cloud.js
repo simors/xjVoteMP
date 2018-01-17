@@ -35,3 +35,7 @@ export async function createPaymentRequest(payload) {
 export async function fetchPlayerRecvGifts(payload) {
   return await AV.Cloud.run('voteListPlayerGifts', payload)
 }
+
+export async function searchPlayer(payload) {
+  return await AV.Cloud.run('voteSearchPlayer', payload)
+}
