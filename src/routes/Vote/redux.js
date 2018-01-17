@@ -19,6 +19,7 @@ const VoteRecord =  Record({
   profit: undefined,
   startDate: undefined,
   cover: undefined,
+  coverSet: undefined,
   expire: undefined,
   title: undefined,
   gifts: undefined,
@@ -46,6 +47,7 @@ class Vote extends VoteRecord {
         record.set('profit', lcObj.profit)
         record.set('startDate', lcObj.startDate)
         record.set('cover', lcObj.cover)
+        record.set('coverSet', lcObj.coverSet)
         record.set('expire', lcObj.expire)
         record.set('title', lcObj.title)
         record.set('gifts', lcObj.gifts)
