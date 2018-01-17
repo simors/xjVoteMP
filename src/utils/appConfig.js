@@ -23,7 +23,7 @@ const WECHAT_OAUTH_DOMAIN_PRO = "http://vote.xiaojee.cn/auth/1/wechat/oauth"
 var CLIENT_DOMAIN = ''
 const CLIENT_DOMAIN_DEV = 'http://www.hudong.frp.lvyii.com'
 const CLIENT_DOMAIN_STAGE = ''
-const CLIENT_DOMAIN_PRO = 'http://vote.xiaojee.cn'
+const CLIENT_DOMAIN_PRO = 'http://admin.xiaojee.cn:6400'
 
 //LeanCloud环境参数
 var LC_APP_ID = ""
