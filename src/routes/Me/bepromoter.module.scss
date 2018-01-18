@@ -1,0 +1,28 @@
+.container {
+  .imageView {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .img {
+      margin: 10px 0;
+      width: 240px;
+    }
+  }
+
+  .tripView {
+    padding: 10px 12px;
+    font-size: 14px;
+    color: red;
+  }
+
+  .mpView {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+    .img {
+      width: 240px;
+      height: 240px;
+      text-align: center;
+    }
+  }
+}

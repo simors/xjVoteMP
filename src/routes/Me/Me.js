@@ -14,6 +14,26 @@ class Me extends React.PureComponent {
     super(props)
   }
 
+  renderProxyItem() {
+    const {activeUser, history} = this.props
+    if(activeUser.agentLevel === 1) {
+      return(
+        <Item thumb={require('../../asset/images/promotion.png')} arrow="horizontal"
+              onClick={() => {history.push('/bePromoter')}}>
+          我要代理
+        </Item>
+      )
+    } else {
+      return(
+        <Item thumb={require('../../asset/images/invite.png')} arrow="horizontal"
+              onClick={() => {history.push('/bePromoter')}}>
+          邀请代理
+        </Item>
+
+      )
+    }
+  }
+
   render() {
     const {activeUser, history} = this.props
     return (
@@ -32,10 +52,7 @@ class Me extends React.PureComponent {
                 onClick={() => {history.push('/wallet')}}>
             我的钱包
           </Item>
-          <Item thumb={require('../../asset/images/promotion.png')} arrow="horizontal"
-                onClick={() => {history.push('/bePromoter')}}>
-            我要代理
-          </Item>
+          {this.renderProxyItem()}
         </List>
         <WhiteSpace size="xl" />
         <WingBlank>

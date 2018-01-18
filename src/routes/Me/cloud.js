@@ -18,3 +18,7 @@ export async function reqWithdrawApply(payload) {
 export async function getLastWithdrawApply(payload) {
   return await AV.Cloud.run('payFetchUserLastWithdrawApply', {})
 }
+
+export async function fetchAgentPrice(payload) {
+  return await AV.Cloud.run('payGetAgentPrice', {})
+}

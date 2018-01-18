@@ -84,6 +84,7 @@ const FETCH_DEAL_RECORD = 'FETCH_DEAL_RECORD'
 const UPDATE_DEAL_LIST = 'UPDATE_DEAL_LIST'
 const REQUEST_WITHDRAW_APPLY = 'REQUEST_WITHDRAW_APPLY'
 const FETCH_LAST_WITHDRAW_APPLY = 'FETCH_LAST_WITHDRAW_APPLY'
+const FETCH_AGENT_PRICE = 'FETCH_AGENT_PRICE'
 
 export const DEAL_TYPE = {
   VOTE_PAY: 1,      // 活动支付
@@ -115,6 +116,7 @@ export const meActions = {
   fetchDealRecordAction: createAction(FETCH_DEAL_RECORD),
   requestWithdrawApplyAction: createAction(REQUEST_WITHDRAW_APPLY),
   fetchLastWithdrawApplyAction: createAction(FETCH_LAST_WITHDRAW_APPLY),
+  fetchAgentPriceAction: createAction(FETCH_AGENT_PRICE),
 }
 const saveWalletInfoAction = createAction(SAVE_WALLET_INFO)
 const updateDealListAction = createAction(UPDATE_DEAL_LIST)
@@ -193,11 +195,28 @@ function* fetchLastWithdrawApply(action) {
   }
 }
 
+function* fetchAgentPrice(action) {
+  let payload = action.payload
+
+  try {
+    let price = yield call(meCloud.fetchAgentPrice, {})
+    if(payload.success) {
+      payload.success(price)
+    }
+  } catch (error) {
+    console.error(error)
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
+}
+
 export const meSaga = [
   takeLatest(FETCH_WALLET_INFO, fetchWalletInfo),
   takeLatest(FETCH_DEAL_RECORD, fetchDealRecord),
   takeLatest(REQUEST_WITHDRAW_APPLY, requestWithdrawApply),
-  takeLatest(FETCH_LAST_WITHDRAW_APPLY, fetchLastWithdrawApply)
+  takeLatest(FETCH_LAST_WITHDRAW_APPLY, fetchLastWithdrawApply),
+  takeLatest(FETCH_AGENT_PRICE, fetchAgentPrice)
 ]
 
 
