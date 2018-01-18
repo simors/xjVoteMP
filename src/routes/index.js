@@ -6,7 +6,7 @@ import NoMatch from './NoMatch'
 import LoadingPage from './Loading'
 import AuthRoute from './AuthRoute'
 import ErrorPage from './Error'
-import {Wallet, MyVote, BePromoter, Withdraw} from './Me'
+import {Wallet, MyVote, BePromoter, Withdraw, Invite} from './Me'
 import {Vote, Player, Present, SearchPlayer} from './Vote'
 import Publish, {Organizer, Award, Gifts} from './Publish'
 
@@ -18,6 +18,7 @@ const rootRoutes = (
     <AuthRoute path="/myVote" component={MyVote}/>
     <AuthRoute path="/withdraw" component={Withdraw}/>
     <AuthRoute path="/bePromoter" component={BePromoter}/>
+    <AuthRoute path="/invite" component={Invite}/>
     <AuthRoute path="/present" component={Present}/>
     <AuthRoute path="/player/:voteId/:playerId" component={Player}/>
     <AuthRoute path="/vote/:voteId" component={Vote}/>

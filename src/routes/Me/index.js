@@ -7,6 +7,7 @@ import Wallet from './Wallet'
 import MyVote from './MyVote'
 import BePromoter from './BePromoter'
 import Withdraw from './Withdraw'
+import Invite from './Invite'
 
 
 /* export saga */
@@ -25,6 +26,6 @@ export const DEAL_TYPE = redux.DEAL_TYPE
 
 export default Me
 
-export {Wallet, MyVote, BePromoter, Withdraw}
+export {Wallet, MyVote, BePromoter, Withdraw, Invite}
 
 

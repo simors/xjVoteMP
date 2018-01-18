@@ -26,7 +26,7 @@ class Me extends React.PureComponent {
     } else {
       return(
         <Item thumb={require('../../asset/images/invite.png')} arrow="horizontal"
-              onClick={() => {history.push('/bePromoter')}}>
+              onClick={() => {history.push('/invite')}}>
           邀请代理
         </Item>
 
