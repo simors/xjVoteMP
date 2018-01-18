@@ -30,6 +30,23 @@ class VoteDetail extends React.PureComponent {
     }
   }
 
+  renderSearchBar() {
+    const {voteInfo} = this.props
+    console.log("voteInfo", voteInfo)
+    if(voteInfo.applyNum === 0) {
+      return(null)
+    }
+    return(
+      <WingBlank>
+        <SearchBar
+          placeholder="选手编号或姓名"
+          onSubmit={this.onSearch}
+          maxLength={10}
+        />
+      </WingBlank>
+    )
+  }
+
   onSearch = (searchKey) => {
     const {history, voteId} = this.props
     history.push('/searchPlayer/' + voteId + "/" + searchKey)
@@ -50,14 +67,7 @@ class VoteDetail extends React.PureComponent {
         <VoteStat applyNum={voteInfo.applyNum} voteNum={voteInfo.voteNum} pv={voteInfo.pv} />
         <Countdown counter={voteInfo.counter} />
         <WhiteSpace />
-        <WingBlank>
-          <SearchBar
-            placeholder="选手编号或姓名"
-            onSubmit={this.onSearch}
-            maxLength={10}
-          />
-        </WingBlank>
-        <WhiteSpace />
+        {this.renderSearchBar()}
         {this.renderApplyBtn()}
         <WhiteSpace />
         <VotePlayers voteId={voteInfo.id} history={history} />
