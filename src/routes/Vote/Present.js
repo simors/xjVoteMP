@@ -63,6 +63,7 @@ class Present extends React.PureComponent {
     let that = this
     const {history} = this.props
     pingpp.createPayment(charge, function (result, err) {
+      alert(err)
       that.setState({payDisabled: false})
       if (result == "success") {
         Toast.success("支付成功", 1)
