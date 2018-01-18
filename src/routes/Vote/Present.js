@@ -163,8 +163,8 @@ class Present extends React.PureComponent {
 
 
 const mapStateToProps = (state, ownProps) => {
-  const {match} = ownProps
-  const {playerId, voteId} = match.params
+  const {location} = ownProps
+  const {playerId, voteId} = location.query
   let playerInfo = voteSelector.selectPlayer(state, playerId)
   let giftList = voteSelector.selectVoteGiftList(state, voteId)
   return {

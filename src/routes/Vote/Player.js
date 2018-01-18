@@ -241,7 +241,13 @@ class Player extends React.PureComponent {
 
   gotoPresent = () => {
     const {history, playerId, voteId} = this.props
-    history.push('/present/' + voteId + '/' + playerId)
+    history.push({
+      pathname: '/present',
+      query: {
+        voteId: voteId,
+        playerId: playerId
+      }
+    })
   }
 
 
