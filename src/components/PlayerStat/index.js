@@ -15,7 +15,7 @@ export default class PlayerStat extends React.PureComponent {
       <div className={styles.container}>
         <div className={styles.item}>
           <div className={styles.trip}>
-            <img className={styles.img} src={require('../../asset/images/mine.png')} alt=""/>
+            <img className={styles.img} src={require('../../asset/images/user.png')} alt=""/>
             <div className={styles.text}>编号</div>
           </div>
           <div className={styles.num}>{number}</div>

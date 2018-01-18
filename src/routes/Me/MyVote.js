@@ -18,7 +18,7 @@ class MyVote extends React.PureComponent {
     this.state = {
       dataSource,
       hasMore: true,
-      isLoading: true,
+      isLoading: false,
       refreshing: false,
     }
   }

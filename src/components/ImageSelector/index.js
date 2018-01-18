@@ -29,7 +29,7 @@ class ImageSelector extends React.Component {
       jssdkURL = entryURL
     }
     getJsApiConfig({
-      debug: __DEV__? true: true,
+      debug: __DEV__? true: false,
       jsApiList: ['chooseImage', 'previewImage', 'getLocalImgData', 'uploadImage'].toString(),
       url: jssdkURL,
       success: this.getJsApiConfigSuccess,
