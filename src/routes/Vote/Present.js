@@ -38,6 +38,7 @@ class Present extends React.PureComponent {
     const openid = currentUser.authData.weixin.openid
     if(!checkedGift) {
       Toast.fail("请选择礼品")
+      this.setState({payDisabled: false})
       return
     }
     createPaymentRequestAction({
@@ -63,7 +64,6 @@ class Present extends React.PureComponent {
     let that = this
     const {history} = this.props
     pingpp.createPayment(charge, function (result, err) {
-      alert(err)
       that.setState({payDisabled: false})
       if (result == "success") {
         Toast.success("支付成功", 1)

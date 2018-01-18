@@ -15,28 +15,28 @@ export default class PlayerStat extends React.PureComponent {
       <div className={styles.container}>
         <div className={styles.item}>
           <div className={styles.trip}>
-            <img className={styles.img} src={require('../../asset/images/hot.png')} alt=""/>
+            <img className={styles.img} src={require('../../asset/images/mine.png')} alt=""/>
             <div className={styles.text}>编号</div>
           </div>
           <div className={styles.num}>{number}</div>
         </div>
         <div className={styles.item}>
           <div className={styles.trip}>
-            <img className={styles.img} src={require('../../asset/images/hot.png')} alt=""/>
+            <img className={styles.img} src={require('../../asset/images/flag.png')} alt=""/>
             <div className={styles.text}>票数</div>
           </div>
           <div className={styles.num}>{voteNum}</div>
         </div>
         <div className={styles.item}>
           <div className={styles.trip}>
-            <img className={styles.img} src={require('../../asset/images/hot.png')} alt=""/>
+            <img className={styles.img} src={require('../../asset/images/gift.png')} alt=""/>
             <div className={styles.text}>礼物</div>
           </div>
           <div className={styles.num}>{giftNum}</div>
         </div>
         <div className={styles.item}>
           <div className={styles.trip}>
-            <img className={styles.img} src={require('../../asset/images/hot.png')} alt=""/>
+            <img className={styles.img} src={require('../../asset/images/hot_gray.png')} alt=""/>
             <div className={styles.text}>热度</div>
           </div>
           <div className={styles.num}>{pv}</div>

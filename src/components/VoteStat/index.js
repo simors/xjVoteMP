@@ -16,21 +16,21 @@ export default class VoteStat extends React.PureComponent {
       <div className={styles.container}>
         <div className={styles.item}>
           <div className={styles.trip}>
-            <img className={styles.img} src={require('../../asset/images/hot.png')} alt=""/>
+            <img className={styles.img} src={require('../../asset/images/flag.png')} alt=""/>
             <div className={styles.text}>选手</div>
           </div>
           <div className={styles.num}>{applyNum}</div>
         </div>
         <div className={styles.item}>
           <div className={styles.trip}>
-            <img className={styles.img} src={require('../../asset/images/hot.png')} alt=""/>
+            <img className={styles.img} src={require('../../asset/images/flower.png')} alt=""/>
             <div className={styles.text}>累计投票</div>
           </div>
           <div className={styles.num}>{voteNum}</div>
         </div>
         <div className={styles.item} style={{borderRight: '0px'}}>
           <div className={styles.trip}>
-            <img className={styles.img} src={require('../../asset/images/hot.png')} alt=""/>
+            <img className={styles.img} src={require('../../asset/images/hot_gray.png')} alt=""/>
             <div className={styles.text}>热度</div>
           </div>
           <div className={styles.num}>{pv}</div>
