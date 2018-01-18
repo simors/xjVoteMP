@@ -9,7 +9,6 @@ import {voteSelector, VOTE_STATUS} from './redux'
 import {NoticeBar, WhiteSpace, WingBlank, SearchBar, Button} from 'antd-mobile'
 import styles from './votedetail.module.scss'
 import VoteStat from '../../components/VoteStat'
-import moment from 'moment'
 import VotePlayers from './VotePlayers'
 import OrganizerView from '../../components/OrganizerView'
 
@@ -38,7 +37,6 @@ class VoteDetail extends React.PureComponent {
 
   render() {
     const {voteInfo, history} = this.props
-    const endTime = moment(voteInfo.startDate, 'YYYY-MM-DD').add(voteInfo.expire, 'days').format('YYYY-MM-DD')
     return (
       <div className={styles.page}>
         <NoticeBar marqueeProps={{ loop: true, style: { padding: '0 7.5px' } }}>
@@ -50,7 +48,7 @@ class VoteDetail extends React.PureComponent {
         <div className={styles.title}>{voteInfo.title}</div>
         <WhiteSpace />
         <VoteStat applyNum={voteInfo.applyNum} voteNum={voteInfo.voteNum} pv={voteInfo.pv} />
-        <Countdown time={endTime} counter={voteInfo.counter} />
+        <Countdown counter={voteInfo.counter} />
         <WhiteSpace />
         <WingBlank>
           <SearchBar

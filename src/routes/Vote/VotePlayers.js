@@ -37,9 +37,9 @@ class VotePlayers extends React.PureComponent {
     }
     return (
       <div>
-        <WingBlank>
-          <Button type="primary" onClick={this.onLoadMore}>加载更多</Button>
-        </WingBlank>
+        <div className={styles.loadMore}>
+          <Button type="ghost" size="small" onClick={this.onLoadMore}>加载更多</Button>
+        </div>
       </div>
     )
   }

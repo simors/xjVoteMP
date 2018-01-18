@@ -7,7 +7,6 @@ import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import {Button, ActivityIndicator, List} from 'antd-mobile'
 import {voteActions, voteSelector} from './redux'
 import Countdown from '../../components/Countdown'
-import moment from 'moment'
 import styles from './range.module.scss'
 
 const Item = List.Item
@@ -35,7 +34,6 @@ class Range extends React.PureComponent {
 
   render() {
     const {voteRankInfoList, voteInfo, history, voteId} = this.props
-    const endTime = moment(voteInfo.startDate, 'YYYY-MM-DD').add(voteInfo.expire, 'days').format('YYYY-MM-DD')
     if(!voteRankInfoList) {
       return(
         <ActivityIndicator toast text="正在加载" />
@@ -43,7 +41,7 @@ class Range extends React.PureComponent {
     }
     return (
       <div className={styles.container}>
-        <Countdown time={endTime} counter={voteInfo.counter} />
+        <Countdown counter={voteInfo.counter} />
         <List>
           {
             voteRankInfoList.map((value, index) => (

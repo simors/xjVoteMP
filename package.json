@@ -26,7 +26,6 @@
     "history": "^4.7.2",
     "immutable": "^3.8.1",
     "leancloud-storage": "^3.4.2",
-    "moment": "^2.20.1",
     "object-assign": "^4.1.1",
     "pingpp-js": "^2.1.16",
     "promise": "^7.1.1",
