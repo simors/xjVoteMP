@@ -9,11 +9,13 @@ import ErrorPage from './Error'
 import {Wallet, MyVote, BePromoter, Withdraw, Invite} from './Me'
 import {Vote, Player, Present, SearchPlayer} from './Vote'
 import Publish, {Organizer, Award, Gifts} from './Publish'
+import TabBarDemo from '../components/TabBar/index'
 
 const rootRoutes = (
   <Switch>
     <Route path="/loading" component={LoadingPage}/>
     <Route path="/error" component={ErrorPage}/>
+    <Route path="/tabbar" component={TabBarDemo}/>
     <AuthRoute path="/wallet" component={Wallet}/>
     <AuthRoute path="/myVote" component={MyVote}/>
     <AuthRoute path="/withdraw" component={Withdraw}/>

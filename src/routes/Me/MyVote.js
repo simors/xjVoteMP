@@ -4,7 +4,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
-import {Button, ListView, PullToRefresh} from 'antd-mobile'
+import {Button, ListView, PullToRefresh, SwipeAction, Modal, Toast} from 'antd-mobile'
 import {voteSelector, voteActions, VOTE_SEARCH_TYPE} from '../Vote/index'
 import styles from './myvote.module.scss'
 
@@ -79,25 +79,6 @@ class MyVote extends React.PureComponent {
     })
   }
 
-  getStatus(status) {
-    switch (status) {
-      case 1:
-        return "正在编辑"
-      case 2:
-        return "待支付"
-      case 3:
-        return "未开始"
-      case 4:
-        return "正在进行"
-      case 5:
-        return "已结束"
-      case 6:
-        return "已结算"
-      default:
-        return "未知"
-    }
-  }
-
   renderStatus(status) {
     switch (status) {
       case 1:
@@ -117,6 +98,23 @@ class MyVote extends React.PureComponent {
     }
   }
 
+  onDeleteVote(vote) {
+    Toast.loading('请稍后', 0)
+    const {setVoteDisableAction, fetchVotesAction} = this.props
+    setVoteDisableAction({
+      voteId: vote.id,
+      disable: true,
+      success: () => {
+        fetchVotesAction({
+          searchType: VOTE_SEARCH_TYPE.PERSONAL,
+          orderedBy: 'createdAt',
+          limit: 10
+        })
+        Toast.hide()
+      }
+    })
+  }
+
   render() {
     const {dataSource} = this.state
     const {history} = this.props
@@ -125,26 +123,39 @@ class MyVote extends React.PureComponent {
 
       }
       return (
-        <div className={styles.item} key={rowID} style={itemStyle}>
-          <div className={styles.thumb}>
-            <img className={styles.img} src={rowData.cover || rowData.coverSet[0]} alt=""/>
+        <SwipeAction autoClose
+                     right={[
+                       {
+                         text: '删除',
+                         onPress: () => Modal.alert('删除', '确认删除「' + rowData.title + "」?", [
+                           { text: '取消', onPress: () =>{} },
+                           { text: '确认', onPress: () => this.onDeleteVote(rowData) },
+                         ]),
+                         style: { backgroundColor: '#F4333C', color: 'white' },
+                       },
+                     ]}
+        >
+          <div className={styles.item} key={rowID} style={itemStyle}>
+            <div className={styles.thumb}>
+              <img className={styles.img} src={rowData.cover || rowData.coverSet[0]} alt=""/>
+            </div>
+            <div className={styles.details}>
+              <div className={styles.detailRow}>
+                <div className={styles.title}>{rowData.title}</div>
+              </div>
+              <div className={styles.detailRow}>
+                <div className={styles.pv}>热度：{rowData.pv}</div>
+              </div>
+              <div className={styles.detailRow}>
+                <div className={styles.profit}>收益：¥ {rowData.profit}</div>
+              </div>
+              <div className={styles.detailRow}>
+                <div className={styles.date}>{rowData.createdAt.split(' ')[0]}</div>
+                {this.renderStatus(rowData.status)}
+              </div>
+            </div>
           </div>
-          <div className={styles.details}>
-            <div className={styles.detailRow}>
-              <div className={styles.title}>{rowData.title}</div>
-            </div>
-            <div className={styles.detailRow}>
-              <div className={styles.pv}>热度：{rowData.pv}</div>
-            </div>
-            <div className={styles.detailRow}>
-              <div className={styles.profit}>收益：¥ {rowData.profit}</div>
-            </div>
-            <div className={styles.detailRow}>
-              <div className={styles.date}>{rowData.createdAt.split(' ')[0]}</div>
-              {this.renderStatus(rowData.status)}
-            </div>
-          </div>
-        </div>
+        </SwipeAction>
       )
     }
     return (
