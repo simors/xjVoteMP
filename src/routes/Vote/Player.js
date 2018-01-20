@@ -49,7 +49,7 @@ class Player extends React.PureComponent {
       jssdkURL = entryURL
     }
     getJsApiConfig({
-      debug: __DEV__? true: false,
+      debug: __DEV__? true: true,
       jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage', 'scanQRCode'].toString(),
       url: jssdkURL.split('#')[0],
       success: this.getJsApiConfigSuccess,
@@ -78,6 +78,12 @@ class Player extends React.PureComponent {
           },
           cancel: function () {
             Toast.fail('取消分享')
+          },
+          fail: function (res) {
+            Toast.fail('fail:' + res.errMsg)
+          },
+          complete: function (res) {
+            Toast.success('complete:' + res.errMsg)
           }
         })
       })
@@ -93,6 +99,12 @@ class Player extends React.PureComponent {
           },
           cancel: function () {
             Toast.fail('取消分享')
+          },
+          fail: function (res) {
+            Toast.fail('fail:' + res.errMsg)
+          },
+          complete: function (res) {
+            Toast.success('complete:' + res.errMsg)
           }
         })
       })
