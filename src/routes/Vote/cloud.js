@@ -43,3 +43,11 @@ export async function searchPlayer(payload) {
 export async function setVoteDisable(payload) {
   return await AV.Cloud.run('voteSetVoteDisable', payload)
 }
+
+export async function enablePlayerApply(payload) {
+  return await AV.Cloud.run('voteEnablePlayerApply', payload)
+}
+
+export async function disablePlayer(payload) {
+  return await AV.Cloud.run('voteSetPlayerDisable', payload)
+}

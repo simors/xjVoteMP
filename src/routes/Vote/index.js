@@ -8,6 +8,7 @@ import VoteDetail from './VoteDetail'
 import Player from './Player'
 import Present from './Present'
 import SearchPlayer from './SearchPlayer'
+import ManPlayer from './ManPlayer'
 
 /* export saga */
 export const voteSaga = redux.voteSaga
@@ -22,6 +23,7 @@ export const voteActions = redux.voteActions
 export const voteSelector = redux.voteSelector
 
 export default VoteListPage
-export { Vote, VoteDetail, Player, Present, SearchPlayer }
+export { Vote, VoteDetail, Player, Present, SearchPlayer, ManPlayer }
 
 export const VOTE_SEARCH_TYPE = redux.VOTE_SEARCH_TYPE
+export const VOTE_STATUS = redux.VOTE_STATUS

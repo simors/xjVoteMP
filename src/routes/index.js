@@ -7,7 +7,7 @@ import LoadingPage from './Loading'
 import AuthRoute from './AuthRoute'
 import ErrorPage from './Error'
 import {Wallet, MyVote, BePromoter, Withdraw, Invite} from './Me'
-import {Vote, Player, Present, SearchPlayer} from './Vote'
+import {Vote, Player, Present, SearchPlayer, ManPlayer} from './Vote'
 import Publish, {Organizer, Award, Gifts} from './Publish'
 import TabBarDemo from '../components/TabBar/index'
 
@@ -23,6 +23,7 @@ const rootRoutes = (
     <AuthRoute path="/invite" component={Invite}/>
     <AuthRoute path="/present" component={Present}/>
     <AuthRoute path="/player/:voteId/:playerId" component={Player}/>
+    <AuthRoute path="/manPlayers/:voteId" component={ManPlayer} />
     <AuthRoute path="/vote/:voteId" component={Vote}/>
     <AuthRoute path="/searchPlayer/:voteId/:searchKey" component={SearchPlayer}/>
     <AuthRoute path="/publish/organizer" component={Organizer}/>

@@ -11,6 +11,8 @@ import styles from './votedetail.module.scss'
 import VoteStat from '../../components/VoteStat'
 import VotePlayers from './VotePlayers'
 import OrganizerView from '../../components/OrganizerView'
+import ManagerBtn from './ManagerBtn'
+import {authSelector} from '../../utils/auth'
 
 class VoteDetail extends React.PureComponent {
   constructor(props) {
@@ -53,7 +55,7 @@ class VoteDetail extends React.PureComponent {
   }
 
   render() {
-    const {voteInfo, history} = this.props
+    const {voteInfo, history, activeUserId} = this.props
     return (
       <div className={styles.page}>
         <NoticeBar marqueeProps={{ loop: true, style: { padding: '0 7.5px' } }}>
@@ -72,6 +74,7 @@ class VoteDetail extends React.PureComponent {
         <WhiteSpace />
         <VotePlayers voteId={voteInfo.id} history={history} />
         <OrganizerView organizer={voteInfo.organizer} />
+        <ManagerBtn voteId={voteInfo.id} show={voteInfo.creatorId === activeUserId} status={voteInfo.status} history={history} />
         <div className={styles.foot}>
           <div className={styles.logoView}>
             <img className={styles.img} src={require('../../asset/images/logo.png')} alt=""/>
@@ -87,8 +90,9 @@ class VoteDetail extends React.PureComponent {
 const mapStateToProps = (state, ownProps) => {
   const voteId = ownProps.voteId
   return {
+    activeUserId: authSelector.activeUserId(state),
     voteId,
-    voteInfo: voteSelector.selectVote(state, voteId)
+    voteInfo: voteSelector.selectVote(state, voteId),
   }
 }
 
