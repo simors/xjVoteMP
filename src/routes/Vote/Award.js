@@ -13,6 +13,20 @@ class Award extends React.PureComponent {
     super(props)
   }
 
+  renderWinnerNum(winnerNum) {
+    if(!winnerNum) {
+      return(null)
+    } else {
+      return(
+        <div className={styles.winnerNum}>
+          <span>获奖人数</span>
+          <span className={styles.num}>{winnerNum}</span>
+          <span>人</span>
+        </div>
+      )
+    }
+  }
+
   render() {
     const {voteInfo} = this.props
     return (
@@ -27,11 +41,7 @@ class Award extends React.PureComponent {
                 <div className={styles.photoView}>
                   <img className={styles.img} src={value.awardPhoto} alt=""/>
                 </div>
-                <div className={styles.winnerNum}>
-                  <span >中奖人数</span>
-                  <span className={styles.num}>{value.winnerNum}</span>
-                  <span>人</span>
-                </div>
+                {this.renderWinnerNum(value.winnerNum)}
                 <div className={styles.description}>
                   {value.description}
                 </div>
