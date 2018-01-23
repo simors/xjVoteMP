@@ -1,0 +1,45 @@
+.container {
+  .imageView {
+    display: flex;
+    justify-content: center;
+    .img {
+      width: 50%;
+      height: 50%;
+    }
+  }
+  .typeView {
+    margin: 10px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    .title {
+      font-size: 17px;
+      color: #696668;
+      padding: 10px 0 15px 0;
+      border-bottom: 1px solid #e5e5e5;
+      width: 100%;
+      text-align: center;
+    }
+    .tripItem {
+      border-bottom: 1px solid #e5e5e5;
+      width: 100%;
+      text-align: center;
+      .radio {
+        background-color: transparent;
+      }
+    }
+  }
+
+  .btnView {
+    margin-top: 30px;
+  }
+
+  .tripView {
+    padding: 20px 12px;
+    .trip {
+      font-size: 14px;
+      color: darkgrey;
+    }
+  }
+}

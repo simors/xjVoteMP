@@ -51,3 +51,7 @@ export async function enablePlayerApply(payload) {
 export async function disablePlayer(payload) {
   return await AV.Cloud.run('voteSetPlayerDisable', payload)
 }
+
+export async function fetchGifts(payload) {
+  return await AV.Cloud.run('voteFetchGifts', payload)
+}

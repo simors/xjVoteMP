@@ -46,7 +46,7 @@ class Home extends Component {
             selectedIcon={<div className={styles.plusIcon}/>}
             selected={this.state.selectedTab === 'plusTab'}
             onPress={() => {
-              history.push('/publish')
+              history.push('/publish/type')
             }}
             data-seed="logId0"
           >

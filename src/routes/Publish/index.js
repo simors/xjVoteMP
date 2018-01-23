@@ -3,6 +3,7 @@ import Publish from './Publish'
 import Organizer from './Organizer'
 import Award from './Award'
 import Gifts from './Gifts'
+import PublishType from './PublishType'
 
 /* export saga */
 export const publishSaga = redux.publishSaga
@@ -17,5 +18,5 @@ export const publishAction = redux.publishAction
 export const publishSelector = redux.publishSelector
 
 export default Publish
-export {Organizer, Award, Gifts}
+export {Organizer, Award, Gifts, PublishType}
 

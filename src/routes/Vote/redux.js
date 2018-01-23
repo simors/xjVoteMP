@@ -182,6 +182,7 @@ const VoteState = Record({
   giftMap: Map(),         // 参赛者礼品信息
   playerGiftList: Map(),  // 参赛者接收礼品列表：键-playerId, 值-giftMapId
   ownerVoteList: List(),  // 用户自己的投票列表
+  totalGiftList: List(),  // 全部礼品列表
 }, 'VoteState')
 
 /**** Constant ****/
@@ -208,6 +209,8 @@ const SEARCH_VOTE_PLAYER = 'SEARCH_VOTE_PLAYER'
 const SET_VOTE_DISABLE = 'SET_VOTE_DISABLE'
 const ENABLE_PLAYER_APPLY = 'ENABLE_PLAYER_APPLY'
 const DISABLE_PLAYER = 'DISABLE_PLAYER'
+const FETCH_GIFTS = 'FETCH_GIFTS'
+const UPDATE_TOTAL_GIFT_LIST = 'UPDATE_TOTAL_GIFT_LIST'
 
 export const VOTE_STATUS = {
   EDITING:    1,        // 正在编辑
@@ -241,6 +244,7 @@ export const voteActions = {
   setVoteDisableAction: createAction(SET_VOTE_DISABLE),
   enablePlayerApplyAction: createAction(ENABLE_PLAYER_APPLY),
   disablePlayerAction: createAction(DISABLE_PLAYER),
+  fetchGiftsAction: createAction(FETCH_GIFTS),
 }
 const updateVoteListAction = createAction(UPDATE_VOTE_LIST)
 const updateVotePlayerListAction = createAction(UPDATE_VOTE_PLAYER_LIST)
@@ -248,7 +252,7 @@ const updateVoteRankListAction = createAction(UPDATE_VOTE_RANK_LIST)
 const updateVoteGiftListAction = createAction(UPDATE_VOTE_GIFT_LIST)
 const updatePlayerGiftListAction = createAction(UPDATE_PLAYER_GIFTS_LIST)
 const updateOwnerVoteListAction = createAction(UPDATE_OWNER_VOTE_LIST)
-
+const updateTotalGiftListAction = createAction(UPDATE_TOTAL_GIFT_LIST)
 
 /**** Saga ****/
 function* fetchVotes(action) {
@@ -533,6 +537,24 @@ function* disablePlayer(action) {
   }
 }
 
+function* fetchGifts(action) {
+  let payload = action.payload
+
+  try {
+    let gifts =  yield call(voteCloud.fetchGifts, {})
+    yield put(updateTotalGiftListAction({gifts}))
+
+    if(payload.success) {
+      payload.success()
+    }
+  } catch (error) {
+    console.error(error)
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
+}
+
 export const voteSaga = [
   takeLatest(FETCH_VOTES, fetchVotes),
   takeLatest(FETCH_VOTE_PLAYERS, fetchVotePlayers),
@@ -545,7 +567,8 @@ export const voteSaga = [
   takeLatest(SEARCH_VOTE_PLAYER, searchVotePlayer),
   takeLatest(SET_VOTE_DISABLE, setVoteDisable),
   takeLatest(ENABLE_PLAYER_APPLY, enablePlayerApply),
-  takeLatest(DISABLE_PLAYER, disablePlayer)
+  takeLatest(DISABLE_PLAYER, disablePlayer),
+  takeLatest(FETCH_GIFTS, fetchGifts)
 ]
 
 /**** Reducer ****/
@@ -575,6 +598,8 @@ export function voteReducer(state = initialState, action) {
       return handleBatchSaveGift(state, action)
     case UPDATE_OWNER_VOTE_LIST:
       return handleUpdateOwnerVoteList(state, action)
+    case UPDATE_TOTAL_GIFT_LIST:
+      return handleUpdateTotalGiftList(state, action)
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
@@ -656,6 +681,19 @@ function handleUpdateVoteGiftList(state, action) {
     giftList = giftList.push(giftInfo.id)
   })
   state = state.setIn(['voteGiftList', voteId], giftList)
+  return state
+}
+
+function handleUpdateTotalGiftList(state, action) {
+  let gifts = action.payload.gifts
+
+  let giftList = List()
+  gifts.forEach((giftInfo) => {
+    let giftRecord = Gift.fromJson(giftInfo)
+    state = state.setIn(['allGifts', giftInfo.id], giftRecord)
+    giftList = giftList.push(giftInfo.id)
+  })
+  state = state.set('totalGiftList', giftList)
   return state
 }
 
@@ -857,6 +895,19 @@ function selectPlayerRecvGiftList(state, playerId) {
   return giftMapListInfo
 }
 
+function selectTotalGift(state) {
+  let giftListInfo = []
+  let giftList = state.VOTE.get('totalGiftList')
+  if(!giftList) {
+    return giftListInfo
+  }
+  giftList.toArray().forEach((giftId) => {
+    let giftInfo = selectGift(state, giftId)
+    giftListInfo.push(giftInfo)
+  })
+  return giftListInfo
+}
+
 export const voteSelector = {
   selectVoteList,
   selectVote,
@@ -867,6 +918,7 @@ export const voteSelector = {
   selectVoteGiftList,
   selectPlayerRecvGiftList,
   selectOwnerVoteList,
+  selectTotalGift,
 }
 
 

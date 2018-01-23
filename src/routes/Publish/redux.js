@@ -5,10 +5,12 @@ import {Map, List, Record} from 'immutable'
 import {createAction} from 'redux-actions'
 import {REHYDRATE} from 'redux-persist/constants'
 import {call, put, takeEvery, takeLatest, select} from 'redux-saga/effects'
+import * as publishCloud from './cloud'
 
 /****  Model  ****/
 const PublishVoteRecord = Record({
   id: undefined,
+  type: undefined,
   title: undefined,
   cover: undefined,
   notice:  undefined,
@@ -19,45 +21,92 @@ const PublishVoteRecord = Record({
   startDate: undefined,
   expire: undefined,
   status: undefined,
+  endDate: undefined,
+  createdAt: undefined,
+  updatedAt: undefined,
 }, 'PublishVoteRecord')
 
-// class PublishVote extends PublishVoteRecord {
-//   static fromJson(lcObj) {
-//     try {
-//       let publishVote = new PublishVoteRecord()
-//       return publishVote.withMutations((record) => {
-//         record.set('id', lcObj.id)
-//         record.set('title', lcObj.title)
-//         record.set('title', lcObj.title)
-//       })
-//     } catch (e) {
-//       throw e
-//     }
-//   }
-// }
+class PublishVote extends PublishVoteRecord {
+  static fromJson(lcObj) {
+    try {
+      let publishVote = new PublishVoteRecord()
+      return publishVote.withMutations((record) => {
+        record.set('id', lcObj.id)
+        record.set('type', lcObj.type)
+        record.set('title', lcObj.title)
+        record.set('cover', lcObj.cover)
+        record.set('notice', lcObj.notice)
+        record.set('rule', lcObj.rule)
+        record.set('organizer', lcObj.organizer)
+        record.set('awards', lcObj.awards)
+        record.set('gifts', lcObj.gifts)
+        record.set('startDate', lcObj.startDate)
+        record.set('expire', lcObj.expire)
+        record.set('status', lcObj.status)
+        record.set('endDate', lcObj.endDate)
+        record.set('createdAt', lcObj.createdAt)
+        record.set('updatedAt', lcObj.updatedAt)
+      })
+    } catch (e) {
+      throw e
+    }
+  }
+}
 
 const PublishVoteState = Record({
-  publishingVote: PublishVoteRecord(),
+  publishingVote: undefined,
 }, 'PublishVoteState')
+
 /**** Constant ****/
-const UPDATE_PUBLISHING_VOTE = 'UPDATE_PUBLISHING_VOTE'
+const CREATE_OR_UPDATE_PUBLISHING_VOTE = 'CREATE_OR_UPDATE_PUBLISHING_VOTE'
 const UPDATE_PUBLISHING_VOTE_STATE = 'UPDATE_PUBLISHING_VOTE_STATE'
-const CREATE_VOTE = 'CREATE_VOTE'
 const CLEAR_PUBLISHING_VOTE_STATE = 'CLEAR_PUBLISHING_VOTE_STATE'
 
 /**** Action ****/
 export const publishAction = {
-  updatePublishingVoteAction: createAction(UPDATE_PUBLISHING_VOTE),
-  createVoteAction: createAction(CREATE_VOTE),
+  createOrUpdatePublishingVoteAction: createAction(CREATE_OR_UPDATE_PUBLISHING_VOTE),
 }
 
-/**** Saga ****/
-function* updatePublishingVote(action) {
+const updatePublishingVoteState = createAction(UPDATE_PUBLISHING_VOTE_STATE)
 
+/**** Saga ****/
+function* createOrUpdatePublishingVote(action) {
+  let payload = action.payload
+
+  let apiPayload = {
+    id: payload.id,
+    type: payload.type,
+    title: payload.title,
+    cover: payload.cover,
+    notice: payload.notice,
+    rule: payload.rule,
+    organizer: payload.organizer,
+    awards: payload.awards,
+    gifts: payload.gifts,
+    startDate: payload.startDate,
+    expire: payload.expire,
+    status: payload.status,
+    endDate: payload.endDate,
+  }
+
+  try {
+    let publishVote = yield call(publishCloud.createOrUpdateVote, apiPayload)
+
+    yield put(updatePublishingVoteState({publishVote: publishVote}))
+
+    if(payload.success) {
+      payload.success()
+    }
+  } catch (error) {
+    console.error(error)
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
 }
 
 export const publishSaga = [
-  takeLatest(UPDATE_PUBLISHING_VOTE, updatePublishingVote),
+  takeLatest(CREATE_OR_UPDATE_PUBLISHING_VOTE, createOrUpdatePublishingVote),
 ]
 
 /**** Reducer ****/
@@ -76,6 +125,9 @@ export function publishReducer(state = initialState, action) {
 }
 
 function handleUpdatePubVoteState(state, action) {
+  let publishVote = action.payload.publishVote
+  let publishVoteRecord = PublishVote.fromJson(publishVote)
+  state = state.set('publishingVote', publishVoteRecord)
   return state
 }
 
@@ -91,8 +143,12 @@ function onRehydrate(state, action) {
 }
 
 /**** Selector ****/
+function selectPublishVote(state) {
+  let publishRecord = state.PUBLISH.get('publishingVote')
+  return publishRecord? publishRecord.toJS() : undefined
+}
 
 export const publishSelector = {
-
+  selectPublishVote,
 }
 
