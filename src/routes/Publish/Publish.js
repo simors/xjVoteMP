@@ -13,8 +13,9 @@ import DateTime from '../../utils/datetime'
 class Publish extends React.PureComponent {
   constructor(props) {
     super(props)
+    document.title = "创建活动"
     this.state = {
-      cover: undefined,
+      cover: [],
       title: undefined,
       endDate: (new Date()).toLocaleDateString(),
       noticeContent: undefined,
@@ -26,7 +27,7 @@ class Publish extends React.PureComponent {
     const {publishVote} = this.props
     if(publishVote) {
       this.setState({
-        cover: publishVote.cover,
+        cover: [publishVote.cover],
         title: publishVote.title,
         noticeContent: publishVote.notice,
         ruleContent: publishVote.rule,
@@ -61,7 +62,7 @@ class Publish extends React.PureComponent {
     createOrUpdatePublishingVoteAction({
       ...publishVote,
       type: type || publishVote.type,
-      cover: cover,
+      cover: cover[0],
       title: title,
       endDate: endDate,
       notice: noticeContent,

@@ -4,5 +4,5 @@
 import AV from 'leancloud-storage'
 
 export async function createOrUpdateVote(payload) {
-  return await AV.Cloud.run('voteCreateOrUpdateVote', payload)
+  return await AV.Cloud.run('voteCreateOrUpdateVoteMP', payload)
 }

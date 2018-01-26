@@ -14,9 +14,9 @@ class ImageSelector extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      localIds: [],
-      localDataList: [],    //适配iOS WKWebview
-      serverIds: [],
+      localIds: props.value || [],
+      localDataList: window.__wxjs_is_wkwebview && props.value? props.value : [],    //适配iOS WKWebview
+      serverIds: props.value || [],
     }
   }
 
@@ -134,7 +134,7 @@ class ImageSelector extends React.Component {
   }
 
   renderCover() {
-    const {localIds, localDataList, value} = this.state
+    const {localIds, localDataList} = this.state
     const {count, trip} = this.props
     let imageSrcList = window.__wxjs_is_wkwebview? localDataList : localIds
     if(imageSrcList.length === 0) {
