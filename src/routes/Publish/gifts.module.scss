@@ -1,6 +1,14 @@
 .container {
   background-color: #fff;
 
+  .trip {
+    padding: 10px 12px;
+    .tripText {
+      font-size: 14px;
+      color: red;
+    }
+  }
+
   .giftItem {
     position: relative;
     display: flex;

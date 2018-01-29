@@ -114,6 +114,7 @@ class Publish extends React.PureComponent {
 const mapStateToProps = (state, ownProps) => {
   let location = ownProps.location
   let type = location.query? location.query.type : undefined
+  console.log('Publish type', type)
   return {
     type: type,
     publishVote: publishSelector.selectPublishVote(state)

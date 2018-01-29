@@ -45,7 +45,7 @@ export default class PublishType extends React.PureComponent {
           </div>
         </div>
         <WingBlank className={styles.btnView}>
-          <Button type="primary" onClick={() => this.gotoPublish('gift')}>下一步</Button>
+          <Button type="primary" onClick={() => this.gotoPublish(this.state.selectedType)}>下一步</Button>
         </WingBlank>
         <div className={styles.tripView}>
           <text className={styles.trip}>提示：有礼品投票需要通过授权才能开通，详情请咨询客服；无礼品投票可免费创建。所有投票活动都必须保证真实合法！两种模式都全程提供免费人工协助！</text>

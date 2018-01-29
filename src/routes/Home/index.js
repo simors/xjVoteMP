@@ -22,6 +22,7 @@ class Home extends Component {
 
   render() {
     const {history} = this.props
+    console.log("this.props", this.props)
     return (
       <div className={styles.page}>
         <TabBar tintColor="#F6635F" hidden={this.state.hidden}  >

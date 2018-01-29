@@ -24,7 +24,6 @@ class Wallet extends React.PureComponent {
 
   render() {
     const {walletInfo, dealList, history} = this.props
-    console.log("dealList", dealList)
     if(!walletInfo) {
       return(<ActivityIndicator toast text="正在加载" />)
     }

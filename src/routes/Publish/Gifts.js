@@ -6,13 +6,17 @@ import {connect} from 'react-redux'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import styles from './gifts.module.scss'
 import {Button, Grid, WhiteSpace, WingBlank, Radio, Toast} from 'antd-mobile'
-import {voteActions, voteSelector} from '../Vote'
+import {voteActions, voteSelector, VOTE_STATUS} from '../Vote'
+import {publishAction, publishSelector} from './redux'
+import PublishTrip from './PublishTrip'
+import {authSelector} from '../../utils/auth'
 
 class Gifts extends React.Component {
   constructor(props) {
     document.title = "礼品及期限"
     super(props)
     this.state = {
+      showPublishTrip: false,
       selectGifts: [],
     }
   }
@@ -28,6 +32,40 @@ class Gifts extends React.Component {
   onBack = () => {
     const {history} = this.props
     history.goBack()
+  }
+
+  onComplete = () => {
+    const {showPublishTrip, selectGifts} = this.state
+    const {activeUser} = this.props
+    if(selectGifts.length === 0) {
+      Toast.fail("没有选择礼品")
+      return
+    }
+    if(activeUser.agentLevel === 1) {
+      this.setState({showPublishTrip: !showPublishTrip})
+    } else {
+      this.onSubmit()
+    }
+  }
+
+  onSubmit = () => {
+    Toast.loading("正在提交")
+    const {history, createOrUpdatePublishingVoteAction, publishVote} = this.props
+    let {selectGifts} = this.state
+    createOrUpdatePublishingVoteAction({
+      ...publishVote,
+      gifts: selectGifts,
+      status: VOTE_STATUS.WAITING,
+      success: () => {
+        Toast.hide()
+        Toast.success('提交成功')
+        history.replace('/')
+      },
+      error: () => {
+        Toast.hide()
+        Toast.fail("提交失败")
+      }
+    })
   }
 
   onClickRadio(giftId) {
@@ -61,6 +99,9 @@ class Gifts extends React.Component {
     const {gifts} = this.props
     return (
       <div className={styles.container}>
+        <div className={styles.trip}>
+          <text className={styles.tripText}>提示：选择下方礼品，最多选择6个！</text>
+        </div>
         <WingBlank>
           <WhiteSpace />
           <Grid
@@ -72,7 +113,12 @@ class Gifts extends React.Component {
             square={false}
           />
         </WingBlank>
-        <Button onClick={this.onBack}>上一步</Button>
+        <WingBlank style={{marginTop: '20px', paddingBottom: '30px', textAlign: 'right'}}>
+          <Button type="primary" style={{marginRight: '10px'}} inline size="small" onClick={this.onBack}>上一步</Button>
+          <Button type="primary" inline size="small" onClick={this.onComplete}>完成</Button>
+        </WingBlank>
+        <PublishTrip visible={this.state.showPublishTrip}
+                     onClose={() => this.setState({showPublishTrip: false})} onSubmit={this.onSubmit}/>
       </div>
     )
   }
@@ -80,12 +126,15 @@ class Gifts extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
+    activeUser: authSelector.activeUserInfo(state),
     gifts: voteSelector.selectTotalGift(state),
+    publishVote: publishSelector.selectPublishVote(state)
   }
 }
 
 const mapDispatchToProps = {
   ...voteActions,
+  ...publishAction,
 }
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Gifts))

@@ -31,7 +31,7 @@ class PublishVote extends PublishVoteRecord {
     try {
       let publishVote = new PublishVoteRecord()
       return publishVote.withMutations((record) => {
-        record.set('id', lcObj.id)
+        record.set('id', lcObj.objectId)
         record.set('type', lcObj.type)
         record.set('title', lcObj.title)
         record.set('cover', lcObj.cover)
@@ -61,10 +61,12 @@ const PublishVoteState = Record({
 const CREATE_OR_UPDATE_PUBLISHING_VOTE = 'CREATE_OR_UPDATE_PUBLISHING_VOTE'
 const UPDATE_PUBLISHING_VOTE_STATE = 'UPDATE_PUBLISHING_VOTE_STATE'
 const CLEAR_PUBLISHING_VOTE_STATE = 'CLEAR_PUBLISHING_VOTE_STATE'
+const FETCH_CREATE_VOTE_PWD = 'FETCH_CREATE_VOTE_PWD'
 
 /**** Action ****/
 export const publishAction = {
   createOrUpdatePublishingVoteAction: createAction(CREATE_OR_UPDATE_PUBLISHING_VOTE),
+  fetchCreateVotePwdAction: createAction(FETCH_CREATE_VOTE_PWD),
 }
 
 const updatePublishingVoteState = createAction(UPDATE_PUBLISHING_VOTE_STATE)
@@ -105,8 +107,26 @@ function* createOrUpdatePublishingVote(action) {
   }
 }
 
+function* fetchCreateVotePwd(action) {
+  let payload = action.payload
+
+  try {
+    let password = yield call(publishCloud.fetchCreateVotePwd, {})
+
+    if(payload.success) {
+      payload.success(password)
+    }
+  } catch (error) {
+    console.error(error)
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
+}
+
 export const publishSaga = [
   takeLatest(CREATE_OR_UPDATE_PUBLISHING_VOTE, createOrUpdatePublishingVote),
+  takeLatest(FETCH_CREATE_VOTE_PWD, fetchCreateVotePwd)
 ]
 
 /**** Reducer ****/

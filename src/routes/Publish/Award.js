@@ -7,6 +7,7 @@ import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import styles from './award.module.scss'
 import {Button, WingBlank, List, InputItem, TextareaItem, Toast} from 'antd-mobile'
 import {publishAction, publishSelector} from './redux'
+import {VOTE_STATUS} from '../Vote'
 import ImageSelector from '../../components/ImageSelector'
 
 class Award extends React.Component {
@@ -61,6 +62,18 @@ class Award extends React.Component {
     history.push('/publish/gifts')
   }
 
+  onSubmit = () => {
+    const {history, createOrUpdatePublishingVoteAction, publishVote} = this.props
+    let {awards} = this.state
+    awards = awards.filter(value => value.awardPhoto)
+    createOrUpdatePublishingVoteAction({
+      ...publishVote,
+      awards: awards,
+      status: VOTE_STATUS.WAITING,
+    })
+    history.replace('/')
+  }
+
   addAward = () => {
     let {awards} = this.state
     let award = {
@@ -81,13 +94,18 @@ class Award extends React.Component {
 
   onWinnerNumChange(value, index) {
     let {awards} = this.state
-    awards[index].winnerNum = value
+    awards[index].winnerNum = Number(value)
     this.setState({awards})
   }
 
   onDescChange(value, index) {
     let {awards} = this.state
     awards[index].description = value
+    this.setState({awards})
+  }
+  onPhotoChange(value, index) {
+    let {awards} = this.state
+    awards[index].awardPhoto = value
     this.setState({awards})
   }
 
@@ -104,12 +122,13 @@ class Award extends React.Component {
         {
           awards.map((award, index) => (
             <div key={index} className={styles.awardItem}>
-              <ImageSelector trip="添加奖项图片" value={award.awardPhoto} count={1} onChange={(values) => {award.awardPhoto = values[0]}} />
+              <ImageSelector trip="添加奖项图片" value={award.awardPhoto && [award.awardPhoto]} count={1}
+                             onChange={(values) => this.onPhotoChange(values[0], index)} />
               <List>
                 <InputItem value={award.awardName}
                            placeholder="请输入奖项名称(选填)"
                            onChange={value => this.onAwardNameChange(value, index)}>奖项名称</InputItem>
-                <InputItem value={award.winnerNum}
+                <InputItem value={award.winnerNum && Number(award.winnerNum)}
                            type="number"
                            placeholder="请输入中奖人数(选填)"
                            onChange={value => this.onWinnerNumChange(value, index)}>获奖人数</InputItem>
@@ -135,6 +154,7 @@ class Award extends React.Component {
   }
 
   render() {
+    const {publishVote} = this.props
     return (
       <div className={styles.container}>
         {this.renderAwards()}
@@ -142,9 +162,9 @@ class Award extends React.Component {
           <img className={styles.img} src={require('../../asset/images/add.png')} alt=""/>
           <text className={styles.text}>添加奖项</text>
         </div>
-        <WingBlank style={{marginTop: '100px', textAlign: 'right'}}>
+        <WingBlank style={{marginTop: '100px', paddingBottom: '30px', textAlign: 'right'}}>
           <Button type="primary" style={{marginRight: '10px'}} inline size="small" onClick={this.onBack}>上一步</Button>
-          <Button type="primary" inline size="small" onClick={this.onNext}>下一步</Button>
+          <Button type="primary" inline size="small" onClick={publishVote.type === 1? this.onNext : this.onSubmit}>{publishVote.type === 1? "下一步" : "完成"}</Button>
         </WingBlank>
       </div>
     )
