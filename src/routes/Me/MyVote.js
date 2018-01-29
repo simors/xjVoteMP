@@ -5,7 +5,8 @@ import React from 'react'
 import {connect} from 'react-redux'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import {Button, ListView, PullToRefresh, SwipeAction, Modal, Toast} from 'antd-mobile'
-import {voteSelector, voteActions, VOTE_SEARCH_TYPE} from '../Vote/index'
+import {voteSelector, voteActions, VOTE_SEARCH_TYPE, VOTE_STATUS} from '../Vote/index'
+import {publishAction} from '../Publish/index'
 import styles from './myvote.module.scss'
 
 class MyVote extends React.PureComponent {
@@ -115,9 +116,20 @@ class MyVote extends React.PureComponent {
     })
   }
 
+  showVoteDetail(vote) {
+    const {history, savePublishingVoteAction} = this.props
+    if(vote.status === VOTE_STATUS.EDITING) {
+      savePublishingVoteAction({
+        vote: vote
+      })
+      history.push('/publish')
+    } else {
+      history.push('/vote/' + vote.id)
+    }
+  }
+
   render() {
     const {dataSource} = this.state
-    const {history} = this.props
     const row = (rowData, sectionID, rowID) => {
       let itemStyle = {
 
@@ -135,7 +147,7 @@ class MyVote extends React.PureComponent {
                        },
                      ]}
         >
-          <div className={styles.item} key={rowID} style={itemStyle}>
+          <div className={styles.item} key={rowID} style={itemStyle} onClick={() => this.showVoteDetail(rowData)}>
             <div className={styles.thumb}>
               <img className={styles.img} src={rowData.cover || rowData.coverSet[0]} alt=""/>
             </div>
@@ -185,6 +197,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = {
   ...voteActions,
+  ...publishAction,
 }
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(MyVote))

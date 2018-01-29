@@ -30,7 +30,12 @@ class Gifts extends React.Component {
   }
 
   onBack = () => {
-    const {history} = this.props
+    const {history, createOrUpdatePublishingVoteAction, publishVote} = this.props
+    let {selectGifts} = this.state
+    createOrUpdatePublishingVoteAction({
+      ...publishVote,
+      gifts: selectGifts,
+    })
     history.goBack()
   }
 
@@ -50,7 +55,7 @@ class Gifts extends React.Component {
 
   onSubmit = () => {
     Toast.loading("正在提交")
-    const {history, createOrUpdatePublishingVoteAction, publishVote} = this.props
+    const {history, createOrUpdatePublishingVoteAction, clearPublishingVoteAction, publishVote} = this.props
     let {selectGifts} = this.state
     createOrUpdatePublishingVoteAction({
       ...publishVote,
@@ -60,6 +65,7 @@ class Gifts extends React.Component {
         Toast.hide()
         Toast.success('提交成功')
         history.replace('/')
+        clearPublishingVoteAction()
       },
       error: () => {
         Toast.hide()

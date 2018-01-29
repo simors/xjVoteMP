@@ -63,15 +63,25 @@ class Award extends React.Component {
   }
 
   onSubmit = () => {
-    const {history, createOrUpdatePublishingVoteAction, publishVote} = this.props
+    Toast.loading("正在提交")
+    const {history, createOrUpdatePublishingVoteAction, clearPublishingVoteAction, publishVote} = this.props
     let {awards} = this.state
     awards = awards.filter(value => value.awardPhoto)
     createOrUpdatePublishingVoteAction({
       ...publishVote,
       awards: awards,
       status: VOTE_STATUS.WAITING,
+      success: () => {
+        Toast.hide()
+        Toast.success('提交成功')
+        history.replace('/')
+        clearPublishingVoteAction()
+      },
+      error: () => {
+        Toast.hide()
+        Toast.fail("提交失败")
+      }
     })
-    history.replace('/')
   }
 
   addAward = () => {

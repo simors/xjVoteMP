@@ -31,6 +31,8 @@ const VoteRecord =  Record({
   organizer: undefined,
   counter: undefined,
   rule: undefined,
+  type: undefined,
+  endDate: undefined,
 }, 'VoteRecord')
 
 class Vote extends VoteRecord {
@@ -59,6 +61,8 @@ class Vote extends VoteRecord {
         record.set('organizer', lcObj.organizer)
         record.set('counter', lcObj.counter)
         record.set('rule', lcObj.rule)
+        record.set('type', lcObj.type)
+        record.set('endDate', lcObj.endDate)
       })
     } catch (e) {
       throw e
