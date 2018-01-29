@@ -114,7 +114,6 @@ class Player extends React.PureComponent {
           needResult: 0,
           scanType: ["qrCode","barCode"],
           success: function (res) {
-            Toast.success(res)
           }
         })
       })
@@ -126,7 +125,7 @@ class Player extends React.PureComponent {
   dataList = [
     { url: 'cTTayShKtEIdQVEMuiWt', title: '朋友圈', type: 'timeline'},
     { url: 'umnHwvEgSyQtXlZjNJTt', title: '微信好友', type: 'appMessage'},
-    { url: 'SxpunpETIwdxNjcJamwB', title: '扫一扫', type: 'scan' }
+    // { url: 'SxpunpETIwdxNjcJamwB', title: '扫一扫', type: 'scan' }
   ].map(obj => ({
     icon: <img src={`https://gw.alipayobjects.com/zos/rmsportal/${obj.url}.png`} alt={obj.title} style={{ width: 36 }}
                onClick={() => this.wxShare(obj.type)} />,

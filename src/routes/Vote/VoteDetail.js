@@ -34,7 +34,6 @@ class VoteDetail extends React.PureComponent {
 
   renderSearchBar() {
     const {voteInfo} = this.props
-    console.log("voteInfo", voteInfo)
     if(voteInfo.applyNum === 0) {
       return(null)
     }
