@@ -49,7 +49,7 @@ class Player extends React.PureComponent {
       jssdkURL = entryURL
     }
     getJsApiConfig({
-      debug: __DEV__? true: true,
+      debug: __DEV__? true: false,
       jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage', 'scanQRCode'].toString(),
       url: jssdkURL.split('#')[0],
       success: this.getJsApiConfigSuccess,
