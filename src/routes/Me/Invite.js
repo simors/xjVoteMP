@@ -38,18 +38,20 @@ class Invite extends React.PureComponent {
   }
 
   onShare = () => {
-    wx.onMenuShareTimeline({
-      title: '小吉互动',
-      link: 'http://vote.xiaojee.cn',
-      imgUrl: 'http://ac-l3cae9l7.clouddn.com/9b8514cffb7b4d9e2395.png',
-      success: function (res) {
+    wx.ready(function () {
+      wx.onMenuShareTimeline({
+        title: '小吉互动',
+        link: 'http://vote.xiaojee.cn',
+        imgUrl: 'http://ac-l3cae9l7.clouddn.com/9b8514cffb7b4d9e2395.png',
+        success: function (res) {
 
-      },
-      cancel: function (res) {
+        },
+        cancel: function (res) {
 
-      }
+        }
+      })
     })
-
+    
     wx.error(function (err) {
       alert(JSON.stringify(err))
     })
