@@ -49,6 +49,10 @@ class Invite extends React.PureComponent {
 
       }
     })
+
+    wx.error(function (err) {
+      alert(JSON.stringify(err))
+    })
   }
 
   render() {
