@@ -49,7 +49,7 @@ class Player extends React.PureComponent {
       jssdkURL = entryURL
     }
     getJsApiConfig({
-      debug: __DEV__? true: false,
+      debug: __DEV__? true: true,
       jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage', 'scanQRCode'].toString(),
       url: jssdkURL.split('#')[0],
       success: this.getJsApiConfigSuccess,
@@ -66,7 +66,7 @@ class Player extends React.PureComponent {
     // const title = playerInfo.number + '号 ' + playerInfo.name + '，邀请您参与投票'
     const title = '分享测试'
     // const url = appConfig.CLIENT_DOMAIN + '/vote/player/' + playerInfo.id
-    const url = 'https://vote.xiaojee.cn/#/'
+    const url = 'https://vote.xiaojee.cn/'
     if(type === 'timeline') {
       wx.ready(function () {
         wx.onMenuShareTimeline({
@@ -117,7 +117,28 @@ class Player extends React.PureComponent {
           }
         })
       })
-    } else {
+    } else if (type === 'QQ') {
+      wx.ready(function () {
+        wx.onMenuShareQQ({
+          title: "分享",
+          desc: "QQ分享测试",
+          link: url,
+          imgUrl: playerInfo.album[0],
+          success: function () {
+            Toast.success("分享成功")
+          },
+          cancel: function () {
+            Toast.fail('取消分享')
+          },
+          fail: function (res) {
+            Toast.fail('fail:' + res.errMsg)
+          },
+          complete: function (res) {
+            Toast.success('complete:' + res.errMsg)
+          }
+        })
+      })
+    }else {
       Toast.fail("无效到分享类型")
     }
   }
@@ -125,7 +146,8 @@ class Player extends React.PureComponent {
   dataList = [
     { url: 'cTTayShKtEIdQVEMuiWt', title: '朋友圈', type: 'timeline'},
     { url: 'umnHwvEgSyQtXlZjNJTt', title: '微信好友', type: 'appMessage'},
-    // { url: 'SxpunpETIwdxNjcJamwB', title: '扫一扫', type: 'scan' }
+    { url: 'SxpunpETIwdxNjcJamwB', title: '扫一扫', type: 'scan' },
+    { url: 'SxpunpETIwdxNjcJamwB', title: 'QQ', type: 'QQ' }
   ].map(obj => ({
     icon: <img src={`https://gw.alipayobjects.com/zos/rmsportal/${obj.url}.png`} alt={obj.title} style={{ width: 36 }}
                onClick={() => this.wxShare(obj.type)} />,
