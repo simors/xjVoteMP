@@ -66,7 +66,7 @@ class Player extends React.PureComponent {
     // const title = playerInfo.number + '号 ' + playerInfo.name + '，邀请您参与投票'
     const title = '分享测试'
     // const url = appConfig.CLIENT_DOMAIN + '/vote/player/' + playerInfo.id
-    const url = 'http://vote.xiaojee.cn/#/'
+    const url = 'https://vote.xiaojee.cn/#/'
     if(type === 'timeline') {
       wx.ready(function () {
         wx.onMenuShareTimeline({

@@ -41,7 +41,7 @@ class Invite extends React.PureComponent {
     wx.ready(function () {
       wx.onMenuShareTimeline({
         title: '小吉互动',
-        link: 'http://vote.xiaojee.cn',
+        link: 'https://vote.xiaojee.cn',
         imgUrl: 'http://ac-l3cae9l7.clouddn.com/9b8514cffb7b4d9e2395.png',
         success: function (res) {
 
@@ -51,7 +51,7 @@ class Invite extends React.PureComponent {
         }
       })
     })
-    
+
     wx.error(function (err) {
       alert(JSON.stringify(err))
     })
