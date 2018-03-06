@@ -62,17 +62,17 @@ class Player extends React.PureComponent {
   }
 
   wxShare(type) {
-    const {playerInfo} = this.props
-    // const title = playerInfo.number + '号 ' + playerInfo.name + '，邀请您参与投票'
-    const title = '分享测试'
-    // const url = appConfig.CLIENT_DOMAIN + '/vote/player/' + playerInfo.id
-    const url = 'https://vote.xiaojee.cn/'
+    const {playerInfo, voteId} = this.props
+    const title = playerInfo.number + '号 ' + playerInfo.name + '，邀请您参与投票'
+    // const title = '分享测试'
+    const url = appConfig.CLIENT_DOMAIN + '/#/player/'+ voteId + '/' + playerInfo.id
+    // const url = 'https://vote.xiaojee.cn/'
     if(type === 'timeline') {
       wx.ready(function () {
         wx.onMenuShareTimeline({
           title: title,
           link: url,
-          // imgUrl: playerInfo.album[0],
+          imgUrl: playerInfo.album[0],
           success: function () {
             Toast.success("分享成功")
           },
@@ -92,7 +92,7 @@ class Player extends React.PureComponent {
         wx.onMenuShareAppMessage({
           title: title,
           link: url,
-          // imgUrl: playerInfo.album[0],
+          imgUrl: playerInfo.album[0],
           desc: '',
           success: function () {
             Toast.success("分享成功")
@@ -123,7 +123,7 @@ class Player extends React.PureComponent {
           title: "分享",
           desc: "QQ分享测试",
           link: url,
-          // imgUrl: playerInfo.album[0],
+          imgUrl: playerInfo.album[0],
           success: function () {
             Toast.success("分享成功")
           },
@@ -138,7 +138,7 @@ class Player extends React.PureComponent {
           }
         })
       })
-    }else {
+    } else {
       Toast.fail("无效到分享类型")
     }
   }
