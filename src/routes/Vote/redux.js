@@ -198,6 +198,7 @@ const FETCH_VOTE_PLAYERS = 'FETCH_VOTE_PLAYERS'
 const UPDATE_VOTE_PLAYER_LIST = 'UPDATE_VOTE_PLAYER_LIST'
 const FETCH_VOTE_RANK = 'FETCH_VOTE_RANK'
 const UPDATE_VOTE_RANK_LIST = 'UPDATE_VOTE_RANK_LIST'
+const FETCH_PLAYER_BY_ID = 'FETCH_PLAYER_BY_ID'
 const VOTE_FOR_PLAYER = 'VOTE_FOR_PLAYER'
 const SAVE_PLAYER = 'SAVE_PLAYER'
 const BATCH_SAVE_PLAYER = 'BATCH_SAVE_PLAYER'
@@ -234,6 +235,7 @@ export const VOTE_SEARCH_TYPE = {
 export const voteActions = {
   fetchVotesAction: createAction(FETCH_VOTES),
   fetchVotePlayersAction: createAction(FETCH_VOTE_PLAYERS),
+  fetchPlayerByIdAction: createAction(FETCH_PLAYER_BY_ID),
   voteForPlayerAction: createAction(VOTE_FOR_PLAYER),
   fetchVoteRankAction: createAction(FETCH_VOTE_RANK),
   savePlayerInfoAction: createAction(SAVE_PLAYER),
@@ -301,6 +303,25 @@ function* fetchVotePlayers(action) {
 
     if(payload.success) {
       payload.success(players.length)
+    }
+  } catch (error) {
+    console.error(error)
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
+}
+
+function* fetchPlayerById(action) {
+  let payload = action.payload
+  let playerId = payload.playerId
+  
+  try {
+    let player = yield call(voteCloud.fetchPlayerById, {playerId})
+    yield put(voteActions.savePlayerInfoAction({player}))
+    
+    if(payload.success) {
+      payload.success()
     }
   } catch (error) {
     console.error(error)
@@ -562,6 +583,7 @@ function* fetchGifts(action) {
 export const voteSaga = [
   takeLatest(FETCH_VOTES, fetchVotes),
   takeLatest(FETCH_VOTE_PLAYERS, fetchVotePlayers),
+  takeLatest(FETCH_PLAYER_BY_ID, fetchPlayerById),
   takeLatest(VOTE_FOR_PLAYER, voteForPlayer),
   takeLatest(FETCH_VOTE_RANK, fetchVoteRank),
   takeLatest(JOIN_VOTE_APPLY, joinVoteApply),
@@ -735,6 +757,9 @@ function handleSaveVote(state, action) {
 }
 
 function handleSavePlayer(state, action) {
+  let player = action.payload.player
+  let playerRecord = Player.fromJson(player)
+  state = state.setIn(['allPlayers', player.id], playerRecord)
   return  state
 }
 

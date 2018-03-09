@@ -11,6 +11,20 @@ export async function fetchVotePlayers(payload) {
   return await AV.Cloud.run('voteFetchVotePlayers', payload)
 }
 
+export async function fetchPlayerById(payload) {
+  let params = {
+    playerId: payload.playerId
+  }
+  return await AV.Cloud.run('voteFetchPlayerById', params)
+}
+
+export async function incPlayerPv(payload) {
+  let params = {
+    playerId: payload.playerId
+  }
+  return await AV.Cloud.run('voteIncPlayerPv', params)
+}
+
 export async function voteForPlayer(payload) {
   return await AV.Cloud.run('voteVoteForPlayer', payload)
 }

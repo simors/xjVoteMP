@@ -34,7 +34,7 @@ export default class PlayerStat extends React.PureComponent {
           </div>
           <div className={styles.num}>{giftNum}</div>
         </div>
-        <div className={styles.item}>
+        <div className={styles.item} style={{borderRight: 'none'}}>
           <div className={styles.trip}>
             <img className={styles.img} src={require('../../asset/images/hot_gray.png')} alt=""/>
             <div className={styles.text}>热度</div>

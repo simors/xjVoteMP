@@ -9,7 +9,7 @@ import styles from './player.module.scss'
 import {voteSelector, voteActions} from './redux'
 import PlayerStat from '../../components/PlayerStat'
 import * as errno from '../../utils/errno'
-import GitfTrip from '../../components/GiftTrip'
+import ShareGuider from '../../components/ShareGuider'
 import wx from 'tencent-wx-jssdk'
 import {appStateAction, appStateSelector} from '../../utils/appstate'
 import {getMobileOperatingSystem} from '../../utils/OS'
@@ -24,7 +24,7 @@ class Player extends React.PureComponent {
     document.title = '投票'
     this.state = {
       selectedTab: 'detailTab',
-      showGitfTrip: false,
+      showShareGuider: false,
       tripMsg: '',
       hasMore: false,
     }
@@ -32,7 +32,8 @@ class Player extends React.PureComponent {
 
   componentWillMount() {
     let that = this
-    const {playerId, fetchPlayerRecvGiftsAction, getJsApiConfig, entryURL} = this.props
+    const {playerId, fetchPlayerRecvGiftsAction, fetchPlayerByIdAction} = this.props
+    fetchPlayerByIdAction({playerId})
     fetchPlayerRecvGiftsAction({
       playerId: playerId,
       limit: 10,
@@ -42,129 +43,55 @@ class Player extends React.PureComponent {
         }
       },
     })
-    const OS = getMobileOperatingSystem()
-    let jssdkURL = window.location.href
-    if(OS === 'iOS') {
-      //微信JS-SDK Bug: SPA(单页应用)ios系统必须使用首次加载的url初始化jssdk
-      jssdkURL = entryURL
-    }
-    getJsApiConfig({
-      debug: __DEV__? true: true,
-      jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage', 'scanQRCode'].toString(),
-      url: jssdkURL.split('#')[0],
-      success: this.getJsApiConfigSuccess,
-      error: (error) => {console.log(error)}
-    })
   }
 
   getJsApiConfigSuccess = (configInfo) => {
     wx.config(configInfo)
-  }
-
-  wxShare(type) {
+  
     const {playerInfo, voteId} = this.props
-    const title = playerInfo.number + '号 ' + playerInfo.name + '，邀请您参与投票'
-    // const title = '分享测试'
-    const url = appConfig.CLIENT_DOMAIN + '/#/player/'+ voteId + '/' + playerInfo.id
-    // const url = 'https://vote.xiaojee.cn/'
-    if(type === 'timeline') {
-      wx.ready(function () {
-        wx.onMenuShareTimeline({
-          title: title,
-          link: url,
-          imgUrl: playerInfo.album[0],
-          success: function () {
-            Toast.success("分享成功")
-          },
-          cancel: function () {
-            Toast.fail('取消分享')
-          },
-          fail: function (res) {
-            Toast.fail('fail:' + res.errMsg)
-          },
-          complete: function (res) {
-            Toast.success('complete:' + res.errMsg)
-          }
-        })
-      })
-    } else if(type === 'appMessage') {
-      wx.ready(function () {
-        wx.onMenuShareAppMessage({
-          title: title,
-          link: url,
-          imgUrl: playerInfo.album[0],
-          desc: '',
-          success: function () {
-            Toast.success("分享成功")
-          },
-          cancel: function () {
-            Toast.fail('取消分享')
-          },
-          fail: function (res) {
-            Toast.fail('fail:' + res.errMsg)
-          },
-          complete: function (res) {
-            Toast.success('complete:' + res.errMsg)
-          }
-        })
-      })
-    } else if(type === 'scan') {
-      wx.ready(function () {
-        wx.scanQRCode({
-          needResult: 0,
-          scanType: ["qrCode","barCode"],
-          success: function (res) {
-          }
-        })
-      })
-    } else if (type === 'QQ') {
-      wx.ready(function () {
-        wx.onMenuShareQQ({
-          title: "分享",
-          desc: "QQ分享测试",
-          link: url,
-          imgUrl: playerInfo.album[0],
-          success: function () {
-            Toast.success("分享成功")
-          },
-          cancel: function () {
-            Toast.fail('取消分享')
-          },
-          fail: function (res) {
-            Toast.fail('fail:' + res.errMsg)
-          },
-          complete: function (res) {
-            Toast.success('complete:' + res.errMsg)
-          }
-        })
-      })
-    } else {
-      Toast.fail("无效到分享类型")
+    if (!playerInfo) {
+      return
     }
-  }
-
-  dataList = [
-    { url: 'cTTayShKtEIdQVEMuiWt', title: '朋友圈', type: 'timeline'},
-    { url: 'umnHwvEgSyQtXlZjNJTt', title: '微信好友', type: 'appMessage'},
-    { url: 'SxpunpETIwdxNjcJamwB', title: '扫一扫', type: 'scan' },
-    { url: 'SxpunpETIwdxNjcJamwB', title: 'QQ', type: 'QQ' }
-  ].map(obj => ({
-    icon: <img src={`https://gw.alipayobjects.com/zos/rmsportal/${obj.url}.png`} alt={obj.title} style={{ width: 36 }}
-               onClick={() => this.wxShare(obj.type)} />,
-    title: obj.title,
-  }));
-
-  showShareActionSheet = () => {
-    ActionSheet.showShareActionSheetWithOptions({
-        options: this.dataList,
-      },
-      (buttonIndex) => {
-        this.setState({ clicked1: buttonIndex > -1 ? this.dataList[buttonIndex].title : 'cancel' });
-        // also support Promise
-        return new Promise((resolve) => {
-          setTimeout(resolve, 100);
-        });
-      });
+    const title = playerInfo.number + '号 ' + playerInfo.name + '，邀请您参与投票'
+    const url = appConfig.CLIENT_DOMAIN + '/#/player/'+ voteId + '/' + playerInfo.id
+    wx.ready(function () {
+      wx.onMenuShareTimeline({
+        title: title,
+        link: url,
+        imgUrl: playerInfo.album[0],
+        success: function () {
+          Toast.success("分享成功")
+        },
+        cancel: function () {
+          Toast.fail('取消分享')
+        },
+        fail: function (res) {
+          Toast.fail('fail:' + res.errMsg)
+        },
+        complete: function (res) {
+          Toast.success('complete:' + res.errMsg)
+        }
+      })
+  
+      wx.onMenuShareAppMessage({
+        title: title,
+        link: url,
+        imgUrl: playerInfo.album[0],
+        desc: '',
+        success: function () {
+          Toast.success("分享成功")
+        },
+        cancel: function () {
+          Toast.fail('取消分享')
+        },
+        fail: function (res) {
+          Toast.fail('fail:' + res.errMsg)
+        },
+        complete: function (res) {
+          Toast.success('complete:' + res.errMsg)
+        }
+      })
+    })
   }
 
   onLoadMoreRecvGifts = () => {
@@ -218,8 +145,11 @@ class Player extends React.PureComponent {
 
   renderContent() {
     const {playerInfo} = this.props
+    if (!playerInfo) {
+      return null
+    }
     return(
-      <div>
+      <div style={{backgroundColor: '#fff'}}>
         {
           playerInfo.album.map((value, index) => (
             <div key={index} className={styles.imageView}>
@@ -241,9 +171,9 @@ class Player extends React.PureComponent {
       </div>
     )
   }
-
-  onCloseGitfTrip = () => {
-    this.setState({showGitfTrip: false})
+  
+  onCloseShareGuider = () => {
+    this.setState({showShareGuider: false})
   }
 
   voteForPlayerActionSuccess = () => {
@@ -251,8 +181,7 @@ class Player extends React.PureComponent {
     Toast.success('投票成功', 2)
     setTimeout(function () {
       that.setState({
-        showGitfTrip: true,
-        tripMsg: '投票成功！每天可以投一票，明天继续参与哦！',
+        showShareGuider: true
       })
     }, 2000)
   }
@@ -262,10 +191,7 @@ class Player extends React.PureComponent {
       Toast.fail('今日已投票', 2)
       let that = this
       setTimeout(function () {
-        that.setState({
-          showGitfTrip: true,
-          tripMsg: '今天的选票已经用完啦！分享给其他小伙伴来支持我吧！',
-        })
+        that.setState({showShareGuider: true})
       }, 2000)
     } else if(error.code === errno.ERROR_VOTE_WAS_DONE) {
       Toast.fail('活动已结束')
@@ -282,11 +208,31 @@ class Player extends React.PureComponent {
       }
     })
   }
-
-
-
+  
+  votePress = () => {
+    const {playerId, voteForPlayerAction, getJsApiConfig, entryURL} = this.props
+    const OS = getMobileOperatingSystem()
+    let jssdkURL = window.location.href
+    if(OS === 'iOS') {
+      //微信JS-SDK Bug: SPA(单页应用)ios系统必须使用首次加载的url初始化jssdk
+      jssdkURL = entryURL
+    }
+    getJsApiConfig({
+      debug: __DEV__? false: false,
+      jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage', 'scanQRCode'].toString(),
+      url: jssdkURL.split('#')[0],
+      success: this.getJsApiConfigSuccess,
+      error: (error) => {console.log(error)}
+    })
+  
+    voteForPlayerAction({
+      playerId: playerId,
+      success: this.voteForPlayerActionSuccess,
+      error: this.voteForPlayerActionError,
+    })
+  }
+  
   render() {
-    const {playerId, voteForPlayerAction} = this.props
     return (
       <div className={styles.page}>
         <TabBar>
@@ -310,13 +256,7 @@ class Player extends React.PureComponent {
             icon={<div className={styles.voteIcon} />}
             selectedIcon={<div className={styles.voteIcon}/>}
             selected={this.state.selectedTab === 'voteTab'}
-            onPress={() => {
-              voteForPlayerAction({
-                playerId: playerId,
-                success: this.voteForPlayerActionSuccess,
-                error: this.voteForPlayerActionError,
-              })
-            }}
+            onPress={this.votePress}
           >
           </Item>
           <Item
@@ -329,10 +269,8 @@ class Player extends React.PureComponent {
           >
           </Item>
         </TabBar>
-        <GitfTrip visible={this.state.showGitfTrip}
-                  message={this.state.tripMsg}
-                  onClose={this.onCloseGitfTrip}
-                  onShare={this.showShareActionSheet}
+        <ShareGuider visible={this.state.showShareGuider}
+                     onClose={this.onCloseShareGuider}
         />
       </div>
 
