@@ -17,7 +17,9 @@ export default class ShareGuider extends React.PureComponent {
     
     return (
       <div className={styles.shareGuiderPage} onClick={() => onClose()}>
-        <div>一次可以转发9个群哦！</div>
+        <div style={{textAlign: 'center'}}>
+          <img className={styles.tipImg} src="http://lc-l3cae9l7.cn-n1.lcfile.com/7f80988f3f44c9a587d3.png"/>
+        </div>
       </div>
     )
   }

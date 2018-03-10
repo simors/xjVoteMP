@@ -8,5 +8,9 @@
   z-index: 1000;
   display: flex;
   justify-content: center;
-  align-items: center;
+
+  .tipImg {
+    width: 80%;
+    height: auto;
+  }
 }
