@@ -80,15 +80,16 @@ class VoteListPage extends React.PureComponent {
   }
   
   renderCover(vote) {
+    const {history} = this.props
     if (vote.cover) {
       return (
-        <div className={styles.cover} onClick={() => {history.push('/vote/' + rowData.id)}}>
+        <div className={styles.cover} onClick={() => {history.push('/vote/' + vote.id)}}>
           <img className={styles.img} src={vote.cover} alt=""/>
         </div>
       )
     } else if (vote.coverSet) {
       return (
-        <div className={styles.cover} onClick={() => {history.push('/vote/' + rowData.id)}}>
+        <div className={styles.cover} onClick={() => {history.push('/vote/' + vote.id)}}>
           <img className={styles.img} src={vote.coverSet[0]} alt=""/>
         </div>
       )
@@ -97,7 +98,6 @@ class VoteListPage extends React.PureComponent {
 
   render() {
     const {dataSource} = this.state
-    const {history} = this.props
     const row = (rowData, sectionID, rowID) => {
       let itemStyle = {
 
