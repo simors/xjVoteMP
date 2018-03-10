@@ -78,6 +78,22 @@ class VoteListPage extends React.PureComponent {
       },
     })
   }
+  
+  renderCover(vote) {
+    if (vote.cover) {
+      return (
+        <div className={styles.cover} onClick={() => {history.push('/vote/' + rowData.id)}}>
+          <img className={styles.img} src={vote.cover} alt=""/>
+        </div>
+      )
+    } else if (vote.coverSet) {
+      return (
+        <div className={styles.cover} onClick={() => {history.push('/vote/' + rowData.id)}}>
+          <img className={styles.img} src={vote.coverSet[0]} alt=""/>
+        </div>
+      )
+    }
+  }
 
   render() {
     const {dataSource} = this.state
@@ -89,9 +105,7 @@ class VoteListPage extends React.PureComponent {
 
       return (
         <div key={rowID} className={styles.voteItem} style={itemStyle}>
-          <div className={styles.cover} onClick={() => {history.push('/vote/' + rowData.id)}}>
-            <img className={styles.img} src={rowData.cover} alt=""/>
-          </div>
+          {this.renderCover(rowData)}
           <WhiteSpace />
           <WingBlank>
             <div className={styles.title}>
