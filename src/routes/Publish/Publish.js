@@ -17,7 +17,7 @@ class Publish extends React.PureComponent {
     this.state = {
       cover: [],
       title: undefined,
-      endDate: (new Date()).toLocaleDateString(),
+      endDate: DateTime.format(new Date()),
       noticeContent: undefined,
       ruleContent: undefined,
     }
