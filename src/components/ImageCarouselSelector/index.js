@@ -1,16 +1,16 @@
 /**
- * Created by wanpeng on 2017/12/27.
+ * Created by yangyang on 2018/3/10.
  */
 import React from 'react'
 import {connect} from 'react-redux'
-import styles from './imageselector.module.scss'
+import styles from './imagecarouselselector.module.scss'
 import wx from 'tencent-wx-jssdk'
 import {appStateAction, appStateSelector} from '../../utils/appstate'
-import {WhiteSpace, Toast,} from 'antd-mobile'
+import {Toast, Carousel} from 'antd-mobile'
 import {getMobileOperatingSystem} from '../../utils/OS'
 import {getLocalImgDataAsync, uploadImageAsync, chooseImageAsync, checkJsApiAsync} from '../../utils/wechatUtil'
 
-class ImageSelector extends React.Component {
+class ImageCarouselSelector extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -19,7 +19,7 @@ class ImageSelector extends React.Component {
       serverIds: props.value || [],
     }
   }
-
+  
   componentWillMount() {
     const {getJsApiConfig, entryURL} = this.props
     const OS = getMobileOperatingSystem()
@@ -29,18 +29,18 @@ class ImageSelector extends React.Component {
       jssdkURL = entryURL
     }
     getJsApiConfig({
-      debug: __DEV__? true: false,
+      debug: __DEV__? false: false,
       jsApiList: ['chooseImage', 'previewImage', 'getLocalImgData', 'uploadImage'].toString(),
       url: jssdkURL,
       success: this.getJsApiConfigSuccess,
       error: (error) => {console.log(error)}
     })
   }
-
+  
   getJsApiConfigSuccess = (configInfo) => {
     wx.config(configInfo)
   }
-
+  
   async getLocalImgDataList(localIds) {
     if(!localIds || localIds.length === 0) {
       return undefined
@@ -57,7 +57,7 @@ class ImageSelector extends React.Component {
     }
     return localDataList
   }
-
+  
   async uploadImageList(localIds) {
     let serverIds = []
     for(let i = 0; i < localIds.length; i++) {
@@ -71,7 +71,7 @@ class ImageSelector extends React.Component {
     }
     return serverIds
   }
-
+  
   onSelectImage = async () => {
     const {count, onChange} = this.props
     let residueCount = count - this.state.localIds.length
@@ -92,48 +92,8 @@ class ImageSelector extends React.Component {
       Toast.fail("图片选择失败")
     }
   }
-
-  async onReplaceImage(index) {
-    const {localIds, localDataList, serverIds} = this.state
-    const {onChange} = this.props
-    try {
-      let result = await chooseImageAsync(wx, 1)
-      let selectedLocalId = result[0]
-      localIds[index] = selectedLocalId
-      this.setState({localIds})
-      if(window.__wxjs_is_wkwebview) {  //适配iOS WKWebview
-        let localData = await getLocalImgDataAsync(wx, selectedLocalId)
-        localDataList[index] = localData
-        this.setState({localDataList})
-      }
-      let serverId = await uploadImageAsync(wx, selectedLocalId)
-      serverIds[index] = serverId
-      this.setState(serverIds)
-      onChange(serverIds)
-    } catch (e) {
-      console.error(e)
-      Toast.fail("图片选择失败")
-    }
-  }
-
-  async onDeleteImage(e, index) {
-    e.preventDefault()
-    let {localIds, localDataList, serverIds} = this.state
-    const {onChange} = this.props
-    try {
-      localIds.splice(index, 1)
-      if(window.__wxjs_is_wkwebview) {
-        localDataList.splice(index, 1)
-      }
-      serverIds.splice(index, 1)
-      this.setState({localIds: localIds, localDataList: localDataList, serverIds})
-      onChange(serverIds)
-    } catch (e) {
-      Toast.fail("删除图片失败")
-    }
-  }
-
-  renderCover() {
+  
+  renderCarousel() {
     const {localIds, localDataList} = this.state
     const {count, trip} = this.props
     let imageSrcList = window.__wxjs_is_wkwebview? localDataList : localIds
@@ -144,47 +104,27 @@ class ImageSelector extends React.Component {
           <div className={styles.desc}>{trip}</div>
         </div>
       )
-    } else if(imageSrcList.length < count) {
-      return(
-        <div>
-          {
-            imageSrcList.map((value, index) => (
-              <div key={index} className={styles.cover}>
-                <img className={styles.img} src={value} alt="" onClick={() => this.onReplaceImage(index)}/>
-                <div className={styles.close} onClick={(e) => this.onDeleteImage(e, index)}>
-                  <img className={styles.img} src={require('../../asset/images/close.png')} alt=""/>
-                </div>
-              </div>
-            ))
-          }
-          <div className={styles.defaultCover} onClick={this.onSelectImage}>
-            <img className={styles.icon} src={require('../../asset/images/photo.png')} alt=""/>
-            <div className={styles.desc}>{trip}</div>
-          </div>
-        </div>
-      )
     } else {
-      return(
+      return (
         <div>
-          {
-            imageSrcList.map((value, index) => (
-              <div key={index} className={styles.cover}>
-                <img className={styles.img} src={value} alt="" onClick={() => this.onReplaceImage(index)}/>
-                <div className={styles.close} onClick={(e) => this.onDeleteImage(e, index)}>
-                  <img className={styles.img} src={require('../../asset/images/close.png')} alt=""/>
+          <Carousel autoplay infinite selectedIndex={0}>
+            {
+              imageSrcList.map((value, index) => (
+                <div key={index} className={styles.cover} onClick={this.onSelectImage}>
+                  <img className={styles.img} src={value} alt=""/>
                 </div>
-              </div>
-            ))
-          }
+              ))
+            }
+          </Carousel>
         </div>
       )
     }
   }
-
+  
   render() {
-    return(
+    return (
       <div className={styles.container}>
-        {this.renderCover()}
+        {this.renderCarousel()}
       </div>
     )
   }
@@ -200,4 +140,4 @@ const mapDispatchToProps = {
   ...appStateAction,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ImageSelector)
+export default connect(mapStateToProps, mapDispatchToProps)(ImageCarouselSelector)

@@ -12,14 +12,12 @@ const PublishVoteRecord = Record({
   id: undefined,
   type: undefined,
   title: undefined,
-  cover: undefined,
+  coverSet: undefined,
   notice:  undefined,
   rule: undefined,
   organizer: undefined,
   awards: undefined,
   gifts: undefined,
-  startDate: undefined,
-  expire: undefined,
   status: undefined,
   endDate: undefined,
   createdAt: undefined,
@@ -34,14 +32,12 @@ class PublishVote extends PublishVoteRecord {
         record.set('id', lcObj.objectId)
         record.set('type', lcObj.type)
         record.set('title', lcObj.title)
-        record.set('cover', lcObj.cover)
+        record.set('coverSet', lcObj.coverSet)
         record.set('notice', lcObj.notice)
         record.set('rule', lcObj.rule)
         record.set('organizer', lcObj.organizer)
         record.set('awards', lcObj.awards)
         record.set('gifts', lcObj.gifts)
-        record.set('startDate', lcObj.startDate)
-        record.set('expire', lcObj.expire)
         record.set('status', lcObj.status)
         record.set('endDate', lcObj.endDate)
         record.set('createdAt', lcObj.createdAt)
@@ -59,14 +55,12 @@ class PublishVote extends PublishVoteRecord {
         record.set('id', vote.id)
         record.set('type', vote.type)
         record.set('title', vote.title)
-        record.set('cover', vote.cover)
+        record.set('coverSet', vote.coverSet)
         record.set('notice', vote.notice)
         record.set('rule', vote.rule)
         record.set('organizer', vote.organizer)
         record.set('awards', vote.awards)
         record.set('gifts', vote.gifts)
-        record.set('startDate', vote.startDate)
-        record.set('expire', vote.expire)
         record.set('status', vote.status)
         record.set('endDate', vote.endDate)
         record.set('createdAt', vote.createdAt)
@@ -107,14 +101,12 @@ function* createOrUpdatePublishingVote(action) {
     id: payload.id,
     type: payload.type,
     title: payload.title,
-    cover: payload.cover,
+    coverSet: payload.coverSet,
     notice: payload.notice,
     rule: payload.rule,
     organizer: payload.organizer,
     awards: payload.awards,
     gifts: payload.gifts,
-    startDate: payload.startDate,
-    expire: payload.expire,
     status: payload.status,
     endDate: payload.endDate,
   }

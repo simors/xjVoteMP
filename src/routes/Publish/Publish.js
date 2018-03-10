@@ -6,7 +6,7 @@ import {connect} from 'react-redux'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import styles from './publish.module.scss'
 import {Button, WhiteSpace, WingBlank, List, InputItem, TextareaItem, DatePicker, Toast} from 'antd-mobile'
-import ImageSelector from '../../components/ImageSelector'
+import ImageCarouselSelector from '../../components/ImageCarouselSelector'
 import {publishAction, publishSelector} from './redux'
 import DateTime from '../../utils/datetime'
 
@@ -27,7 +27,7 @@ class Publish extends React.PureComponent {
     const {publishVote} = this.props
     if(publishVote) {
       this.setState({
-        cover: [publishVote.cover],
+        cover: publishVote.coverSet,
         title: publishVote.title,
         noticeContent: publishVote.notice,
         ruleContent: publishVote.rule,
@@ -39,10 +39,10 @@ class Publish extends React.PureComponent {
   onNext = () => {
     const {history, createOrUpdatePublishingVoteAction, publishVote, type} = this.props
     const {cover, title, endDate, noticeContent, ruleContent} = this.state
-    // if(!cover) {
-    //   Toast.fail("未上传封面")
-    //   return
-    // }
+    if(cover.length == 0) {
+      Toast.fail("未上传封面")
+      return
+    }
     if(!title) {
       Toast.fail("未输入活动名称")
       return
@@ -62,7 +62,7 @@ class Publish extends React.PureComponent {
     createOrUpdatePublishingVoteAction({
       ...publishVote,
       type: type || publishVote.type,
-      cover: cover[0],
+      coverSet: cover,
       title: title,
       endDate: endDate,
       notice: noticeContent,
@@ -79,7 +79,7 @@ class Publish extends React.PureComponent {
     const {cover, title, endDate, noticeContent, ruleContent} = this.state
     return (
       <div className={styles.page}>
-        <ImageSelector value={cover} trip="添加封面" count={1} onChange={this.selectCover} />
+        <ImageCarouselSelector value={cover} trip="添加封面，最多3张" count={3} onChange={this.selectCover} />
         <List>
           <InputItem value={title}
                      placeholder="请输入活动的名称"
@@ -88,7 +88,8 @@ class Publish extends React.PureComponent {
                       mode="date"
                       minDate={new Date()}
                       maxDate={new Date(DateTime.addDate(60))}
-                      onChange={date => this.setState({endDate: date.toLocaleDateString()})}>
+                      format={val => DateTime.format(val)}
+                      onChange={date => this.setState({endDate: DateTime.format(date)})}>
             <List.Item arrow="horizontal">结束日期</List.Item>
           </DatePicker>
           <TextareaItem value={noticeContent}

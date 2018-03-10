@@ -57,6 +57,14 @@ export default class DateTime {
     let D = givenDate.getDate()<10 ? '0'+givenDate.getDate() : givenDate.getDate()
     return Y+M+D
   }
+  
+  static formatDate(date) {
+    /* eslint no-confusing-arrow: 0 */
+    const pad = n => n < 10 ? `0${n}` : n;
+    const dateStr = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+    const timeStr = `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    return `${dateStr} ${timeStr}`;
+  }
 
   /**
    * 根据当前时间计算增加天数后的时间格式，YYYY-MM-DD

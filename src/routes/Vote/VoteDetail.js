@@ -6,7 +6,7 @@ import {connect} from 'react-redux'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import Countdown from '../../components/Countdown'
 import {voteSelector, VOTE_STATUS} from './redux'
-import {NoticeBar, WhiteSpace, WingBlank, SearchBar, Button} from 'antd-mobile'
+import {NoticeBar, WhiteSpace, WingBlank, SearchBar, Button, Carousel} from 'antd-mobile'
 import styles from './votedetail.module.scss'
 import VoteStat from '../../components/VoteStat'
 import VotePlayers from './VotePlayers'
@@ -52,6 +52,31 @@ class VoteDetail extends React.PureComponent {
     const {history, voteId} = this.props
     history.push('/searchPlayer/' + voteId + "/" + searchKey)
   }
+  
+  renderCoverImg() {
+    const {voteInfo} = this.props
+    if (voteInfo.cover) {
+      return (
+        <div className={styles.cover}>
+          <img className={styles.img} src={voteInfo.cover} alt=""/>
+        </div>
+      )
+    } else if (voteInfo.coverSet) {
+      return (
+        <div>
+          <Carousel autoplay infinite selectedIndex={0}>
+            {
+              voteInfo.coverSet.map((value, index) => (
+                <div key={index} className={styles.cover}>
+                  <img className={styles.img} src={value} alt=""/>
+                </div>
+              ))
+            }
+          </Carousel>
+        </div>
+      )
+    }
+  }
 
   render() {
     const {voteInfo, history, activeUserId} = this.props
@@ -60,9 +85,7 @@ class VoteDetail extends React.PureComponent {
         <NoticeBar marqueeProps={{ loop: true, style: { padding: '0 7.5px' } }}>
           {voteInfo.notice}
         </NoticeBar>
-        <div className={styles.cover}>
-          <img className={styles.img} src={voteInfo.cover} alt=""/>
-        </div>
+        {this.renderCoverImg()}
         <div className={styles.title}>{voteInfo.title}</div>
         <WhiteSpace />
         <VoteStat applyNum={voteInfo.applyNum} voteNum={voteInfo.voteNum} pv={voteInfo.pv} />
