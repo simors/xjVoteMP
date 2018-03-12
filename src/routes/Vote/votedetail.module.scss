@@ -4,18 +4,6 @@
   //overflow: scroll;
   //-webkit-overflow-scrolling: touch;
 
-  .title {
-    font-size: 16px;
-    font-weight: bold;
-    display: -webkit-box;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    word-break: break-all;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    background: rgba(0, 0, 0, 0.05);
-    padding: 10px 12px;
-  }
   .titleView {
     display: flex;
     align-items: center;
@@ -25,13 +13,18 @@
     min-height: 40px;
 
     .titleText {
-      display: flex;
-      flex: 1;
+      width: 100%;
+      height: 100%;
       padding: 5px 5px 5px 12px;
-      text-overflow: ellipsis;
-      word-break: break-all;
-      -webkit-box-orient: vertical;
+      display: -webkit-box;
       -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      font-size: 16px;
+      font-weight: bold;
+      max-height: 45px;
+      line-height: 18px;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .titleShareView {
@@ -75,6 +68,40 @@
     justify-content: center;
     .img {
       width: 100%;
+    }
+  }
+
+  .searchView {
+    margin: 10px 12px;
+    border: 1px solid #e6e6ea;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+
+    .searchBtnView {
+      background: #F6635F;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      width: 125px;
+      height: 30px;
+
+      .searchBtnText {
+        font-size: 14px;
+        color: #fff;
+      }
+    }
+
+    .searchInput {
+      font-size: 14px;
+      padding: 0 10px;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+      border: none;
     }
   }
 

@@ -6,7 +6,7 @@ import {connect} from 'react-redux'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import Countdown from '../../components/Countdown'
 import {voteSelector, VOTE_STATUS} from './redux'
-import {NoticeBar, WhiteSpace, WingBlank, SearchBar, Button, Carousel, Toast} from 'antd-mobile'
+import {NoticeBar, WhiteSpace, WingBlank, Button, Carousel, Toast} from 'antd-mobile'
 import styles from './votedetail.module.scss'
 import VoteStat from '../../components/VoteStat'
 import VotePlayers from './VotePlayers'
@@ -23,7 +23,8 @@ class VoteDetail extends React.PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      showShareGuider: false
+      showShareGuider: false,
+      searchKey: ''
     }
   }
   
@@ -104,22 +105,18 @@ class VoteDetail extends React.PureComponent {
   }
 
   renderSearchBar() {
-    const {voteInfo} = this.props
-    if(voteInfo.applyNum === 0) {
-      return(null)
-    }
-    return(
-      <WingBlank>
-        <SearchBar
-          placeholder="选手编号或姓名"
-          onSubmit={this.onSearch}
-          maxLength={10}
-        />
-      </WingBlank>
+    return (
+      <div className={styles.searchView}>
+        <input placeholder="输入选手编号或姓名搜索" className={styles.searchInput} onChange={(e) => this.setState({searchKey: e.target.value})}/>
+        <div className={styles.searchBtnView} onClick={this.onSearch}>
+          <div className={styles.searchBtnText}>搜索</div>
+        </div>
+      </div>
     )
   }
 
-  onSearch = (searchKey) => {
+  onSearch = () => {
+    let searchKey = this.state.searchKey
     const {history, voteId} = this.props
     history.push('/searchPlayer/' + voteId + "/" + searchKey)
   }
@@ -155,6 +152,7 @@ class VoteDetail extends React.PureComponent {
 
   render() {
     const {voteInfo, history, activeUserId} = this.props
+    document.title = voteInfo.title
     return (
       <div className={styles.page}>
         <NoticeBar marqueeProps={{ loop: true, style: { padding: '0 7.5px' } }}>
