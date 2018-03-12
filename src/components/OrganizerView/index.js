@@ -38,9 +38,9 @@ export default class OrganizerView extends React.PureComponent {
     return(
       <div className={styles.container}>
         <div className={styles.title}>
-          <img className={styles.icon} src={require('../../asset/images/item.png')} alt=""/>
           <div className={styles.text}>主办方介绍</div>
         </div>
+        <WhiteSpace />
         {this.renderContent()}
       </div>
     )
