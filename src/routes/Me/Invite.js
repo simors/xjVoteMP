@@ -25,7 +25,7 @@ class Invite extends React.PureComponent {
       jssdkURL = entryURL
     }
     getJsApiConfig({
-      debug: __DEV__? true: true,
+      debug: __DEV__? false: false,
       jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage'].toString(),
       url: jssdkURL,
       success: this.getJsApiConfigSuccess,
