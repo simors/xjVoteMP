@@ -14,7 +14,8 @@ import wx from 'tencent-wx-jssdk'
 import {appStateAction, appStateSelector} from '../../utils/appstate'
 import {getMobileOperatingSystem} from '../../utils/OS'
 import appConfig from '../../utils/appConfig'
-
+import VoteCover from '../../components/VoteCover'
+import Countdown from '../../components/Countdown'
 
 const Item = TabBar.Item
 
@@ -30,9 +31,28 @@ class Player extends React.PureComponent {
     }
   }
 
-  componentWillMount() {
+  componentDidMount() {
     let that = this
-    const {playerId, fetchPlayerRecvGiftsAction, fetchPlayerByIdAction} = this.props
+    const {playerId, fetchPlayerRecvGiftsAction, fetchPlayerByIdAction, fetchVoteByIdAction, match, getJsApiConfig, entryURL} = this.props
+  
+    const OS = getMobileOperatingSystem()
+    let jssdkURL = window.location.href
+    if(OS === 'iOS') {
+      //微信JS-SDK Bug: SPA(单页应用)ios系统必须使用首次加载的url初始化jssdk
+      jssdkURL = entryURL
+    }
+    getJsApiConfig({
+      debug: __DEV__? false: false,
+      jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage'].toString(),
+      url: jssdkURL.split('#')[0],
+      success: this.getJsApiConfigSuccess,
+      error: (error) => {console.log(error)}
+    })
+    
+    const {voteId} = match.params
+    if (voteId) {
+      fetchVoteByIdAction({voteId, updateStatus: true})
+    }
     fetchPlayerByIdAction({playerId})
     fetchPlayerRecvGiftsAction({
       playerId: playerId,
@@ -144,12 +164,15 @@ class Player extends React.PureComponent {
   }
 
   renderContent() {
-    const {playerInfo} = this.props
-    if (!playerInfo) {
+    const {playerInfo, voteInfo} = this.props
+    if (!playerInfo || !voteInfo) {
       return null
     }
     return(
       <div style={{backgroundColor: '#fff'}}>
+        <VoteCover voteInfo={voteInfo}/>
+        <Countdown counter={voteInfo.counter} />
+        <WhiteSpace />
         {
           playerInfo.album.map((value, index) => (
             <div key={index} className={styles.imageView}>
@@ -221,20 +244,7 @@ class Player extends React.PureComponent {
   }
   
   votePress = () => {
-    const {playerId, voteForPlayerAction, getJsApiConfig, entryURL} = this.props
-    const OS = getMobileOperatingSystem()
-    let jssdkURL = window.location.href
-    if(OS === 'iOS') {
-      //微信JS-SDK Bug: SPA(单页应用)ios系统必须使用首次加载的url初始化jssdk
-      jssdkURL = entryURL
-    }
-    getJsApiConfig({
-      debug: __DEV__? false: false,
-      jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage'].toString(),
-      url: jssdkURL.split('#')[0],
-      success: this.getJsApiConfigSuccess,
-      error: (error) => {console.log(error)}
-    })
+    const {playerId, voteForPlayerAction} = this.props
   
     voteForPlayerAction({
       playerId: playerId,
@@ -298,7 +308,8 @@ const mapStateToProps = (state, ownProps) => {
     playerId,
     playerInfo,
     entryURL: appStateSelector.selectEntryURL(state),
-    playerGiftList: voteSelector.selectPlayerRecvGiftList(state, playerId)
+    playerGiftList: voteSelector.selectPlayerRecvGiftList(state, playerId),
+    voteInfo: voteSelector.selectVote(state, voteId)
   }
 }
 

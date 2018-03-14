@@ -7,6 +7,21 @@ export async function fetchVotesApi(payload) {
   return await AV.Cloud.run('voteFetchSet', payload)
 }
 
+export async function fetchVoteInfoById(payload) {
+  let params = {
+    voteId: payload.voteId,
+      updateStatus: payload.updateStatus
+  }
+  return await AV.Cloud.run('voteFetchById', params)
+}
+
+export async function incVotePv(payload) {
+  let params = {
+    voteId: payload.voteId
+  }
+  return await AV.Cloud.run('voteIncVotePv', params)
+}
+
 export async function fetchVotePlayers(payload) {
   return await AV.Cloud.run('voteFetchVotePlayers', payload)
 }

@@ -198,6 +198,7 @@ const FETCH_VOTE_PLAYERS = 'FETCH_VOTE_PLAYERS'
 const UPDATE_VOTE_PLAYER_LIST = 'UPDATE_VOTE_PLAYER_LIST'
 const FETCH_VOTE_RANK = 'FETCH_VOTE_RANK'
 const UPDATE_VOTE_RANK_LIST = 'UPDATE_VOTE_RANK_LIST'
+const FETCH_VOTE_BY_ID = 'FETCH_VOTE_BY_ID'
 const FETCH_PLAYER_BY_ID = 'FETCH_PLAYER_BY_ID'
 const VOTE_FOR_PLAYER = 'VOTE_FOR_PLAYER'
 const SAVE_PLAYER = 'SAVE_PLAYER'
@@ -234,6 +235,7 @@ export const VOTE_SEARCH_TYPE = {
 /**** Action ****/
 export const voteActions = {
   fetchVotesAction: createAction(FETCH_VOTES),
+  fetchVoteByIdAction: createAction(FETCH_VOTE_BY_ID),
   fetchVotePlayersAction: createAction(FETCH_VOTE_PLAYERS),
   fetchPlayerByIdAction: createAction(FETCH_PLAYER_BY_ID),
   voteForPlayerAction: createAction(VOTE_FOR_PLAYER),
@@ -252,6 +254,7 @@ export const voteActions = {
   disablePlayerAction: createAction(DISABLE_PLAYER),
   fetchGiftsAction: createAction(FETCH_GIFTS),
 }
+const saveVoteAction = createAction(SAVE_VOTE)
 const updateVoteListAction = createAction(UPDATE_VOTE_LIST)
 const updateVotePlayerListAction = createAction(UPDATE_VOTE_PLAYER_LIST)
 const updateVoteRankListAction = createAction(UPDATE_VOTE_RANK_LIST)
@@ -278,6 +281,23 @@ function* fetchVotes(action) {
     } else {
       yield put(updateVoteListAction({votes: votes, isRefresh: apiPayload.lastTime? false : true}))
     }
+    if(payload.success) {
+      payload.success()
+    }
+  } catch (error) {
+    console.error(error)
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
+}
+
+function* fetchVoteById(action) {
+  let payload = action.payload
+  
+  try {
+    let vote = yield call(voteCloud.fetchVoteInfoById, payload)
+    yield put(saveVoteAction({vote}))
     if(payload.success) {
       payload.success()
     }
@@ -582,6 +602,7 @@ function* fetchGifts(action) {
 
 export const voteSaga = [
   takeLatest(FETCH_VOTES, fetchVotes),
+  takeLatest(FETCH_VOTE_BY_ID, fetchVoteById),
   takeLatest(FETCH_VOTE_PLAYERS, fetchVotePlayers),
   takeLatest(FETCH_PLAYER_BY_ID, fetchPlayerById),
   takeLatest(VOTE_FOR_PLAYER, voteForPlayer),
@@ -753,6 +774,9 @@ function handleBatchSaveVote(state, action) {
 }
 
 function handleSaveVote(state, action) {
+  let vote = action.payload.vote
+  let voteRecord = Vote.fromJson(vote)
+  state = state.setIn(['allVotes', vote.id], voteRecord)
   return state
 }
 
