@@ -166,6 +166,17 @@ class Player extends React.PureComponent {
         </div>
         <WhiteSpace />
         <PlayerStat number={playerInfo.number} voteNum={playerInfo.voteNum} giftNum={playerInfo.giftNum} pv={playerInfo.pv} />
+        
+        <div className={styles.shareView}>
+          <div className={styles.shareBtnView} onClick={() => this.setState({showShareGuider: true})}>
+            <img className={styles.shareImg} src="http://lc-l3cae9l7.cn-n1.lcfile.com/f5455f55c0fe11e0488c.png" />
+            <div className={styles.shareTipView}>
+              <div className={styles.shareTxtBig}>觉得不错，就为TA拉票吧！</div>
+              <div className={styles.shareTxtSmall}>分享到微信，一次可以转发九个群</div>
+            </div>
+          </div>
+        </div>
+        
         {this.renderRecvGifts()}
         <div style={{width: '100%', height: '50px'}}></div>
       </div>
