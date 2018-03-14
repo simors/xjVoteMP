@@ -13,7 +13,6 @@ import VotePlayers from './VotePlayers'
 import OrganizerView from '../../components/OrganizerView'
 import ManagerBtn from './ManagerBtn'
 import {authSelector} from '../../utils/auth'
-import ShareGuider from '../../components/ShareGuider'
 import {getMobileOperatingSystem} from '../../utils/OS'
 import {appStateAction, appStateSelector} from '../../utils/appstate'
 import wx from 'tencent-wx-jssdk'
@@ -25,7 +24,6 @@ class VoteDetail extends React.PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      showShareGuider: false,
       searchKey: ''
     }
   }
@@ -122,10 +120,6 @@ class VoteDetail extends React.PureComponent {
     const {history, voteId} = this.props
     history.push('/searchPlayer/' + voteId + "/" + searchKey)
   }
-  
-  onCloseShareGuider = () => {
-    this.setState({showShareGuider: false})
-  }
 
   render() {
     const {voteInfo, history, activeUserId} = this.props
@@ -136,7 +130,7 @@ class VoteDetail extends React.PureComponent {
           {voteInfo.notice}
         </NoticeBar>
         <VoteCover voteInfo={voteInfo}/>
-        <VoteTitle title={voteInfo.title} onClick={() => this.setState({showShareGuider: true})}/>
+        <VoteTitle title={voteInfo.title}/>
         <WhiteSpace />
         <VoteStat applyNum={voteInfo.applyNum} voteNum={voteInfo.voteNum} pv={voteInfo.pv} />
         <Countdown counter={voteInfo.counter} />
@@ -154,10 +148,6 @@ class VoteDetail extends React.PureComponent {
           </div>
           <div className={styles.trip}>本活动由小吉互动提供技术支持</div>
         </div>
-  
-        <ShareGuider visible={this.state.showShareGuider}
-                     onClose={this.onCloseShareGuider}
-        />
       </div>
     )
   }
