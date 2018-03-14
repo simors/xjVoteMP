@@ -84,9 +84,9 @@ class Apply extends React.PureComponent {
           <ImageSelector trip="请上传参赛图片" count={3} onChange={this.selectImage} />
         </WingBlank>
         <WhiteSpace />
-        <WingBlank>
+        <div className={styles.btnView}>
           <Button type="primary" onClick={this.submitApply}>提交</Button>
-        </WingBlank>
+        </div>
       </div>
     )
   }

@@ -26,7 +26,7 @@ class VoteDetail extends React.PureComponent {
 
   renderApplyBtn() {
     const {voteInfo, onSwitchTab} = this.props
-    if(voteInfo.status === VOTE_STATUS.STARTING) {
+    if(voteInfo.status === VOTE_STATUS.WAITING) {
       return (
         <WingBlank>
           <Button type="primary" onClick={() => onSwitchTab('applyTab')}>我要报名</Button>
@@ -68,8 +68,8 @@ class VoteDetail extends React.PureComponent {
         <VoteStat applyNum={voteInfo.applyNum} voteNum={voteInfo.voteNum} pv={voteInfo.pv} />
         <Countdown counter={voteInfo.counter} />
         <WhiteSpace />
-        {this.renderSearchBar()}
         {this.renderApplyBtn()}
+        {this.renderSearchBar()}
         <WhiteSpace />
         <VotePlayers voteId={voteInfo.id} history={history} />
         <OrganizerView organizer={voteInfo.organizer} />
