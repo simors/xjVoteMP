@@ -33,7 +33,7 @@ class Player extends React.PureComponent {
 
   componentDidMount() {
     let that = this
-    const {playerId, fetchPlayerRecvGiftsAction, fetchPlayerByIdAction, fetchVoteByIdAction, match, getJsApiConfig, entryURL} = this.props
+    const {playerId, fetchPlayerRecvGiftsAction, fetchPlayerByIdAction, fetchVoteByIdAction, isVoteAllowedAction, match, getJsApiConfig, entryURL} = this.props
   
     const OS = getMobileOperatingSystem()
     let jssdkURL = window.location.href
@@ -52,6 +52,7 @@ class Player extends React.PureComponent {
     const {voteId} = match.params
     if (voteId) {
       fetchVoteByIdAction({voteId, updateStatus: true})
+      isVoteAllowedAction({voteId})
     }
     fetchPlayerByIdAction({playerId})
     fetchPlayerRecvGiftsAction({
@@ -253,6 +254,67 @@ class Player extends React.PureComponent {
     })
   }
   
+  renderMainBtn() {
+    let {voteAllowed} = this.props
+    if (voteAllowed) {
+      return (
+        <Item
+          title="投票"
+          key="vote"
+          icon={<div className={styles.voteIcon} />}
+          selectedIcon={<div className={styles.voteIcon}/>}
+          selected={this.state.selectedTab === 'voteTab'}
+          onPress={this.votePress}
+        >
+        </Item>
+      )
+    } else {
+      return (
+        <Item
+          title="投票"
+          key="vote"
+          icon={<div className={styles.voteDoneIcon} />}
+          selectedIcon={<div className={styles.voteDoneIcon}/>}
+          selected={this.state.selectedTab === 'voteTab'}
+          onPress={() => this.setState({showShareGuider: true})}
+        >
+        </Item>
+      )
+    }
+  }
+  
+  renderRightBtn() {
+    let {voteInfo} = this.props
+    if (!voteInfo) {
+      return null
+    }
+    if (voteInfo.type == 1) {
+      return (
+        <Item
+          title="礼物"
+          key="gift"
+          icon={<div className={styles.giftIcon} />}
+          selectedIcon={<div className={styles.giftIcon}/>}
+          selected={this.state.selectedTab === 'giftTab'}
+          onPress={this.gotoPresent}
+        >
+        </Item>
+      )
+    } else {
+      return (
+        <Item
+          title="关于"
+          key="about"
+          icon={<div className={styles.aboutIcon} />}
+          selectedIcon={<div className={styles.aboutIcon}/>}
+          selected={this.state.selectedTab === 'aboutTab'}
+          onPress={this.gotoPresent}
+        >
+        </Item>
+      )
+    }
+  }
+  
   render() {
     return (
       <div className={styles.page}>
@@ -271,24 +333,8 @@ class Player extends React.PureComponent {
           >
             {this.renderContent()}
           </Item>
-          <Item
-            title="投票"
-            key="vote"
-            icon={<div className={styles.voteIcon} />}
-            selectedIcon={<div className={styles.voteIcon}/>}
-            selected={this.state.selectedTab === 'voteTab'}
-            onPress={this.votePress}
-          >
-          </Item>
-          <Item
-            title="礼物"
-            key="gift"
-            icon={<div className={styles.giftIcon} />}
-            selectedIcon={<div className={styles.giftIcon}/>}
-            selected={this.state.selectedTab === 'giftTab'}
-            onPress={this.gotoPresent}
-          >
-          </Item>
+          {this.renderMainBtn()}
+          {this.renderRightBtn()}
         </TabBar>
         <ShareGuider visible={this.state.showShareGuider}
                      onClose={this.onCloseShareGuider}
@@ -309,7 +355,8 @@ const mapStateToProps = (state, ownProps) => {
     playerInfo,
     entryURL: appStateSelector.selectEntryURL(state),
     playerGiftList: voteSelector.selectPlayerRecvGiftList(state, playerId),
-    voteInfo: voteSelector.selectVote(state, voteId)
+    voteInfo: voteSelector.selectVote(state, voteId),
+    voteAllowed: voteSelector.selectVoteAllowed(state)
   }
 }
 

@@ -84,3 +84,10 @@ export async function disablePlayer(payload) {
 export async function fetchGifts(payload) {
   return await AV.Cloud.run('voteFetchGifts', payload)
 }
+
+export async function isVoteAllowed(payload) {
+  let params = {
+    voteId: payload.voteId
+  }
+  return await AV.Cloud.run('voteIsVoteAllowed', params)
+}

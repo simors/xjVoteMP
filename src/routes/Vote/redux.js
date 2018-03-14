@@ -187,6 +187,7 @@ const VoteState = Record({
   playerGiftList: Map(),  // 参赛者接收礼品列表：键-playerId, 值-giftMapId
   ownerVoteList: List(),  // 用户自己的投票列表
   totalGiftList: List(),  // 全部礼品列表
+  voteAllowed: undefined, // 是否允许投票
 }, 'VoteState')
 
 /**** Constant ****/
@@ -217,6 +218,8 @@ const ENABLE_PLAYER_APPLY = 'ENABLE_PLAYER_APPLY'
 const DISABLE_PLAYER = 'DISABLE_PLAYER'
 const FETCH_GIFTS = 'FETCH_GIFTS'
 const UPDATE_TOTAL_GIFT_LIST = 'UPDATE_TOTAL_GIFT_LIST'
+const IS_VOTE_ALLOWED = 'IS_VOTE_ALLOWED'
+const UPDATE_VOTE_ALLOWED = 'UPDATE_VOTE_ALLOWED'
 
 export const VOTE_STATUS = {
   EDITING:    1,        // 正在编辑
@@ -253,6 +256,7 @@ export const voteActions = {
   enablePlayerApplyAction: createAction(ENABLE_PLAYER_APPLY),
   disablePlayerAction: createAction(DISABLE_PLAYER),
   fetchGiftsAction: createAction(FETCH_GIFTS),
+  isVoteAllowedAction: createAction(IS_VOTE_ALLOWED)
 }
 const saveVoteAction = createAction(SAVE_VOTE)
 const updateVoteListAction = createAction(UPDATE_VOTE_LIST)
@@ -262,6 +266,7 @@ const updateVoteGiftListAction = createAction(UPDATE_VOTE_GIFT_LIST)
 const updatePlayerGiftListAction = createAction(UPDATE_PLAYER_GIFTS_LIST)
 const updateOwnerVoteListAction = createAction(UPDATE_OWNER_VOTE_LIST)
 const updateTotalGiftListAction = createAction(UPDATE_TOTAL_GIFT_LIST)
+const updateVoteAllowedAction = createAction(UPDATE_VOTE_ALLOWED)
 
 /**** Saga ****/
 function* fetchVotes(action) {
@@ -600,6 +605,24 @@ function* fetchGifts(action) {
   }
 }
 
+function* isVoteAllowed(action) {
+  let payload = action.payload
+  
+  try {
+    let allow = yield call(voteCloud.isVoteAllowed, payload)
+    yield put(updateVoteAllowedAction({allow}))
+    
+    if(payload.success) {
+      payload.success()
+    }
+  } catch (error) {
+    console.error(error)
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
+}
+
 export const voteSaga = [
   takeLatest(FETCH_VOTES, fetchVotes),
   takeLatest(FETCH_VOTE_BY_ID, fetchVoteById),
@@ -615,7 +638,8 @@ export const voteSaga = [
   takeLatest(SET_VOTE_DISABLE, setVoteDisable),
   takeLatest(ENABLE_PLAYER_APPLY, enablePlayerApply),
   takeLatest(DISABLE_PLAYER, disablePlayer),
-  takeLatest(FETCH_GIFTS, fetchGifts)
+  takeLatest(FETCH_GIFTS, fetchGifts),
+  takeLatest(IS_VOTE_ALLOWED, isVoteAllowed)
 ]
 
 /**** Reducer ****/
@@ -647,6 +671,8 @@ export function voteReducer(state = initialState, action) {
       return handleUpdateOwnerVoteList(state, action)
     case UPDATE_TOTAL_GIFT_LIST:
       return handleUpdateTotalGiftList(state, action)
+    case UPDATE_VOTE_ALLOWED:
+      return handleUpdateVoteAllowed(state, action)
     case REHYDRATE:
       return onRehydrate(state, action)
     default:
@@ -806,6 +832,12 @@ function handleBatchSaveGift(state, action) {
   return state
 }
 
+function handleUpdateVoteAllowed(state, action) {
+  let allow = action.payload.allow
+  state = state.set('voteAllowed', allow)
+  return state
+}
+
 function onRehydrate(state, action) {
   var incoming = action.payload.VOTE
   if (!incoming) return state
@@ -961,6 +993,10 @@ function selectTotalGift(state) {
   return giftListInfo
 }
 
+function selectVoteAllowed(state) {
+  return state.VOTE.get('voteAllowed')
+}
+
 export const voteSelector = {
   selectVoteList,
   selectVote,
@@ -972,6 +1008,7 @@ export const voteSelector = {
   selectPlayerRecvGiftList,
   selectOwnerVoteList,
   selectTotalGift,
+  selectVoteAllowed
 }
 
 
