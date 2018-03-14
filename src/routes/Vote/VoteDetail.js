@@ -6,7 +6,7 @@ import {connect} from 'react-redux'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import Countdown from '../../components/Countdown'
 import {voteSelector, VOTE_STATUS} from './redux'
-import {NoticeBar, WhiteSpace, WingBlank, Button, Carousel, Toast} from 'antd-mobile'
+import {NoticeBar, WhiteSpace, WingBlank, Button, Toast} from 'antd-mobile'
 import styles from './votedetail.module.scss'
 import VoteStat from '../../components/VoteStat'
 import VotePlayers from './VotePlayers'
@@ -18,6 +18,8 @@ import {getMobileOperatingSystem} from '../../utils/OS'
 import {appStateAction, appStateSelector} from '../../utils/appstate'
 import wx from 'tencent-wx-jssdk'
 import appConfig from '../../utils/appConfig'
+import VoteCover from '../../components/VoteCover'
+import VoteTitle from '../../components/VoteTitle'
 
 class VoteDetail extends React.PureComponent {
   constructor(props) {
@@ -124,31 +126,6 @@ class VoteDetail extends React.PureComponent {
   onCloseShareGuider = () => {
     this.setState({showShareGuider: false})
   }
-  
-  renderCoverImg() {
-    const {voteInfo} = this.props
-    if (voteInfo.cover) {
-      return (
-        <div className={styles.cover}>
-          <img className={styles.img} src={voteInfo.cover} alt=""/>
-        </div>
-      )
-    } else if (voteInfo.coverSet) {
-      return (
-        <div>
-          <Carousel autoplay infinite selectedIndex={0}>
-            {
-              voteInfo.coverSet.map((value, index) => (
-                <div key={index} className={styles.cover}>
-                  <img className={styles.img} src={value} alt=""/>
-                </div>
-              ))
-            }
-          </Carousel>
-        </div>
-      )
-    }
-  }
 
   render() {
     const {voteInfo, history, activeUserId} = this.props
@@ -158,16 +135,8 @@ class VoteDetail extends React.PureComponent {
         <NoticeBar marqueeProps={{ loop: true, style: { padding: '0 7.5px' } }}>
           {voteInfo.notice}
         </NoticeBar>
-        {this.renderCoverImg()}
-        <div className={styles.titleView}>
-          <div className={styles.titleText}>{voteInfo.title}</div>
-          <div className={styles.titleShareView} onClick={() => this.setState({showShareGuider: true})}>
-            <div className={styles.titleShareArraw}></div>
-            <div className={styles.titleBtnView} >
-              <img className={styles.shareLogo} src={require('../../asset/images/share.png')} />
-            </div>
-          </div>
-        </div>
+        <VoteCover voteInfo={voteInfo}/>
+        <VoteTitle title={voteInfo.title} onClick={() => this.setState({showShareGuider: true})}/>
         <WhiteSpace />
         <VoteStat applyNum={voteInfo.applyNum} voteNum={voteInfo.voteNum} pv={voteInfo.pv} />
         <Countdown counter={voteInfo.counter} />
