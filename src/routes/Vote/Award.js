@@ -7,6 +7,9 @@ import {Link, Route, withRouter, Switch} from 'react-router-dom'
 import {Button, WhiteSpace, WingBlank} from 'antd-mobile'
 import {voteSelector} from './redux'
 import styles from './award.module.scss'
+import VoteCover from '../../components/VoteCover'
+import VoteTitle from '../../components/VoteTitle'
+import VoteStat from '../../components/VoteStat'
 
 class Award extends React.PureComponent {
   constructor(props) {
@@ -31,6 +34,12 @@ class Award extends React.PureComponent {
     const {voteInfo} = this.props
     return (
       <div className={styles.container}>
+        <VoteCover voteInfo={voteInfo}/>
+        <VoteTitle title={voteInfo.title}/>
+        <WhiteSpace />
+        <VoteStat applyNum={voteInfo.applyNum} voteNum={voteInfo.voteNum} pv={voteInfo.pv} />
+        <WhiteSpace />
+        
         <div>
           {
             voteInfo.awards.map((value, index) => (

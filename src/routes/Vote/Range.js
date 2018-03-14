@@ -4,10 +4,13 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {Link, Route, withRouter, Switch} from 'react-router-dom'
-import {Button, ActivityIndicator, List} from 'antd-mobile'
+import {WhiteSpace, ActivityIndicator, List} from 'antd-mobile'
 import {voteActions, voteSelector} from './redux'
 import Countdown from '../../components/Countdown'
 import styles from './range.module.scss'
+import VoteCover from '../../components/VoteCover'
+import VoteTitle from '../../components/VoteTitle'
+import VoteStat from '../../components/VoteStat'
 
 const Item = List.Item
 const Brief = List.Item.Brief
@@ -41,6 +44,11 @@ class Range extends React.PureComponent {
     }
     return (
       <div className={styles.container}>
+        <VoteCover voteInfo={voteInfo}/>
+        <VoteTitle title={voteInfo.title}/>
+        <WhiteSpace />
+        <VoteStat applyNum={voteInfo.applyNum} voteNum={voteInfo.voteNum} pv={voteInfo.pv} />
+        <WhiteSpace />
         <Countdown counter={voteInfo.counter} />
         <List>
           {
