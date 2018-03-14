@@ -31,11 +31,11 @@ class Award extends React.PureComponent {
   }
 
   render() {
-    const {voteInfo} = this.props
+    const {voteInfo, onShare} = this.props
     return (
       <div className={styles.container}>
         <VoteCover voteInfo={voteInfo}/>
-        <VoteTitle title={voteInfo.title}/>
+        <VoteTitle title={voteInfo.title} onShare={onShare}/>
         <WhiteSpace />
         <VoteStat applyNum={voteInfo.applyNum} voteNum={voteInfo.voteNum} pv={voteInfo.pv} />
         <WhiteSpace />

@@ -15,6 +15,7 @@ import wx from 'tencent-wx-jssdk'
 import appConfig from '../../utils/appConfig'
 import {getMobileOperatingSystem} from '../../utils/OS'
 import {appStateAction, appStateSelector} from '../../utils/appstate'
+import ShareGuider from '../../components/ShareGuider'
 
 const Item = TabBar.Item
 
@@ -23,6 +24,7 @@ class Vote extends React.PureComponent {
     super(props)
     this.state = {
       selectedTab: 'homeTab',
+      showShareGuider: false
     }
   }
   
@@ -93,6 +95,15 @@ class Vote extends React.PureComponent {
   onSwitchTab = (tab) => {
     this.setState({selectedTab: tab})
   }
+  
+  onCloseShareGuider = () => {
+    this.setState({showShareGuider: false})
+  }
+  
+  onOpenShareGuider = (e) => {
+    e.preventDefault()
+    this.setState({showShareGuider: true})
+  }
 
   render() {
     const {voteId, history, voteInfo} = this.props
@@ -113,7 +124,7 @@ class Vote extends React.PureComponent {
                 document.title = "活动主页"
               }}
             >
-              <VoteDetail voteId={voteId} onSwitchTab={this.onSwitchTab} history={history} />
+              <VoteDetail voteId={voteId} onSwitchTab={this.onSwitchTab} history={history} onShare={this.onOpenShareGuider}/>
             </Item>
             <Item
               title="奖品"
@@ -128,7 +139,7 @@ class Vote extends React.PureComponent {
                 document.title = "奖品详情"
               }}
             >
-              <Award voteId={voteId} />
+              <Award voteId={voteId} onShare={this.onOpenShareGuider}/>
             </Item>
             <Item
               title="榜单"
@@ -143,9 +154,12 @@ class Vote extends React.PureComponent {
                 document.title = "榜单"
               }}
             >
-              <Range voteId={voteId} history={history} />
+              <Range voteId={voteId} history={history} onShare={this.onOpenShareGuider}/>
             </Item>
           </TabBar>
+          <ShareGuider visible={this.state.showShareGuider}
+                       onClose={this.onCloseShareGuider}
+          />
         </div>
       )
     }
@@ -165,7 +179,7 @@ class Vote extends React.PureComponent {
               document.title = "活动主页"
             }}
           >
-            <VoteDetail voteId={voteId} onSwitchTab={this.onSwitchTab} history={history} />
+            <VoteDetail voteId={voteId} onSwitchTab={this.onSwitchTab} history={history} onShare={this.onOpenShareGuider}/>
           </Item>
           <Item
             title="报名"
@@ -195,7 +209,7 @@ class Vote extends React.PureComponent {
               document.title = "奖品详情"
             }}
           >
-            <Award voteId={voteId} />
+            <Award voteId={voteId} onShare={this.onOpenShareGuider}/>
           </Item>
           <Item
             title="榜单"
@@ -210,9 +224,12 @@ class Vote extends React.PureComponent {
               document.title = "榜单"
             }}
           >
-            <Range voteId={voteId} history={history} />
+            <Range voteId={voteId} history={history} onShare={this.onOpenShareGuider}/>
           </Item>
         </TabBar>
+        <ShareGuider visible={this.state.showShareGuider}
+                     onClose={this.onCloseShareGuider}
+        />
       </div>
     )
   }

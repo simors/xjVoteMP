@@ -55,7 +55,7 @@ class VoteDetail extends React.PureComponent {
   }
 
   render() {
-    const {voteInfo, history, activeUserId} = this.props
+    const {voteInfo, history, activeUserId, onShare} = this.props
     document.title = voteInfo.title
     return (
       <div className={styles.page}>
@@ -63,7 +63,7 @@ class VoteDetail extends React.PureComponent {
           {voteInfo.notice}
         </NoticeBar>
         <VoteCover voteInfo={voteInfo}/>
-        <VoteTitle title={voteInfo.title}/>
+        <VoteTitle title={voteInfo.title} onShare={onShare}/>
         <WhiteSpace />
         <VoteStat applyNum={voteInfo.applyNum} voteNum={voteInfo.voteNum} pv={voteInfo.pv} />
         <Countdown counter={voteInfo.counter} />

@@ -36,7 +36,7 @@ class Range extends React.PureComponent {
   }
 
   render() {
-    const {voteRankInfoList, voteInfo, history, voteId} = this.props
+    const {voteRankInfoList, voteInfo, history, voteId, onShare} = this.props
     if(!voteRankInfoList) {
       return(
         <ActivityIndicator toast text="正在加载" />
@@ -45,7 +45,7 @@ class Range extends React.PureComponent {
     return (
       <div className={styles.container}>
         <VoteCover voteInfo={voteInfo}/>
-        <VoteTitle title={voteInfo.title}/>
+        <VoteTitle title={voteInfo.title} onShare={onShare}/>
         <WhiteSpace />
         <VoteStat applyNum={voteInfo.applyNum} voteNum={voteInfo.voteNum} pv={voteInfo.pv} />
         <WhiteSpace />
