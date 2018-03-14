@@ -245,13 +245,16 @@ class Player extends React.PureComponent {
   }
   
   votePress = () => {
-    const {playerId, voteForPlayerAction} = this.props
+    const {playerId, voteForPlayerAction, isVoteAllowedAction, match} = this.props
   
     voteForPlayerAction({
       playerId: playerId,
       success: this.voteForPlayerActionSuccess,
       error: this.voteForPlayerActionError,
     })
+  
+    const {voteId} = match.params
+    isVoteAllowedAction({voteId})
   }
   
   renderMainBtn() {
