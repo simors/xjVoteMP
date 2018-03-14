@@ -15,7 +15,7 @@ class Apply extends React.PureComponent {
     super(props)
     this.state = {
       title: undefined,
-      declaration: "不一样的经常",
+      declaration: "",
       imageServerIds: undefined
     }
   }

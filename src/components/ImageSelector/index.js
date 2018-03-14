@@ -6,7 +6,7 @@ import {connect} from 'react-redux'
 import styles from './imageselector.module.scss'
 import wx from 'tencent-wx-jssdk'
 import {appStateAction, appStateSelector} from '../../utils/appstate'
-import {WhiteSpace, Toast,} from 'antd-mobile'
+import {Toast} from 'antd-mobile'
 import {getMobileOperatingSystem} from '../../utils/OS'
 import {getLocalImgDataAsync, uploadImageAsync, chooseImageAsync, checkJsApiAsync} from '../../utils/wechatUtil'
 
@@ -20,7 +20,7 @@ class ImageSelector extends React.Component {
     }
   }
 
-  componentWillMount() {
+  componentDidMount() {
     const {getJsApiConfig, entryURL} = this.props
     const OS = getMobileOperatingSystem()
     let jssdkURL = window.location.href
@@ -29,7 +29,7 @@ class ImageSelector extends React.Component {
       jssdkURL = entryURL
     }
     getJsApiConfig({
-      debug: __DEV__? false: false,
+      debug: __DEV__? true: false,
       jsApiList: ['chooseImage', 'previewImage', 'getLocalImgData', 'uploadImage'].toString(),
       url: jssdkURL,
       success: this.getJsApiConfigSuccess,

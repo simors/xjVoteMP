@@ -110,9 +110,9 @@ function* updateEntryURL(action) {
 
 export const appStateSaga = [
   takeLatest(UPDATE_REHYDRATE, updateAppRehydrate),
-  takeLatest(GET_WECHAT_JSAPI_CONFIG, fetchJssdkConfig),
+  takeEvery(GET_WECHAT_JSAPI_CONFIG, fetchJssdkConfig),
   takeLatest(UPDATE_PROVINCE_AND_CITY, updateProvinceAndCitySaga),
- takeLatest(UPDATE_ENTRY_URL, updateEntryURL),
+  takeLatest(UPDATE_ENTRY_URL, updateEntryURL),
 ]
 
 /**** Reducer ****/
