@@ -3,14 +3,18 @@
  */
 import React from 'react'
 import {connect} from 'react-redux'
-import {Link, Route, withRouter, Switch} from 'react-router-dom'
-import {Button, TabBar} from 'antd-mobile'
+import {withRouter} from 'react-router-dom'
+import {Toast, TabBar} from 'antd-mobile'
 import styles from './vote.module.scss'
 import VoteDetail from './VoteDetail'
 import Apply from './Apply'
 import Award from './Award'
 import Range from './Range'
 import {voteSelector, VOTE_STATUS} from './redux'
+import wx from 'tencent-wx-jssdk'
+import appConfig from '../../utils/appConfig'
+import {getMobileOperatingSystem} from '../../utils/OS'
+import {appStateAction, appStateSelector} from '../../utils/appstate'
 
 const Item = TabBar.Item
 
@@ -21,33 +25,72 @@ class Vote extends React.PureComponent {
       selectedTab: 'homeTab',
     }
   }
+  
+  componentDidMount() {
+    const {getJsApiConfig, entryURL} = this.props
+    const OS = getMobileOperatingSystem()
+    let jssdkURL = window.location.href
+    if(OS === 'iOS') {
+      //微信JS-SDK Bug: SPA(单页应用)ios系统必须使用首次加载的url初始化jssdk
+      jssdkURL = entryURL
+    }
+    getJsApiConfig({
+      debug: __DEV__? false: false,
+      jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage'].toString(),
+      url: jssdkURL.split('#')[0],
+      success: this.getJsApiConfigSuccess,
+      error: (error) => {console.log(error)}
+    })
+  }
+  
+  getJsApiConfigSuccess = (configInfo) => {
+    wx.config(configInfo)
+    
+    const {voteId, voteInfo} = this.props
+    const title = voteInfo.title
+    const url = appConfig.CLIENT_DOMAIN + '/#/vote/'+ voteId
+    wx.ready(function () {
+      wx.onMenuShareTimeline({
+        title: title,
+        link: url,
+        imgUrl: voteInfo.cover ? voteInfo.cover : voteInfo.coverSet[0],
+        success: function () {
+          Toast.success("分享成功")
+        },
+        cancel: function () {
+          Toast.fail('取消分享')
+        },
+        fail: function (res) {
+          Toast.fail('fail:' + res.errMsg)
+        },
+        complete: function (res) {
+          Toast.success('complete:' + res.errMsg)
+        }
+      })
+      
+      wx.onMenuShareAppMessage({
+        title: title,
+        link: url,
+        imgUrl: voteInfo.cover? voteInfo.cover : voteInfo.coverSet[0],
+        desc: '',
+        success: function () {
+          Toast.success("分享成功")
+        },
+        cancel: function () {
+          Toast.fail('取消分享')
+        },
+        fail: function (res) {
+          Toast.fail('fail:' + res.errMsg)
+        },
+        complete: function (res) {
+          Toast.success('complete:' + res.errMsg)
+        }
+      })
+    })
+  }
 
   onSwitchTab = (tab) => {
     this.setState({selectedTab: tab})
-  }
-
-  renderApplyTab() {
-    const {voteId, voteInfo} = this.props
-    if(voteInfo.status === VOTE_STATUS.STARTING || voteInfo.status === VOTE_STATUS.DONE || voteInfo.status === VOTE_STATUS.ACCOUNTED) {
-      return(null)
-    }
-    return(
-      <Item
-        title="报名"
-        key="apply"
-        icon={<div className={styles.applyIcon} />}
-        selectedIcon={<div className={styles.applyIconFill}/>}
-        selected={this.state.selectedTab === 'applyTab'}
-        onPress={() => {
-          this.setState({
-            selectedTab: 'applyTab',
-          })
-          document.title = "我要报名"
-        }}
-      >
-        <Apply voteId={voteId} onSwitchTab={this.onSwitchTab} />
-      </Item>
-    )
   }
 
   render() {
@@ -179,12 +222,13 @@ const mapStateToProps = (state, ownProps) => {
   const {voteId} = match.params
   return {
     voteId,
-    voteInfo: voteSelector.selectVote(state, voteId)
+    voteInfo: voteSelector.selectVote(state, voteId),
+    entryURL: appStateSelector.selectEntryURL(state)
   }
 }
 
 const mapDispatchToProps = {
-
+  ...appStateAction
 }
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Vote))

@@ -13,10 +13,6 @@ import VotePlayers from './VotePlayers'
 import OrganizerView from '../../components/OrganizerView'
 import ManagerBtn from './ManagerBtn'
 import {authSelector} from '../../utils/auth'
-import {getMobileOperatingSystem} from '../../utils/OS'
-import {appStateAction, appStateSelector} from '../../utils/appstate'
-import wx from 'tencent-wx-jssdk'
-import appConfig from '../../utils/appConfig'
 import VoteCover from '../../components/VoteCover'
 import VoteTitle from '../../components/VoteTitle'
 
@@ -26,69 +22,6 @@ class VoteDetail extends React.PureComponent {
     this.state = {
       searchKey: ''
     }
-  }
-  
-  componentDidMount() {
-    const {getJsApiConfig, entryURL} = this.props
-    const OS = getMobileOperatingSystem()
-    let jssdkURL = window.location.href
-    if(OS === 'iOS') {
-      //微信JS-SDK Bug: SPA(单页应用)ios系统必须使用首次加载的url初始化jssdk
-      jssdkURL = entryURL
-    }
-    getJsApiConfig({
-      debug: __DEV__? false: false,
-      jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage'].toString(),
-      url: jssdkURL.split('#')[0],
-      success: this.getJsApiConfigSuccess,
-      error: (error) => {console.log(error)}
-    })
-  }
-  
-  getJsApiConfigSuccess = (configInfo) => {
-    wx.config(configInfo)
-    
-    const {voteId, voteInfo} = this.props
-    const title = voteInfo.title
-    const url = appConfig.CLIENT_DOMAIN + '/#/vote/'+ voteId
-    wx.ready(function () {
-      wx.onMenuShareTimeline({
-        title: title,
-        link: url,
-        imgUrl: voteInfo.cover ? voteInfo.cover : voteInfo.coverSet[0],
-        success: function () {
-          Toast.success("分享成功")
-        },
-        cancel: function () {
-          Toast.fail('取消分享')
-        },
-        fail: function (res) {
-          Toast.fail('fail:' + res.errMsg)
-        },
-        complete: function (res) {
-          Toast.success('complete:' + res.errMsg)
-        }
-      })
-      
-      wx.onMenuShareAppMessage({
-        title: title,
-        link: url,
-        imgUrl: voteInfo.cover? voteInfo.cover : voteInfo.coverSet[0],
-        desc: '',
-        success: function () {
-          Toast.success("分享成功")
-        },
-        cancel: function () {
-          Toast.fail('取消分享')
-        },
-        fail: function (res) {
-          Toast.fail('fail:' + res.errMsg)
-        },
-        complete: function (res) {
-          Toast.success('complete:' + res.errMsg)
-        }
-      })
-    })
   }
 
   renderApplyBtn() {
@@ -158,13 +91,11 @@ const mapStateToProps = (state, ownProps) => {
   return {
     activeUserId: authSelector.activeUserId(state),
     voteId,
-    voteInfo: voteSelector.selectVote(state, voteId),
-    entryURL: appStateSelector.selectEntryURL(state)
+    voteInfo: voteSelector.selectVote(state, voteId)
   }
 }
 
 const mapDispatchToProps = {
-  ...appStateAction
 }
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(VoteDetail))
