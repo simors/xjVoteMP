@@ -53,6 +53,7 @@ class Vote extends React.PureComponent {
       wx.onMenuShareTimeline({
         title: title,
         link: url,
+        desc: '邀请您投票',
         imgUrl: voteInfo.cover ? voteInfo.cover : voteInfo.coverSet[0],
         success: function () {
           Toast.success("分享成功")
@@ -64,7 +65,7 @@ class Vote extends React.PureComponent {
           Toast.fail('fail:' + res.errMsg)
         },
         complete: function (res) {
-          Toast.success('complete:' + res.errMsg)
+          // Toast.success('complete:' + res.errMsg)
         }
       })
       
@@ -72,7 +73,7 @@ class Vote extends React.PureComponent {
         title: title,
         link: url,
         imgUrl: voteInfo.cover? voteInfo.cover : voteInfo.coverSet[0],
-        desc: '',
+        desc: '邀请您投票',
         success: function () {
           Toast.success("分享成功")
         },
@@ -83,7 +84,7 @@ class Vote extends React.PureComponent {
           Toast.fail('fail:' + res.errMsg)
         },
         complete: function (res) {
-          Toast.success('complete:' + res.errMsg)
+          // Toast.success('complete:' + res.errMsg)
         }
       })
     })
