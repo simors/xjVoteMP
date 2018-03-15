@@ -70,7 +70,6 @@ class VoteDetail extends React.PureComponent {
         <WhiteSpace />
         {this.renderApplyBtn()}
         {this.renderSearchBar()}
-        <WhiteSpace />
         <VotePlayers voteId={voteInfo.id} history={history} />
         <OrganizerView organizer={voteInfo.organizer} />
         <ManagerBtn voteId={voteInfo.id} show={voteInfo.creatorId === activeUserId} status={voteInfo.status} history={history} />
