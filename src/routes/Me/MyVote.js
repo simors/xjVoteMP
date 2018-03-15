@@ -149,7 +149,7 @@ class MyVote extends React.PureComponent {
         >
           <div className={styles.item} key={rowID} style={itemStyle} onClick={() => this.showVoteDetail(rowData)}>
             <div className={styles.thumb}>
-              <img className={styles.img} src={rowData.cover || rowData.coverSet[0]} alt=""/>
+              <img className={styles.img} src={rowData.cover ? rowData.cover : rowData.coverSet[0]} alt=""/>
             </div>
             <div className={styles.details}>
               <div className={styles.detailRow}>
