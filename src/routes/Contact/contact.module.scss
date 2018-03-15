@@ -1,0 +1,82 @@
+.contactContainer {
+  background-image: url("http://ac-l3cae9l7.clouddn.com/1eec49677e74041d8198.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  overflow: hidden;
+  box-sizing: border-box;
+  overflow-x: hidden;
+
+  .headImgView {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+    height: 345px;
+    background-image: url("http://ac-l3cae9l7.clouddn.com/4f025debbd761a549924.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position-y: bottom;
+
+    .headImg {
+      width: 225px;
+      margin-top: 60px;
+    }
+
+    .solognImg {
+      width: 330px;
+      margin-bottom: 15px;
+      padding: 0 20px;
+    }
+  }
+
+  .titleView {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 16px;
+
+    .titleImg {
+      width: 250px;
+      height: 50px;
+    }
+  }
+
+  .applicationView {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin-top: 16px;
+
+    .applicationItem {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      margin-bottom: 16px;
+
+      .applicationImg {
+        width: 140px;
+      }
+
+      .applicationText {
+        font-size: 16px;
+        color: #fff;
+        margin-top: 8px;
+      }
+    }
+  }
+
+  .btnView {
+    padding: 10px 16px 20px 16px;
+  }
+
+  .sampleView {
+    margin: 16px 0;
+    padding: 0 24px;
+  }
+
+  .bottomGap {
+    padding: 12px 15px 30px 15px
+  }
+}

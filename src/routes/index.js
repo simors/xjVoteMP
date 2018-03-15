@@ -9,6 +9,7 @@ import ErrorPage from './Error'
 import {Wallet, MyVote, BePromoter, Withdraw, Invite} from './Me'
 import {Vote, Player, Present, SearchPlayer, ManPlayer} from './Vote'
 import Publish, {Organizer, Award, Gifts, PublishType} from './Publish'
+import Contact from './Contact'
 import TabBarDemo from '../components/TabBar/index'
 
 const rootRoutes = (
@@ -31,6 +32,7 @@ const rootRoutes = (
     <AuthRoute path="/publish/gifts" component={Gifts}/>
     <AuthRoute path="/publish/type" component={PublishType}/>
     <AuthRoute path="/publish" component={Publish}/>
+    <Route path="/contact" component={Contact}/>
     <AuthRoute path="/" component={Home}/>
     <Route component={NoMatch}/>
   </Switch>

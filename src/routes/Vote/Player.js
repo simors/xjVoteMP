@@ -244,6 +244,13 @@ class Player extends React.PureComponent {
     })
   }
   
+  gotoContact = () => {
+    const {history} = this.props
+    history.push({
+      pathname: '/contact',
+    })
+  }
+  
   votePress = () => {
     const {playerId, voteForPlayerAction, isVoteAllowedAction, match} = this.props
   
@@ -311,7 +318,7 @@ class Player extends React.PureComponent {
           icon={<div className={styles.aboutIcon} />}
           selectedIcon={<div className={styles.aboutIcon}/>}
           selected={this.state.selectedTab === 'aboutTab'}
-          onPress={this.gotoPresent}
+          onPress={this.gotoContact}
         >
         </Item>
       )
