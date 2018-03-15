@@ -74,6 +74,25 @@ class Gifts extends React.Component {
     })
   }
 
+  preview = () => {
+    Toast.loading("正在转到预览")
+    const {history, createOrUpdatePublishingVoteAction, clearPublishingVoteAction, publishVote} = this.props
+    let {selectGifts} = this.state
+    createOrUpdatePublishingVoteAction({
+      ...publishVote,
+      gifts: selectGifts,
+      status: VOTE_STATUS.WAITING,
+      success: () => {
+        Toast.hide()
+        history.push('/vote/' + this.props.publishVote.id + '&&showType=preview')
+      },
+      error: () => {
+        Toast.hide()
+        Toast.fail("预览失败")
+      }
+    })
+  }
+
   onClickRadio(giftId) {
     let selectGifts = this.state.selectGifts
     if(selectGifts.length === 6) {
@@ -121,6 +140,7 @@ class Gifts extends React.Component {
         </WingBlank>
         <WingBlank style={{marginTop: '20px', paddingBottom: '30px', textAlign: 'right'}}>
           <Button type="primary" style={{marginRight: '10px'}} inline size="small" onClick={this.onBack}>上一步</Button>
+          <Button type="primary" inline size="small" onClick={this.preview}>预览</Button>
           <Button type="primary" inline size="small" onClick={this.onComplete}>完成</Button>
         </WingBlank>
         <PublishTrip visible={this.state.showPublishTrip}

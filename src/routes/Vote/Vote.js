@@ -4,13 +4,14 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router-dom'
-import {Toast, TabBar} from 'antd-mobile'
+import {Toast, TabBar, Modal} from 'antd-mobile'
 import styles from './vote.module.scss'
 import VoteDetail from './VoteDetail'
 import Apply from './Apply'
 import Award from './Award'
 import Range from './Range'
 import {voteSelector, VOTE_STATUS} from './redux'
+import {publishSelector} from '../Publish/redux'
 import wx from 'tencent-wx-jssdk'
 import appConfig from '../../utils/appConfig'
 import {getMobileOperatingSystem} from '../../utils/OS'
@@ -24,12 +25,13 @@ class Vote extends React.PureComponent {
     super(props)
     this.state = {
       selectedTab: 'homeTab',
-      showShareGuider: false
+      showShareGuider: false,
+      previewModalVisible: false,
     }
   }
   
   componentDidMount() {
-    const {getJsApiConfig, entryURL} = this.props
+    const {getJsApiConfig, entryURL, showType} = this.props
     const OS = getMobileOperatingSystem()
     let jssdkURL = window.location.href
     if(OS === 'iOS') {
@@ -43,6 +45,11 @@ class Vote extends React.PureComponent {
       success: this.getJsApiConfigSuccess,
       error: (error) => {console.log(error)}
     })
+    if(showType=='preview'){
+      this.setState({
+        previewModalVisible: true
+      })
+    }
   }
   
   getJsApiConfigSuccess = (configInfo) => {
@@ -105,11 +112,25 @@ class Vote extends React.PureComponent {
     this.setState({showShareGuider: true})
   }
 
+  closePreviewModal = () => {
+    this.setState({previewModalVisible: false})
+  }
+
   render() {
     const {voteId, history, voteInfo} = this.props
     if(voteInfo.status === VOTE_STATUS.STARTING || voteInfo.status === VOTE_STATUS.DONE || voteInfo.status === VOTE_STATUS.ACCOUNTED) {
       return(
         <div className={styles.page}>
+          {this.state.previewModalVisible?<Modal
+            visible={this.state.modal1}
+            transparent
+            maskClosable={false}
+            onClose={this.closePreviewModal}
+            title="Title"
+            footer={[{ text: '确认', onPress: this.closePreviewModal }]}
+          >
+
+          </Modal>:null}
           <TabBar tintColor="#F6635F">
             <Item
               title="活动主页"
@@ -237,10 +258,11 @@ class Vote extends React.PureComponent {
 
 const mapStateToProps = (state, ownProps) => {
   const {match} = ownProps
-  const {voteId} = match.params
+  const {voteId, showType} = match.params
   return {
     voteId,
-    voteInfo: voteSelector.selectVote(state, voteId),
+    showType,
+    voteInfo: showType=='preview'?publishSelector.selectPublishVote(state):voteSelector.selectVote(state, voteId),
     entryURL: appStateSelector.selectEntryURL(state)
   }
 }
