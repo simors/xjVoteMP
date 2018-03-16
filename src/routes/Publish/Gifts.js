@@ -81,7 +81,6 @@ class Gifts extends React.Component {
     createOrUpdatePublishingVoteAction({
       ...publishVote,
       gifts: selectGifts,
-      status: VOTE_STATUS.WAITING,
       success: () => {
         Toast.hide()
         history.push('/vote/' + this.props.publishVote.id + '&&showType=preview')
