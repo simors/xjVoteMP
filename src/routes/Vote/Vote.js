@@ -10,7 +10,7 @@ import VoteDetail from './VoteDetail'
 import Apply from './Apply'
 import Award from './Award'
 import Range from './Range'
-import {voteSelector, VOTE_STATUS} from './redux'
+import {voteActions, voteSelector, VOTE_STATUS} from './redux'
 import wx from 'tencent-wx-jssdk'
 import appConfig from '../../utils/appConfig'
 import {getMobileOperatingSystem} from '../../utils/OS'
@@ -29,7 +29,7 @@ class Vote extends React.PureComponent {
   }
   
   componentDidMount() {
-    const {getJsApiConfig, entryURL} = this.props
+    const {getJsApiConfig, entryURL, match, fetchVoteByIdAction, incVotePvAction} = this.props
     const OS = getMobileOperatingSystem()
     let jssdkURL = window.location.href
     if(OS === 'iOS') {
@@ -43,6 +43,12 @@ class Vote extends React.PureComponent {
       success: this.getJsApiConfigSuccess,
       error: (error) => {console.log(error)}
     })
+  
+    const {voteId} = match.params
+    if (voteId) {
+      fetchVoteByIdAction({voteId, updateStatus: true})
+      incVotePvAction({voteId})
+    }
   }
   
   getJsApiConfigSuccess = (configInfo) => {
@@ -246,7 +252,8 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 const mapDispatchToProps = {
-  ...appStateAction
+  ...appStateAction,
+  ...voteActions
 }
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Vote))

@@ -33,7 +33,18 @@ class Player extends React.PureComponent {
 
   componentDidMount() {
     let that = this
-    const {playerId, fetchPlayerRecvGiftsAction, fetchPlayerByIdAction, fetchVoteByIdAction, isVoteAllowedAction, match, getJsApiConfig, entryURL} = this.props
+    const {
+      playerId,
+      fetchPlayerRecvGiftsAction,
+      fetchPlayerByIdAction,
+      fetchVoteByIdAction,
+      isVoteAllowedAction,
+      incPlayerPvAction,
+      incVotePvAction,
+      match,
+      getJsApiConfig,
+      entryURL
+    } = this.props
   
     const OS = getMobileOperatingSystem()
     let jssdkURL = window.location.href
@@ -53,6 +64,7 @@ class Player extends React.PureComponent {
     if (voteId) {
       fetchVoteByIdAction({voteId, updateStatus: true})
       isVoteAllowedAction({voteId})
+      incVotePvAction({voteId})
     }
     fetchPlayerByIdAction({playerId})
     fetchPlayerRecvGiftsAction({
@@ -64,6 +76,7 @@ class Player extends React.PureComponent {
         }
       },
     })
+    incPlayerPvAction({playerId})
   }
 
   getJsApiConfigSuccess = (configInfo) => {
