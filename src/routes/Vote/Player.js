@@ -275,7 +275,7 @@ class Player extends React.PureComponent {
     const {history, location, voteId} = this.props
     const {scene} = location.query ? location.query : {scene: undefined}
     if (scene === 'inner') {
-      history.pop()
+      history.goBack()
     } else {
       history.push('/vote/' + voteId)
     }
