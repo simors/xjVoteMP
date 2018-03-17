@@ -42,6 +42,7 @@ class Player extends React.PureComponent {
       incPlayerPvAction,
       incVotePvAction,
       match,
+      location,
       getJsApiConfig,
       entryURL
     } = this.props
@@ -64,7 +65,10 @@ class Player extends React.PureComponent {
     if (voteId) {
       fetchVoteByIdAction({voteId, updateStatus: true})
       isVoteAllowedAction({voteId})
-      incVotePvAction({voteId})
+      const {scene} = location.query ? location.query : {scene: undefined}
+      if (!scene || scene !== 'inner') {
+        incVotePvAction({voteId})
+      }
     }
     fetchPlayerByIdAction({playerId})
     fetchPlayerRecvGiftsAction({

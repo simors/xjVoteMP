@@ -61,7 +61,10 @@ class VotePlayers extends React.PureComponent {
 
   gotoPlayer(playerId) {
     const {history, voteId} = this.props
-    history.push('/player/' + voteId + '/' + playerId)
+    history.push({
+      pathname: '/player/' + voteId + '/' + playerId,
+      query: {scene: 'inner'}
+    })
   }
 
 
