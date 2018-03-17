@@ -268,6 +268,19 @@ class Player extends React.PureComponent {
     })
   }
   
+  gotoVote = () => {
+    this.setState({
+      selectedTab: 'detailTab',
+    })
+    const {history, location, voteId} = this.props
+    const {scene} = location.query ? location.query : {scene: undefined}
+    if (scene === 'inner') {
+      history.pop()
+    } else {
+      history.push('/vote/' + voteId)
+    }
+  }
+  
   votePress = () => {
     const {playerId, voteForPlayerAction, isVoteAllowedAction, match} = this.props
   
@@ -352,11 +365,7 @@ class Player extends React.PureComponent {
             icon={<div className={styles.homeIcon} />}
             selectedIcon={<div className={styles.homeIconFill}/>}
             selected={this.state.selectedTab === 'detailTab'}
-            onPress={() => {
-              this.setState({
-                selectedTab: 'detailTab',
-              })
-            }}
+            onPress={this.gotoVote}
           >
             {this.renderContent()}
           </Item>
