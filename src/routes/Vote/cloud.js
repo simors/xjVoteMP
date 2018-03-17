@@ -69,6 +69,10 @@ export async function searchPlayer(payload) {
   return await AV.Cloud.run('voteSearchPlayer', payload)
 }
 
+export async function fetchCreateVotePwd() {
+  return await AV.Cloud.run('voteGetCreatePwd')
+}
+
 export async function setVoteDisable(payload) {
   return await AV.Cloud.run('voteSetVoteDisable', payload)
 }

@@ -194,6 +194,7 @@ const VoteState = Record({
 const FETCH_VOTES = 'FETCH_VOTES'
 const SAVE_VOTE = 'SAVE_VOTE'
 const BATCH_SAVE_VOTE = 'BATCH_SAVE_VOTE'
+const INC_VOTE_PV = 'INC_VOTE_PV'
 const UPDATE_VOTE_LIST = 'UPDATE_VOTE_LIST'
 const FETCH_VOTE_PLAYERS = 'FETCH_VOTE_PLAYERS'
 const UPDATE_VOTE_PLAYER_LIST = 'UPDATE_VOTE_PLAYER_LIST'
@@ -204,6 +205,7 @@ const FETCH_PLAYER_BY_ID = 'FETCH_PLAYER_BY_ID'
 const VOTE_FOR_PLAYER = 'VOTE_FOR_PLAYER'
 const SAVE_PLAYER = 'SAVE_PLAYER'
 const BATCH_SAVE_PLAYER = 'BATCH_SAVE_PLAYER'
+const INC_PLAYER_PV = 'INC_PLAYER_PV'
 const JOIN_VOTE_APPLY = 'JOIN_VOTE_APPLY'
 const FETCH_VOTE_GITFS = 'FETCH_VOTE_GITFS'
 const UPDATE_VOTE_GIFT_LIST = 'UPDATE_VOTE_GIFT_LIST'
@@ -239,12 +241,14 @@ export const VOTE_SEARCH_TYPE = {
 export const voteActions = {
   fetchVotesAction: createAction(FETCH_VOTES),
   fetchVoteByIdAction: createAction(FETCH_VOTE_BY_ID),
+  incVotePvAction: createAction(INC_VOTE_PV),
   fetchVotePlayersAction: createAction(FETCH_VOTE_PLAYERS),
   fetchPlayerByIdAction: createAction(FETCH_PLAYER_BY_ID),
   voteForPlayerAction: createAction(VOTE_FOR_PLAYER),
   fetchVoteRankAction: createAction(FETCH_VOTE_RANK),
   savePlayerInfoAction: createAction(SAVE_PLAYER),
   batchSavePlayerInfoAction: createAction(BATCH_SAVE_PLAYER),
+  incPlayerPvAction: createAction(INC_PLAYER_PV),
   joinVoteApplyAction: createAction(JOIN_VOTE_APPLY),
   fetchVoteGiftsAction: createAction(FETCH_VOTE_GITFS),
   createPaymentRequestAction: createAction(CREATE_PAYMENT_REQUEST),
@@ -314,6 +318,22 @@ function* fetchVoteById(action) {
   }
 }
 
+function* incVotePv(action) {
+  let payload = action.payload
+  
+  try {
+    yield call(voteCloud.incVotePv, payload)
+    if(payload.success) {
+      payload.success()
+    }
+  } catch (error) {
+    console.error(error)
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
+}
+
 function* fetchVotePlayers(action) {
   let payload = action.payload
   let apiPayload = {
@@ -345,6 +365,22 @@ function* fetchPlayerById(action) {
     let player = yield call(voteCloud.fetchPlayerById, {playerId})
     yield put(voteActions.savePlayerInfoAction({player}))
     
+    if(payload.success) {
+      payload.success()
+    }
+  } catch (error) {
+    console.error(error)
+    if(payload.error) {
+      payload.error(error)
+    }
+  }
+}
+
+function* incPlayerPv(action) {
+  let payload = action.payload
+  
+  try {
+    yield call(voteCloud.incPlayerPv, payload)
     if(payload.success) {
       payload.success()
     }
@@ -626,8 +662,10 @@ function* isVoteAllowed(action) {
 export const voteSaga = [
   takeLatest(FETCH_VOTES, fetchVotes),
   takeLatest(FETCH_VOTE_BY_ID, fetchVoteById),
+  takeLatest(INC_VOTE_PV, incVotePv),
   takeLatest(FETCH_VOTE_PLAYERS, fetchVotePlayers),
   takeLatest(FETCH_PLAYER_BY_ID, fetchPlayerById),
+  takeLatest(INC_PLAYER_PV, incPlayerPv),
   takeLatest(VOTE_FOR_PLAYER, voteForPlayer),
   takeLatest(FETCH_VOTE_RANK, fetchVoteRank),
   takeLatest(JOIN_VOTE_APPLY, joinVoteApply),

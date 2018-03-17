@@ -86,7 +86,7 @@ class Award extends React.Component {
 
   preview = () => {
     Toast.loading("正在转到预览")
-    const {history, createOrUpdatePublishingVoteAction, publishVote, fetchVoteByIdAction} = this.props
+    const {history, createOrUpdatePublishingVoteAction, publishVote} = this.props
     let {awards} = this.state
     awards = awards.filter(value => value.awardPhoto)
     createOrUpdatePublishingVoteAction({
@@ -94,7 +94,7 @@ class Award extends React.Component {
       awards: awards,
       success: () => {
         Toast.hide()
-        history.push('/vote/' + this.props.publishVote.id + '/preview')
+        history.push('/vote/' + this.props.publishVote.id + '?showType=preview')
       },
       error: (e) => {
         Toast.hide()

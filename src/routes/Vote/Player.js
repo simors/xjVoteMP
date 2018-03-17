@@ -33,7 +33,19 @@ class Player extends React.PureComponent {
 
   componentDidMount() {
     let that = this
-    const {playerId, fetchPlayerRecvGiftsAction, fetchPlayerByIdAction, fetchVoteByIdAction, isVoteAllowedAction, match, getJsApiConfig, entryURL} = this.props
+    const {
+      playerId,
+      fetchPlayerRecvGiftsAction,
+      fetchPlayerByIdAction,
+      fetchVoteByIdAction,
+      isVoteAllowedAction,
+      incPlayerPvAction,
+      incVotePvAction,
+      match,
+      location,
+      getJsApiConfig,
+      entryURL
+    } = this.props
   
     const OS = getMobileOperatingSystem()
     let jssdkURL = window.location.href
@@ -53,6 +65,10 @@ class Player extends React.PureComponent {
     if (voteId) {
       fetchVoteByIdAction({voteId, updateStatus: true})
       isVoteAllowedAction({voteId})
+      const {scene} = location.query ? location.query : {scene: undefined}
+      if (!scene || scene !== 'inner') {
+        incVotePvAction({voteId})
+      }
     }
     fetchPlayerByIdAction({playerId})
     fetchPlayerRecvGiftsAction({
@@ -64,6 +80,7 @@ class Player extends React.PureComponent {
         }
       },
     })
+    incPlayerPvAction({playerId})
   }
 
   getJsApiConfigSuccess = (configInfo) => {
@@ -251,6 +268,19 @@ class Player extends React.PureComponent {
     })
   }
   
+  gotoVote = () => {
+    this.setState({
+      selectedTab: 'detailTab',
+    })
+    const {history, location, voteId} = this.props
+    const {scene} = location.query ? location.query : {scene: undefined}
+    if (scene === 'inner') {
+      history.pop()
+    } else {
+      history.push('/vote/' + voteId)
+    }
+  }
+  
   votePress = () => {
     const {playerId, voteForPlayerAction, isVoteAllowedAction, match} = this.props
   
@@ -335,11 +365,7 @@ class Player extends React.PureComponent {
             icon={<div className={styles.homeIcon} />}
             selectedIcon={<div className={styles.homeIconFill}/>}
             selected={this.state.selectedTab === 'detailTab'}
-            onPress={() => {
-              this.setState({
-                selectedTab: 'detailTab',
-              })
-            }}
+            onPress={this.gotoVote}
           >
             {this.renderContent()}
           </Item>

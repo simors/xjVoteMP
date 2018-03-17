@@ -76,14 +76,14 @@ class Gifts extends React.Component {
 
   preview = () => {
     Toast.loading("正在转到预览")
-    const {history, createOrUpdatePublishingVoteAction, clearPublishingVoteAction, publishVote} = this.props
+    const {history, createOrUpdatePublishingVoteAction, publishVote} = this.props
     let {selectGifts} = this.state
     createOrUpdatePublishingVoteAction({
       ...publishVote,
       gifts: selectGifts,
       success: () => {
         Toast.hide()
-        history.push('/vote/' + this.props.publishVote.id + '/preview')
+        history.push('/vote/' + this.props.publishVote.id + '?showType=preview')
       },
       error: () => {
         Toast.hide()

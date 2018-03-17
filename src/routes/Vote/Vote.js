@@ -11,13 +11,13 @@ import VoteDetail from './VoteDetail'
 import Apply from './Apply'
 import Award from './Award'
 import Range from './Range'
-import {voteSelector, VOTE_STATUS, voteActions} from './redux'
-import {publishSelector} from '../Publish/redux'
+import {voteActions, voteSelector, VOTE_STATUS} from './redux'
 import wx from 'tencent-wx-jssdk'
 import appConfig from '../../utils/appConfig'
 import {getMobileOperatingSystem} from '../../utils/OS'
 import {appStateAction, appStateSelector} from '../../utils/appstate'
 import ShareGuider from '../../components/ShareGuider'
+const queryString = require('query-string');
 
 const Item = TabBar.Item
 
@@ -32,7 +32,7 @@ class Vote extends React.PureComponent {
   }
   
   componentDidMount() {
-    const {getJsApiConfig, entryURL, showType} = this.props
+    const {getJsApiConfig, entryURL, match, fetchVoteByIdAction, incVotePvAction, showType} = this.props
     const OS = getMobileOperatingSystem()
     let jssdkURL = window.location.href
     if(OS === 'iOS') {
@@ -46,23 +46,19 @@ class Vote extends React.PureComponent {
       success: this.getJsApiConfigSuccess,
       error: (error) => {console.log(error)}
     })
-  }
-
-  componentWillMount(){
-    const { showType, fetchVoteByIdAction, voteId} = this.props
-    if(showType == 'preview') {
+  
+    const {voteId} = match.params
+    if (voteId) {
       fetchVoteByIdAction({
-        voteId: voteId,
-        success: () => {
-          Toast.success('此为临时链接，仅用于活动预览，将在短期内失效')
-          // this.setState({
-          //   previewModalVisible: true
-          // },()=>{console.log('previewModalVisible====>',this.state.previewModalVisible)})
-        },
-        error: (e) => {
-          Toast.fail(e.message)
+        voteId,
+        updateStatus: true,
+        success:()=>{
+          if(showType=='preview'){
+            Toast.success('此为临时链接，仅用于活动预览，将在短期内失效')
+          }
         }
       })
+      incVotePvAction({voteId})
     }
   }
   
@@ -73,7 +69,7 @@ class Vote extends React.PureComponent {
     const title = voteInfo.title
     let url = undefined
     if(this.props.showType=='preview'){
-      url = appConfig.CLIENT_DOMAIN + '/#/vote/'+ voteId + '/preview'
+      url = appConfig.CLIENT_DOMAIN + '/#/vote/'+ voteId + '?showType=preview'
     }else{
       url = appConfig.CLIENT_DOMAIN + '/#/vote/'+ voteId
     }
@@ -275,17 +271,17 @@ class Vote extends React.PureComponent {
         </div>
       )
     }else{
-      return <Loading />
+      return null
     }
 
   }
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const {match} = ownProps
-  const {voteId,showType} = match.params
-  console.log('voteId',voteId,showType)
-
+  const {match,history} = ownProps
+  const {voteId} = match.params
+  let {showType} = queryString.parse(history.location.search)
+  console.log('showType====>',showType)
   return {
     voteId,
     showType,
