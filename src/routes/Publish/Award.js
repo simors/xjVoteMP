@@ -86,7 +86,7 @@ class Award extends React.Component {
 
   preview = () => {
     Toast.loading("正在转到预览")
-    const {history, createOrUpdatePublishingVoteAction, publishVote} = this.props
+    const {history, createOrUpdatePublishingVoteAction, publishVote, fetchVoteByIdAction} = this.props
     let {awards} = this.state
     awards = awards.filter(value => value.awardPhoto)
     createOrUpdatePublishingVoteAction({
@@ -94,11 +94,11 @@ class Award extends React.Component {
       awards: awards,
       success: () => {
         Toast.hide()
-        history.push('/vote/' + this.props.publishVote.id + '&&showType=preview')
+        history.push('/vote/' + this.props.publishVote.id + '/preview')
       },
-      error: () => {
+      error: (e) => {
         Toast.hide()
-        Toast.fail("预览失败")
+        Toast.fail(e.message)
       }
     })
   }
@@ -193,7 +193,7 @@ class Award extends React.Component {
         </div>
         <WingBlank style={{marginTop: '100px', paddingBottom: '30px', textAlign: 'right'}}>
           <Button type="primary" style={{marginRight: '10px'}} inline size="small" onClick={this.onBack}>上一步</Button>
-          {publishVote.type === 1?<Button type="primary" inline size="small" onClick={this.preview}>预览</Button>:null}
+          {publishVote.type === 1?null:<Button type="primary" style={{marginRight: '10px'}} inline size="small" onClick={this.preview}>预览</Button>}
           <Button type="primary" inline size="small" onClick={publishVote.type === 1? this.onNext : this.onSubmit}>{publishVote.type === 1? "下一步" : "完成"}</Button>
         </WingBlank>
       </div>

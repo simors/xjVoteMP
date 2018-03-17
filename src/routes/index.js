@@ -25,7 +25,8 @@ const rootRoutes = (
     <AuthRoute path="/present" component={Present}/>
     <AuthRoute path="/player/:voteId/:playerId" component={Player}/>
     <AuthRoute path="/manPlayers/:voteId" component={ManPlayer} />
-    <AuthRoute path="/vote/:voteId" component={Vote}/>
+    <AuthRoute path="/vote/:voteId/:showType" component={Vote}/>
+      <AuthRoute path="/vote/:voteId" component={Vote}/>
     <AuthRoute path="/searchPlayer/:voteId/:searchKey" component={SearchPlayer}/>
     <AuthRoute path="/publish/organizer" component={Organizer}/>
     <AuthRoute path="/publish/award" component={Award}/>

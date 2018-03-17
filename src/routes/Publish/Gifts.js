@@ -83,7 +83,7 @@ class Gifts extends React.Component {
       gifts: selectGifts,
       success: () => {
         Toast.hide()
-        history.push('/vote/' + this.props.publishVote.id + '&&showType=preview')
+        history.push('/vote/' + this.props.publishVote.id + '/preview')
       },
       error: () => {
         Toast.hide()
@@ -139,7 +139,7 @@ class Gifts extends React.Component {
         </WingBlank>
         <WingBlank style={{marginTop: '20px', paddingBottom: '30px', textAlign: 'right'}}>
           <Button type="primary" style={{marginRight: '10px'}} inline size="small" onClick={this.onBack}>上一步</Button>
-          <Button type="primary" inline size="small" onClick={this.preview}>预览</Button>
+          <Button type="primary" style={{marginRight: '10px'}} inline size="small" onClick={this.preview}>预览</Button>
           <Button type="primary" inline size="small" onClick={this.onComplete}>完成</Button>
         </WingBlank>
         <PublishTrip visible={this.state.showPublishTrip}

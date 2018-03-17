@@ -5,12 +5,13 @@ import React from 'react'
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router-dom'
 import {Toast, TabBar, Modal} from 'antd-mobile'
+import Loading from '../Loading'
 import styles from './vote.module.scss'
 import VoteDetail from './VoteDetail'
 import Apply from './Apply'
 import Award from './Award'
 import Range from './Range'
-import {voteSelector, VOTE_STATUS} from './redux'
+import {voteSelector, VOTE_STATUS, voteActions} from './redux'
 import {publishSelector} from '../Publish/redux'
 import wx from 'tencent-wx-jssdk'
 import appConfig from '../../utils/appConfig'
@@ -45,9 +46,22 @@ class Vote extends React.PureComponent {
       success: this.getJsApiConfigSuccess,
       error: (error) => {console.log(error)}
     })
-    if(showType=='preview'){
-      this.setState({
-        previewModalVisible: true
+  }
+
+  componentWillMount(){
+    const { showType, fetchVoteByIdAction, voteId} = this.props
+    if(showType == 'preview') {
+      fetchVoteByIdAction({
+        voteId: voteId,
+        success: () => {
+          Toast.success('此为临时链接，仅用于活动预览，将在短期内失效')
+          // this.setState({
+          //   previewModalVisible: true
+          // },()=>{console.log('previewModalVisible====>',this.state.previewModalVisible)})
+        },
+        error: (e) => {
+          Toast.fail(e.message)
+        }
       })
     }
   }
@@ -59,7 +73,7 @@ class Vote extends React.PureComponent {
     const title = voteInfo.title
     let url = undefined
     if(this.props.showType=='preview'){
-      url = appConfig.CLIENT_DOMAIN + '/#/vote/'+ voteId + '&&showType=preview'
+      url = appConfig.CLIENT_DOMAIN + '/#/vote/'+ voteId + '/preview'
     }else{
       url = appConfig.CLIENT_DOMAIN + '/#/vote/'+ voteId
     }
@@ -124,19 +138,75 @@ class Vote extends React.PureComponent {
 
   render() {
     const {voteId, history, voteInfo} = this.props
-    if(voteInfo.status === VOTE_STATUS.STARTING || voteInfo.status === VOTE_STATUS.DONE || voteInfo.status === VOTE_STATUS.ACCOUNTED) {
-      return(
-        <div className={styles.page}>
-          {this.state.previewModalVisible?<Modal
-            visible={this.state.modal1}
-            transparent
-            maskClosable={false}
-            onClose={this.closePreviewModal}
-            title="Title"
-            footer={[{ text: '确认', onPress: this.closePreviewModal }]}
-          >
+    if(voteInfo!=undefined){
+      if(voteInfo.status === VOTE_STATUS.STARTING || voteInfo.status === VOTE_STATUS.DONE || voteInfo.status === VOTE_STATUS.ACCOUNTED){
+        return(
+          <div className={styles.page}>
+            {this.state.previewModalVisible?<Modal
+              visible={true}
+              transparent
+              maskClosable={false}
+              onClose={this.closePreviewModal}
+              title="Title"
+              footer={[{ text: '确认', onPress: this.closePreviewModal }]}
+            >
 
-          </Modal>:null}
+            </Modal>:null}
+            <TabBar tintColor="#F6635F">
+              <Item
+                title="活动主页"
+                key="Home"
+                icon={<div className={styles.homeIcon} />}
+                selectedIcon={<div className={styles.homeIconFill}/>}
+                selected={this.state.selectedTab === 'homeTab'}
+                onPress={() => {
+                  this.setState({
+                    selectedTab: 'homeTab',
+                  })
+                  document.title = "活动主页"
+                }}
+              >
+                <VoteDetail voteId={voteId} onSwitchTab={this.onSwitchTab} history={history} onShare={this.onOpenShareGuider}/>
+              </Item>
+              <Item
+                title="奖品"
+                key="prize"
+                icon={<div className={styles.prizeIcon} />}
+                selectedIcon={<div className={styles.prizeIconFill}/>}
+                selected={this.state.selectedTab === 'prizeTab'}
+                onPress={() => {
+                  this.setState({
+                    selectedTab: 'prizeTab',
+                  })
+                  document.title = "奖品详情"
+                }}
+              >
+                <Award voteId={voteId} onShare={this.onOpenShareGuider}/>
+              </Item>
+              <Item
+                title="榜单"
+                key="range"
+                icon={<div className={styles.rangeIcon} />}
+                selectedIcon={<div className={styles.rangeIconFill}/>}
+                selected={this.state.selectedTab === 'rangeTab'}
+                onPress={() => {
+                  this.setState({
+                    selectedTab: 'rangeTab',
+                  })
+                  document.title = "榜单"
+                }}
+              >
+                <Range voteId={voteId} history={history} onShare={this.onOpenShareGuider}/>
+              </Item>
+            </TabBar>
+            <ShareGuider visible={this.state.showShareGuider}
+                         onClose={this.onCloseShareGuider}
+            />
+          </div>
+        )
+      }
+      return (
+        <div className={styles.page}>
           <TabBar tintColor="#F6635F">
             <Item
               title="活动主页"
@@ -152,6 +222,21 @@ class Vote extends React.PureComponent {
               }}
             >
               <VoteDetail voteId={voteId} onSwitchTab={this.onSwitchTab} history={history} onShare={this.onOpenShareGuider}/>
+            </Item>
+            <Item
+              title="报名"
+              key="apply"
+              icon={<div className={styles.applyIcon} />}
+              selectedIcon={<div className={styles.applyIconFill}/>}
+              selected={this.state.selectedTab === 'applyTab'}
+              onPress={() => {
+                this.setState({
+                  selectedTab: 'applyTab',
+                })
+                document.title = "我要报名"
+              }}
+            >
+              <Apply voteId={voteId} onSwitchTab={this.onSwitchTab} />
             </Item>
             <Item
               title="奖品"
@@ -189,92 +274,29 @@ class Vote extends React.PureComponent {
           />
         </div>
       )
+    }else{
+      return <Loading />
     }
-    return (
-      <div className={styles.page}>
-        <TabBar tintColor="#F6635F">
-          <Item
-            title="活动主页"
-            key="Home"
-            icon={<div className={styles.homeIcon} />}
-            selectedIcon={<div className={styles.homeIconFill}/>}
-            selected={this.state.selectedTab === 'homeTab'}
-            onPress={() => {
-              this.setState({
-                selectedTab: 'homeTab',
-              })
-              document.title = "活动主页"
-            }}
-          >
-            <VoteDetail voteId={voteId} onSwitchTab={this.onSwitchTab} history={history} onShare={this.onOpenShareGuider}/>
-          </Item>
-          <Item
-            title="报名"
-            key="apply"
-            icon={<div className={styles.applyIcon} />}
-            selectedIcon={<div className={styles.applyIconFill}/>}
-            selected={this.state.selectedTab === 'applyTab'}
-            onPress={() => {
-              this.setState({
-                selectedTab: 'applyTab',
-              })
-              document.title = "我要报名"
-            }}
-          >
-            <Apply voteId={voteId} onSwitchTab={this.onSwitchTab} />
-          </Item>
-          <Item
-            title="奖品"
-            key="prize"
-            icon={<div className={styles.prizeIcon} />}
-            selectedIcon={<div className={styles.prizeIconFill}/>}
-            selected={this.state.selectedTab === 'prizeTab'}
-            onPress={() => {
-              this.setState({
-                selectedTab: 'prizeTab',
-              })
-              document.title = "奖品详情"
-            }}
-          >
-            <Award voteId={voteId} onShare={this.onOpenShareGuider}/>
-          </Item>
-          <Item
-            title="榜单"
-            key="range"
-            icon={<div className={styles.rangeIcon} />}
-            selectedIcon={<div className={styles.rangeIconFill}/>}
-            selected={this.state.selectedTab === 'rangeTab'}
-            onPress={() => {
-              this.setState({
-                selectedTab: 'rangeTab',
-              })
-              document.title = "榜单"
-            }}
-          >
-            <Range voteId={voteId} history={history} onShare={this.onOpenShareGuider}/>
-          </Item>
-        </TabBar>
-        <ShareGuider visible={this.state.showShareGuider}
-                     onClose={this.onCloseShareGuider}
-        />
-      </div>
-    )
+
   }
 }
 
 const mapStateToProps = (state, ownProps) => {
   const {match} = ownProps
-  const {voteId, showType} = match.params
+  const {voteId,showType} = match.params
+  console.log('voteId',voteId,showType)
+
   return {
     voteId,
     showType,
-    voteInfo: showType=='preview'?publishSelector.selectPublishVote(state):voteSelector.selectVote(state, voteId),
+    voteInfo: voteSelector.selectVote(state, voteId),
     entryURL: appStateSelector.selectEntryURL(state)
   }
 }
 
 const mapDispatchToProps = {
-  ...appStateAction
+  ...appStateAction,
+  ...voteActions
 }
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Vote))
