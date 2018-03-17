@@ -57,7 +57,13 @@ class Vote extends React.PureComponent {
     
     const {voteId, voteInfo} = this.props
     const title = voteInfo.title
-    const url = appConfig.CLIENT_DOMAIN + '/#/vote/'+ voteId
+    let url = undefined
+    if(this.props.showType=='preview'){
+      url = appConfig.CLIENT_DOMAIN + '/#/vote/'+ voteId + '&&showType=preview'
+    }else{
+      url = appConfig.CLIENT_DOMAIN + '/#/vote/'+ voteId
+    }
+
     wx.ready(function () {
       wx.onMenuShareTimeline({
         title: title,
